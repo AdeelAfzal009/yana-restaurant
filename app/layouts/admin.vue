@@ -6,6 +6,8 @@
         <span>Admin</span>
       </NuxtLink>
       <div v-if="showLogout" class="admin-user">
+        <NuxtLink to="/admin/reservations" class="admin-nav-link">Reservations</NuxtLink>
+        <NuxtLink to="/admin/password" class="admin-nav-link">Password</NuxtLink>
         <span v-if="user" class="admin-user-name">{{ user.name }} · {{ user.role }}</span>
         <button type="button" class="admin-logout" @click="logout">Log out</button>
       </div>
@@ -73,6 +75,23 @@ async function logout() {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.admin-nav-link {
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.admin-nav-link:hover {
+  opacity: 0.7;
+}
+
+.admin-nav-link.router-link-active {
+  color: #ffffff;
 }
 
 .admin-user-name {

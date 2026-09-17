@@ -4,8 +4,10 @@ import { setSessionCookie } from '../../utils/auth'
 import { useDb } from '../../utils/db'
 import { verifyPassword } from '../../utils/password'
 
-const MAX_ATTEMPTS = 8
-const WINDOW_MS = 15 * 60 * 1000
+// Tuned so normal use can't lock a real person out: scrypt verification already
+// costs ~100ms, which caps guessing far more effectively than a low counter.
+const MAX_ATTEMPTS = 20
+const WINDOW_MS = 5 * 60 * 1000
 
 // In-memory and therefore per-instance; enough to blunt password guessing on a
 // single container. Move to Redis if this ever runs more than one replica.
