@@ -1,0 +1,28 @@
+{
+  "name": "yana-restaurant",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed-admin": "tsx scripts/seed-admin.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "nuxt": "^4.5.2",
+    "pg": "^8.23.0",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.13"
+  }
+}
