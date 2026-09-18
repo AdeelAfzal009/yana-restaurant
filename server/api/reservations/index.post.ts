@@ -1,5 +1,8 @@
 import { reservations } from '../../database/schema'
 import { useDb, generateReference } from '../../utils/db'
+import { findOrCreateGuest } from '../../utils/guests'
+import { logActivity } from '../../utils/activity'
+import { DATE_RE, EMAIL_RE, TIME_RE } from '../../utils/validate'
 
 interface ReservationInput {
   date?: string
@@ -11,10 +14,6 @@ interface ReservationInput {
   phone?: string
   notes?: string
 }
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
-const TIME_RE = /^\d{2}:\d{2}$/
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<ReservationInput>(event)
@@ -47,14 +46,20 @@ export default defineEventHandler(async (event) => {
 
   const db = useDb()
 
-  const values = {
-    date: body.date,
-    time: `${body.time}:00`,
-    partySize,
+  const contact = {
     firstName: body.firstName.trim(),
     lastName: body.lastName.trim(),
     email: body.email.trim(),
-    phone: body.phone.trim(),
+    phone: body.phone.trim()
+  }
+
+  const values = {
+    guestId: await findOrCreateGuest(db, contact),
+    source: 'online' as const,
+    date: body.date,
+    time: `${body.time}:00`,
+    partySize,
+    ...contact,
     notes: body.notes?.trim() || null
   }
 
@@ -64,9 +69,10 @@ export default defineEventHandler(async (event) => {
       .insert(reservations)
       .values({ ...values, reference: generateReference() })
       .onConflictDoNothing({ target: reservations.reference })
-      .returning({ reference: reservations.reference })
+      .returning({ id: reservations.id, reference: reservations.reference })
 
     if (created) {
+      await logActivity(db, created.id, null, 'created')
       return {
         reference: created.reference,
         date: body.date,
