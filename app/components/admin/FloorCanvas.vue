@@ -93,19 +93,24 @@
         {{ stateFor(t)?.occupied ? `${stateFor(t)!.partySize}/${t.maxCovers}` : `(${t.maxCovers})` }}
       </text>
 
-      <template v-if="stateFor(t)">
-        <g class="guest-flag">
-          <rect :x="t.x + t.width / 2 - 72" :y="t.y - 30" width="144" height="25" rx="4" :fill="stateFor(t)!.occupied ? '#E0ECF7' : '#FFFFFF'" stroke="#C7D3E0" />
-          <text :x="t.x + t.width / 2" :y="t.y - 12" class="flag-text">{{ truncate(stateFor(t)!.name, 16) }}</text>
-        </g>
-        <g>
-          <rect :x="t.x + t.width - 8" :y="t.y + t.height / 2 - 12" width="54" height="24" rx="4" :fill="stateFor(t)!.color" />
-          <text :x="t.x + t.width + 19" :y="t.y + t.height / 2 + 5" class="time-text">{{ stateFor(t)!.time }}</text>
-        </g>
-      </template>
-
       <template v-if="editable && selectedKey === `t:${i}`">
         <rect :x="t.x - 5" :y="t.y - 5" :width="t.width + 10" :height="t.height + 10" class="sel-outline" />
+      </template>
+    </g>
+
+    <!-- Name flags and time badges sit above every table so neighbours never cover them. -->
+    <g class="labels" aria-hidden="true">
+      <template v-for="t in section.tables" :key="`l${t.id}`">
+        <template v-if="stateFor(t)">
+          <g class="guest-flag">
+            <rect :x="t.x + t.width / 2 - 72" :y="t.y - 30" width="144" height="25" rx="4" :fill="stateFor(t)!.occupied ? '#E0ECF7' : '#FFFFFF'" stroke="#C7D3E0" />
+            <text :x="t.x + t.width / 2" :y="t.y - 12" class="flag-text">{{ truncate(stateFor(t)!.name, 16) }}</text>
+          </g>
+          <g>
+            <rect :x="t.x + t.width - 8" :y="t.y + t.height / 2 - 12" width="54" height="24" rx="4" :fill="stateFor(t)!.color" />
+            <text :x="t.x + t.width + 19" :y="t.y + t.height / 2 + 5" class="time-text">{{ stateFor(t)!.time }}</text>
+          </g>
+        </template>
       </template>
     </g>
 
@@ -304,6 +309,10 @@ function endDrag() {
   font-family: var(--sans);
   font-size: 15px;
   text-anchor: middle;
+  pointer-events: none;
+}
+
+.labels {
   pointer-events: none;
 }
 
