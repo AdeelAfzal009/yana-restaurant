@@ -205,11 +205,10 @@
 </template>
 
 <script setup lang="ts">
-// Drop YANA's own .mp4 into public/videos and set heroVideo to it, e.g. '/videos/hero.mp4'.
-// PREVIEW_VIDEO belongs to COYA and is only here to demo the effect while developing —
-// it is never served in production, and must be replaced before the hero goes live.
-const PREVIEW_VIDEO = 'https://coyarestaurant.com/uploads/content/pages/1698918469_44fefc7e-15ae-4f40-b8a4-dac51b658d78.mp4'
-const heroVideo = import.meta.dev ? PREVIEW_VIDEO : ''
+// TEMPORARY placeholder for staging review only: this file belongs to COYA and is
+// hotlinked from their server. Replace it with YANA's own footage before launch —
+// drop an .mp4 into public/videos and point heroVideo at it, e.g. '/videos/hero.mp4'.
+const heroVideo = 'https://coyarestaurant.com/uploads/content/pages/1698918469_44fefc7e-15ae-4f40-b8a4-dac51b658d78.mp4'
 const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
 const ctaImage = '/images/yana-image-2-mrt9pbly-db2c.webp'
 const signatureDishImage = '/images/food1.webp'
@@ -291,11 +290,11 @@ onMounted(() => {
 
 .hero-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 200;
   font-size: clamp(56px, 12vw, 152px);
   line-height: 0.98;
   margin: 26px 0 0;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   color: #ffffff;
 }
 
@@ -451,10 +450,11 @@ onMounted(() => {
 }
 
 .statement-text {
+  letter-spacing: -0.015em;
   max-width: 900px;
   margin: 0 auto;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(30px, 4.6vw, 54px);
   line-height: 1.16;
   color: var(--ink);
@@ -507,6 +507,8 @@ onMounted(() => {
 }
 
 .link-underline {
+  letter-spacing: 0.01em;
+  font-weight: 400;
   display: inline-block;
   margin-top: 36px;
   padding-bottom: 4px;
@@ -578,6 +580,8 @@ onMounted(() => {
 
 /* ---------- Full-bleed band ---------- */
 .story-signoff {
+  letter-spacing: 0.01em;
+  font-weight: 300;
   font-family: var(--serif);
   font-style: italic;
   font-size: 22px;
@@ -670,8 +674,9 @@ onMounted(() => {
 }
 
 .h2-dark {
+  letter-spacing: -0.015em;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(34px, 5vw, 58px);
   line-height: 1.06;
   margin: 24px 0 0;
@@ -685,8 +690,9 @@ onMounted(() => {
 }
 
 .h2-light {
+  letter-spacing: -0.015em;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(34px, 5vw, 58px);
   line-height: 1.06;
   margin: 22px 0 0;
@@ -795,8 +801,9 @@ onMounted(() => {
 }
 
 .cta-title {
+  letter-spacing: -0.015em;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(38px, 6vw, 72px);
   line-height: 1.04;
   margin: 22px 0 0;

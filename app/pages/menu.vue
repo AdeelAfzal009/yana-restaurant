@@ -196,12 +196,12 @@ useHead({ title: 'Menu · YANA Restaurant' })
 
 .banner-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 200;
   font-size: clamp(44px, 9vw, 104px);
   line-height: 1;
   margin: 20px 0 0;
   color: #ffffff;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
 }
 
 .banner-sub {
@@ -219,6 +219,8 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .group-tab {
+  letter-spacing: 0.01em;
+  font-weight: 300;
   display: inline-flex;
   align-items: flex-start;
   gap: 7px;
@@ -324,6 +326,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .intro-text {
+  letter-spacing: 0;
   font-family: var(--serif);
   font-style: italic;
   font-weight: 300;
@@ -378,8 +381,9 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .dish-name {
+  letter-spacing: 0;
   font-family: var(--serif);
-  font-weight: 500;
+  font-weight: 400;
   font-size: clamp(19px, 1.9vw, 22px);
   line-height: 1.2;
   margin: 0;
@@ -402,6 +406,8 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .dish-price {
+  letter-spacing: 0.02em;
+  font-weight: 400;
   font-family: var(--serif);
   font-size: 19px;
   color: var(--gold-dk);
@@ -462,8 +468,9 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .menu-h2 {
+  letter-spacing: -0.01em;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(30px, 4.6vw, 54px);
   line-height: 1;
   margin: 0;
@@ -524,8 +531,9 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .cta-title {
+  letter-spacing: -0.015em;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(32px, 5.4vw, 62px);
   line-height: 1.06;
   margin: 20px 0 0;

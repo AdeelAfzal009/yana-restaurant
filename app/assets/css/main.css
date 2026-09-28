@@ -11,8 +11,10 @@
   --ink: #0F1E2E;
   --ink-dim: rgba(15, 30, 46, 0.62);
   --cream-dim: rgba(255, 255, 255, 0.66);
-  --sans: 'Jost', sans-serif;
-  --serif: 'Cormorant Garamond', serif;
+  /* Montserrat throughout; --serif is kept as the display slot so every
+     existing rule keeps working. */
+  --sans: 'Montserrat', sans-serif;
+  --serif: 'Montserrat', sans-serif;
 }
 
 * {
