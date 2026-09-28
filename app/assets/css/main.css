@@ -46,10 +46,6 @@ a:hover {
   color: var(--blue);
 }
 
-#yana-dish-track::-webkit-scrollbar {
-  display: none;
-}
-
 .yana-input {
   width: 100%;
   background: transparent;

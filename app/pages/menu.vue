@@ -8,13 +8,28 @@
         <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
         <h1 class="banner-title">Menu</h1>
         <p class="banner-sub">Pan-Asian Fusion, Peruvian Flair</p>
+        <div class="group-tabs" role="tablist" aria-label="Menu">
+          <button
+            v-for="g in menuGroups"
+            :key="g.id"
+            type="button"
+            role="tab"
+            :aria-selected="g.id === activeGroup"
+            class="group-tab"
+            :class="{ 'is-active': g.id === activeGroup }"
+            @click="selectGroup(g.id)"
+          >
+            {{ g.label }}
+            <span class="group-tab-count">{{ itemCount(g) }}</span>
+          </button>
+        </div>
       </div>
     </header>
 
     <!-- CATEGORY RAIL -->
     <div class="category-rail">
       <div class="category-rail-inner">
-        <a v-for="cat in categories" :key="cat.id" :href="`#${cat.id}`" class="rail-link">{{ cat.label }}</a>
+        <a v-for="sec in group.sections" :key="sec.id" :href="`#${sec.id}`" class="rail-link">{{ sec.label }}</a>
         <a :href="digitalMenuUrl" target="_blank" rel="noopener" class="rail-link rail-link--digital">Digital Menu →</a>
       </div>
     </div>
@@ -27,79 +42,50 @@
       </div>
     </section>
 
-    <!-- STARTERS -->
-    <section id="starters" class="menu-section">
+    <!-- ===================== MENU SECTIONS ===================== -->
+    <section
+      v-for="(sec, i) in group.sections"
+      :id="sec.id"
+      :key="sec.id"
+      class="menu-section"
+      :class="{ 'menu-section--dark': isDark(i) }"
+    >
+      <div v-if="isDark(i)" aria-hidden="true" class="pattern-dark" />
       <div class="menu-section-inner">
-        <div class="menu-section-head">
-          <h2 class="menu-h2">Starters</h2>
-          <span class="menu-section-label">Raw bar &amp; small plates</span>
+        <div class="menu-section-head" :class="{ 'menu-section-head--dark': isDark(i) }">
+          <h2 class="menu-h2" :class="{ 'menu-h2--light': isDark(i) }">{{ sec.label }}</h2>
+          <span class="menu-section-label" :class="{ 'menu-section-label--light': isDark(i) }">
+            {{ sec.items.length }} {{ activeGroup === 'drinks' ? (sec.items.length === 1 ? 'drink' : 'drinks') : (sec.items.length === 1 ? 'dish' : 'dishes') }}
+          </span>
         </div>
-        <div class="menu-rows">
-          <div v-for="item in starters" :key="item.name" class="menu-row">
-            <div class="menu-row-text">
-              <h3 class="menu-item-name">{{ item.name }}</h3>
-              <p class="menu-item-desc">{{ item.desc }}</p>
+
+        <div class="dish-grid">
+          <article v-for="item in sec.items" :key="item.name" class="dish-card">
+            <div class="dish-photo">
+              <img
+                v-if="item.image"
+                :src="item.image"
+                :alt="item.name"
+                width="800"
+                height="800"
+                loading="lazy"
+                decoding="async"
+              >
+              <ImagePlaceholder v-else label="Photo coming soon" :on-light="!isDark(i)" />
+              <span aria-hidden="true" class="dish-photo-frame" />
             </div>
-            <span class="menu-item-price">{{ item.price }}</span>
-          </div>
+            <div class="dish-head">
+              <h3 class="dish-name" :class="{ 'dish-name--light': isDark(i) }">{{ displayName(item.name) }}</h3>
+              <span class="dish-leader" :class="{ 'dish-leader--light': isDark(i) }" />
+              <span class="dish-price" :class="{ 'dish-price--light': isDark(i) }">{{ item.price }}</span>
+            </div>
+            <p v-if="item.desc" class="dish-desc" :class="{ 'dish-desc--light': isDark(i) }">{{ item.desc }}</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- MAINS (dark band) -->
-    <section id="mains" class="menu-section menu-section--dark">
-      <div aria-hidden="true" class="pattern-dark" />
-      <div class="menu-section-inner">
-        <div class="menu-section-head menu-section-head--dark">
-          <h2 class="menu-h2 menu-h2--light">Mains</h2>
-          <span class="menu-section-label menu-section-label--light">From the Josper grill</span>
-        </div>
-        <div class="menu-rows">
-          <div v-for="item in mains" :key="item.name" class="menu-row menu-row--dark">
-            <div class="menu-row-text">
-              <h3 class="menu-item-name menu-item-name--light">{{ item.name }}</h3>
-              <p class="menu-item-desc menu-item-desc--light">{{ item.desc }}</p>
-            </div>
-            <span class="menu-item-price menu-item-price--light">{{ item.price }}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DESSERTS + DRINKS -->
-    <section id="desserts" class="desserts-section">
-      <div class="desserts-grid">
-        <div>
-          <div class="menu-section-head menu-section-head--tight">
-            <h2 class="menu-h2 menu-h2--sm">Desserts</h2>
-          </div>
-          <div class="menu-rows menu-rows--tight">
-            <div v-for="item in desserts" :key="item.name" class="menu-row menu-row--tight">
-              <div class="menu-row-text">
-                <h3 class="menu-item-name menu-item-name--sm">{{ item.name }}</h3>
-                <p class="menu-item-desc">{{ item.desc }}</p>
-              </div>
-              <span class="menu-item-price">{{ item.price }}</span>
-            </div>
-          </div>
-        </div>
-        <div id="drinks" class="drinks-col">
-          <div class="menu-section-head menu-section-head--tight">
-            <h2 class="menu-h2 menu-h2--sm">Drinks</h2>
-          </div>
-          <div class="menu-rows menu-rows--tight">
-            <div v-for="item in drinks" :key="item.name" class="menu-row menu-row--tight">
-              <div class="menu-row-text">
-                <h3 class="menu-item-name menu-item-name--sm">{{ item.name }}</h3>
-                <p class="menu-item-desc">{{ item.desc }}</p>
-              </div>
-              <span class="menu-item-price">{{ item.price }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="price-disclaimer">All prices in AED and inclusive of applicable taxes.</p>
-    </section>
+    <p class="price-disclaimer">All prices in AED and inclusive of applicable taxes.</p>
 
     <!-- CTA -->
     <section class="cta-section">
@@ -119,38 +105,38 @@
 </template>
 
 <script setup lang="ts">
-const digitalMenuUrl = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID=54266'
+import { menuGroups, type MenuGroup } from '~/data/menu'
 
-const categories = [
-  { id: 'starters', label: 'Starters' },
-  { id: 'mains', label: 'Mains' },
-  { id: 'desserts', label: 'Desserts' },
-  { id: 'drinks', label: 'Drinks' }
-]
+const digitalMenuUrl = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID=62881'
 
-const starters = [
-  { name: 'Ceviche YANA', desc: 'Sea bass, leche de tigre, crisp cancha, red onion and coriander oil.', price: '75' },
-  { name: 'Nikkei Tiradito', desc: "Yellowtail, aji amarillo tiger's milk, yuzu and a whisper of gold leaf.", price: '85' },
-  { name: 'Anticuchos de Wagyu', desc: 'Charcoal-grilled wagyu skewers, panca glaze and smoked lime.', price: '95' },
-  { name: 'Pulpo al Josper', desc: 'Grilled octopus, botija olive, aji panca and purple Andean potato.', price: '110' }
-]
+// ?menu=drinks keeps a shared link on the right list.
+const route = useRoute()
+const router = useRouter()
+const fromQuery = typeof route.query.menu === 'string' && menuGroups.some(g => g.id === route.query.menu)
+  ? route.query.menu
+  : menuGroups[0]!.id
 
-const mains = [
-  { name: 'Miso Glazed Black Cod', desc: 'Black cod marinated in miso glaze, broiled and served with pandan rice and bok choy.', price: '145' },
-  { name: 'Lomo Saltado', desc: 'Wok-seared beef tenderloin, soy, vine tomato and crisp golden potato.', price: '135' },
-  { name: 'Salmón Nikkei', desc: 'Torched salmon, den miso, jalapeño and a lift of kizami wasabi.', price: '125' },
-  { name: 'Charcoaled Beef Burger', desc: 'Robata-grilled patty, cheddar, caramelised onion and aji panca in a brioche bun.', price: '95' }
-]
+const activeGroup = ref(fromQuery)
+const group = computed(() => menuGroups.find(g => g.id === activeGroup.value) ?? menuGroups[0]!)
 
-const desserts = [
-  { name: 'Lucuma Cheesecake', desc: 'Peruvian lucuma, torched meringue and cacao crumb.', price: '55' },
-  { name: 'Yuzu Matcha Tart', desc: 'Matcha ganache, yuzu curd and white sesame tuile.', price: '50' }
-]
+const itemCount = (g: MenuGroup) => g.sections.reduce((n, sec) => n + sec.items.length, 0)
 
-const drinks = [
-  { name: 'Chicha Morada', desc: 'Purple corn, pineapple, clove and lime — served over ice.', price: '38' },
-  { name: 'Yuzu Cooler', desc: 'Yuzu, shiso, cucumber and soda.', price: '42' }
-]
+function selectGroup(id: string) {
+  if (id === activeGroup.value) return
+  activeGroup.value = id
+  router.replace({ query: id === menuGroups[0]!.id ? {} : { menu: id } })
+}
+
+// A few names arrive shouting from the digital menu (ESPRESSO); even them out.
+function displayName(name: string) {
+  if (name.length < 4 || name !== name.toUpperCase()) return name
+  return name.toLowerCase().replace(/(^|[\s(-])([a-z])/g, (_, pre, ch) => pre + ch.toUpperCase())
+}
+
+// Alternate light and dark bands down the page.
+const isDark = (i: number) => i % 2 === 1
+
+useHead({ title: 'Menu · YANA Restaurant' })
 </script>
 
 <style scoped>
@@ -224,6 +210,47 @@ const drinks = [
   font-size: clamp(19px, 3vw, 28px);
   color: rgba(255, 255, 255, 0.9);
   margin: 16px 0 0;
+}
+
+.group-tabs {
+  display: flex;
+  gap: clamp(16px, 3vw, 34px);
+  margin-top: clamp(24px, 3vw, 34px);
+}
+
+.group-tab {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  background: none;
+  font-family: var(--serif);
+  font-size: clamp(22px, 3vw, 30px);
+  color: rgba(255, 255, 255, 0.62);
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.group-tab:hover {
+  color: #ffffff;
+}
+
+.group-tab.is-active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.group-tab-count {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.group-tab.is-active .group-tab-count {
+  color: var(--gold-lt);
 }
 
 .category-rail {
@@ -306,6 +333,97 @@ const drinks = [
   margin: 0;
 }
 
+.dish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: clamp(22px, 2.6vw, 38px);
+  margin-top: clamp(28px, 3.5vw, 46px);
+}
+
+.dish-card {
+  min-width: 0;
+}
+
+.dish-photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.dish-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.dish-card:hover .dish-photo img {
+  transform: scale(1.06);
+}
+
+.dish-photo-frame {
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(217, 182, 144, 0.45);
+  pointer-events: none;
+}
+
+.dish-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dish-name {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(19px, 1.9vw, 22px);
+  line-height: 1.2;
+  margin: 0;
+  color: var(--ink);
+}
+
+.dish-name--light {
+  color: #ffffff;
+}
+
+.dish-leader {
+  flex: 1;
+  height: 1px;
+  min-width: 12px;
+  background: repeating-linear-gradient(90deg, rgba(15, 30, 46, 0.28) 0 2px, transparent 2px 6px);
+}
+
+.dish-leader--light {
+  background: repeating-linear-gradient(90deg, rgba(232, 220, 200, 0.4) 0 2px, transparent 2px 6px);
+}
+
+.dish-price {
+  font-family: var(--serif);
+  font-size: 19px;
+  color: var(--gold-dk);
+  white-space: nowrap;
+}
+
+.dish-price--light {
+  color: var(--gold);
+}
+
+.dish-desc {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.75;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.dish-desc--light {
+  color: var(--cream-dim);
+}
+
 .menu-section {
   scroll-margin-top: 130px;
   position: relative;
@@ -343,11 +461,6 @@ const drinks = [
   border-bottom: 1px solid rgba(217, 182, 144, 0.45);
 }
 
-.menu-section-head--tight {
-  gap: 20px;
-  padding-bottom: 20px;
-}
-
 .menu-h2 {
   font-family: var(--serif);
   font-weight: 400;
@@ -361,10 +474,6 @@ const drinks = [
   color: #ffffff;
 }
 
-.menu-h2--sm {
-  font-size: clamp(28px, 4vw, 44px);
-}
-
 .menu-section-label {
   font-size: 10.5px;
   letter-spacing: 0.28em;
@@ -376,102 +485,15 @@ const drinks = [
   color: var(--gold-lt);
 }
 
-.menu-rows {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 0 clamp(40px, 6vw, 80px);
-  margin-top: clamp(24px, 3vw, 40px);
-}
-
-.menu-rows--tight {
-  display: block;
-  margin-top: 8px;
-}
-
-.menu-row {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 22px 0;
-  border-bottom: 1px solid rgba(18, 66, 109, 0.1);
-}
-
-.menu-row--dark {
-  border-bottom-color: rgba(255, 255, 255, 0.12);
-}
-
-.menu-row--tight {
-  padding: 20px 0;
-}
-
-.menu-row-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.menu-item-name {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: clamp(20px, 2.2vw, 25px);
-  margin: 0;
-  color: var(--ink);
-}
-
-.menu-item-name--light {
-  color: #ffffff;
-}
-
-.menu-item-name--sm {
-  font-size: 22px;
-}
-
-.menu-item-desc {
-  font-size: 13.5px;
-  line-height: 1.7;
-  color: var(--ink-dim);
-  margin: 7px 0 0;
-}
-
-.menu-item-desc--light {
-  color: var(--cream-dim);
-}
-
-.menu-item-price {
-  font-family: var(--serif);
-  font-size: 19px;
-  color: var(--gold-dk);
-  white-space: nowrap;
-}
-
-.menu-item-price--light {
-  color: var(--gold-lt);
-}
-
-.desserts-section {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(64px, 9vw, 110px) clamp(20px, 5vw, 64px);
-}
-
-.desserts-grid {
-  position: relative;
-  max-width: 1320px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: clamp(48px, 6vw, 84px);
-}
-
-.drinks-col {
-  scroll-margin-top: 130px;
-}
-
 .price-disclaimer {
   position: relative;
   max-width: 1320px;
-  margin: clamp(40px, 5vw, 60px) auto 0;
+  /* Standalone strip between the last menu band and the CTA. */
+  margin: 0 auto;
+  padding: clamp(26px, 3.5vw, 40px) clamp(20px, 5vw, 64px);
   font-size: 11.5px;
   letter-spacing: 0.06em;
+  text-align: center;
   color: var(--ink-dim);
 }
 

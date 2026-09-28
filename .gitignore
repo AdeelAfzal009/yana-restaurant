@@ -26,3 +26,6 @@ logs
 # Local reservations database
 /data
 *.db
+
+# Full-size source photos (optimised copies live in public/images)
+/design-source

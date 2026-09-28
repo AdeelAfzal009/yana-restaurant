@@ -7,7 +7,7 @@
       <div class="hero-content">
         <div v-reveal="{ y: 24, duration: 1.1 }">
           <span class="hero-eyebrow">
-            <span class="rule rule-left" />Peruvian &middot; Pan-Asian Kitchen<span class="rule rule-right" />
+            <span class="rule rule-left" />Pan Asian Fusion Peruvian Flair<span class="rule rule-right" />
           </span>
         </div>
         <h1 v-reveal="{ y: 28, duration: 1.2, delay: 0.12 }" class="hero-title">Fire &amp; Sea</h1>
@@ -25,6 +25,32 @@
 
     <div aria-hidden="true" class="hero-transition" />
 
+    <!-- ===================== FOOD (signature dish) ===================== -->
+    <section id="cuisine" class="section-pad section-light food-section">
+      <span aria-hidden="true" class="ghost-word ghost-center">FOOD</span>
+      <div class="food-grid">
+        <div v-reveal="{ y: 30 }" class="food-text">
+          <span class="eyebrow eyebrow-dark"><span class="rule-short" />01 — Food</span>
+          <h2 class="h2-dark">Discover the flavours<br>of Peru at YANA</h2>
+          <p class="body-copy">Experience the vibrant flavours of Peru, reimagined on Saadiyat Island.</p>
+          <p class="body-copy">A curated menu of fresh ceviches, silken tiraditos and anticuchos charred over the Josper grill — Nikkei precision met with Peruvian soul.</p>
+          <p class="body-copy">Set in a dining room of deep blue and brass, YANA offers a culinary journey that blends authentic Peruvian tastes with the fire of the East.</p>
+          <p class="body-copy">Ideal for those seeking a genuine taste of Peru in Abu Dhabi.</p>
+          <NuxtLink to="/menu" class="link-underline">Explore the Menu</NuxtLink>
+        </div>
+        <div v-reveal="{ y: 30, delay: 0.15 }" class="food-media">
+          <svg aria-hidden="true" class="food-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="2.5,3.5 98,0 99.5,96.5 0,99" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
+          </svg>
+          <div class="food-photo" :style="signatureDishImage ? { backgroundImage: `url('${signatureDishImage}')` } : undefined">
+            <ImagePlaceholder v-if="!signatureDishImage" label="Signature dish photo" on-light />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider-flourish" />
+
     <!-- ===================== STORY ===================== -->
     <section id="story" class="section-pad section-light">
       <span aria-hidden="true" class="ghost-word ghost-left">PERU</span>
@@ -35,44 +61,12 @@
           </div>
         </div>
         <div v-reveal="{ y: 30, delay: 0.15 }" class="story-text">
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />01 — Our Story</span>
+          <span class="eyebrow eyebrow-dark"><span class="rule-short" />02 — Our Story</span>
           <h2 class="h2-dark">Two coastlines,<br>one table.</h2>
           <p class="body-copy">YANA is a meeting of distant shores — the citrus-bright kitchens of coastal Peru and the quiet mastery of Pan-Asian cuisine. Set against the hush of Saadiyat Island, each plate is an invitation to linger over fire, sea and spice long into the Abu Dhabi night.</p>
           <p class="body-copy" style="margin-top: 20px;">We cook over open flame, pour with intention, and treat every evening as a slow, deliberate occasion.</p>
           <p class="story-signoff">— The House of YANA</p>
         </div>
-      </div>
-    </section>
-
-    <div class="divider-flourish" />
-
-    <!-- ===================== SIGNATURE DISHES ===================== -->
-    <section id="dishes" class="section-pad section-light">
-      <span aria-hidden="true" class="ghost-word ghost-right">CUISINE</span>
-      <div v-reveal class="dishes-intro">
-        <span class="eyebrow eyebrow-dark"><span class="rule-short" />02 — The Menu</span>
-        <h2 class="h2-dark">Signature plates</h2>
-        <p class="body-copy-sm">A selection from our nightly kitchen — Nikkei precision, Peruvian soul and the smoke of the Josper grill. Swipe to explore.</p>
-      </div>
-      <div v-reveal class="dish-controls">
-        <button aria-label="Previous dish" class="icon-btn" @click="scrollDishes(-1)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polyline points="15 5 8 12 15 19" /></svg>
-        </button>
-        <button aria-label="Next dish" class="icon-btn" @click="scrollDishes(1)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polyline points="9 5 16 12 9 19" /></svg>
-        </button>
-      </div>
-      <div id="yana-dish-track" ref="dishTrack" class="dish-track">
-        <div v-for="dish in dishes" :key="dish.name" class="dish-card">
-          <div class="dish-image" :style="{ background: dish.gradient }">
-            <div class="frame-border frame-border--tint" />
-          </div>
-          <h3 class="dish-name">{{ dish.name }}</h3>
-          <p class="dish-desc">{{ dish.desc }}</p>
-        </div>
-      </div>
-      <div v-reveal class="dishes-cta">
-        <NuxtLink to="/menu" class="btn-outline">Show All Dishes</NuxtLink>
       </div>
     </section>
 
@@ -188,28 +182,9 @@
 const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
 const sideImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
 const ctaImage = '/images/yana-image-2-mrt9pbly-db2c.webp'
+const signatureDishImage = '/images/food1.webp'
 const heroKenBurns = true
 
-const dishTrack = ref<HTMLElement | null>(null)
-
-const dishes = [
-  { name: 'Nikkei Tiradito', desc: "Yellowtail, aji amarillo tiger's milk, yuzu and a whisper of gold leaf.", gradient: 'radial-gradient(90% 80% at 80% 100%, rgba(217,182,144,.22), transparent 55%), linear-gradient(160deg, #F3ECE1, #EAD9BF 74%)' },
-  { name: 'Anticuchos de Wagyu', desc: 'Charcoal-grilled wagyu skewers, panca glaze and smoked lime.', gradient: 'radial-gradient(90% 80% at 15% 100%, rgba(217,182,144,.24), transparent 55%), linear-gradient(150deg, #F6EFE4, #EAD9BF 74%)' },
-  { name: 'Josper Black Cod', desc: 'Miso-lacquered black cod, roasted sweet potato and shiso.', gradient: 'radial-gradient(80% 80% at 90% 90%, rgba(217,182,144,.22), transparent 55%), linear-gradient(165deg, #F3ECE1, #EAD9BF 74%)' },
-  { name: 'Ceviche YANA', desc: 'Sea bass, leche de tigre, crisp cancha, red onion and coriander oil.', gradient: 'radial-gradient(90% 80% at 12% 92%, rgba(217,182,144,.24), transparent 55%), linear-gradient(155deg, #F6EFE4, #EAD9BF 74%)' },
-  { name: 'Lomo Saltado', desc: 'Wok-seared beef tenderloin, soy, vine tomato and crisp golden potato.', gradient: 'radial-gradient(90% 80% at 80% 100%, rgba(217,182,144,.22), transparent 55%), linear-gradient(158deg, #F3ECE1, #EAD9BF 74%)' },
-  { name: 'Salmón Nikkei', desc: 'Torched salmon, den miso, jalapeño and a lift of kizami wasabi.', gradient: 'radial-gradient(90% 80% at 95% 85%, rgba(217,182,144,.24), transparent 55%), linear-gradient(150deg, #F6EFE4, #EAD9BF 74%)' },
-  { name: 'Pulpo al Josper', desc: 'Grilled octopus, botija olive, aji panca and purple Andean potato.', gradient: 'radial-gradient(90% 80% at 10% 90%, rgba(217,182,144,.22), transparent 55%), linear-gradient(162deg, #F3ECE1, #EAD9BF 74%)' }
-]
-
-function scrollDishes(dir: number) {
-  const track = dishTrack.value
-  if (!track) return
-  const card = track.querySelector('.dish-card') as HTMLElement | null
-  const width = card ? card.getBoundingClientRect().width : 280
-  const gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '24') || 24
-  track.scrollBy({ left: dir * (width + gap), behavior: 'smooth' })
-}
 </script>
 
 <style scoped>
@@ -401,8 +376,11 @@ function scrollDishes(dir: number) {
   font-size: clamp(88px, 20vw, 250px);
 }
 
-.ghost-right {
-  right: -1.5vw;
+.ghost-center {
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(76px, 15vw, 210px);
+  letter-spacing: 0.12em;
 }
 
 .ghost-word--light {
@@ -413,6 +391,79 @@ function scrollDishes(dir: number) {
   bottom: clamp(24px, 5vw, 60px);
   top: auto;
   left: -1.5vw;
+}
+
+.food-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.food-grid {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+}
+
+.food-text {
+  flex: 1 1 400px;
+  min-width: 300px;
+}
+
+.food-text .body-copy {
+  margin-top: 20px;
+  max-width: 46ch;
+}
+
+.food-text .body-copy:first-of-type {
+  margin-top: 30px;
+}
+
+.link-underline {
+  display: inline-block;
+  margin-top: 36px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--gold);
+  font-family: var(--serif);
+  font-size: 21px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.link-underline:hover {
+  color: var(--gold-dk);
+  border-color: var(--gold-dk);
+}
+
+/* The photo sits inside a hand-cut gold outline, as on COYA's food section. */
+.food-media {
+  position: relative;
+  flex: 1 1 420px;
+  min-width: 300px;
+  padding: 26px 22px;
+}
+
+.food-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(217, 182, 144, 0.75);
+  transform: rotate(-1.8deg);
+  pointer-events: none;
+}
+
+.food-photo {
+  position: relative;
+  aspect-ratio: 4 / 4.5;
+  background-color: var(--panel);
+  background-size: cover;
+  /* The dishes sit low in the frame, so bias the crop downward. */
+  background-position: center 58%;
+  background-repeat: no-repeat;
+  clip-path: polygon(1% 2.5%, 99.5% 0%, 98.5% 98%, 0.5% 100%);
 }
 
 .story-grid {
@@ -539,105 +590,6 @@ function scrollDishes(dir: number) {
   background: linear-gradient(90deg, transparent, rgba(217, 182, 144, 0.4), transparent);
   max-width: 1320px;
   margin: 0 auto;
-}
-
-.dishes-intro {
-  position: relative;
-  max-width: 640px;
-}
-
-.dish-controls {
-  position: relative;
-  margin-top: clamp(40px, 5vw, 60px);
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: none;
-  border: 1px solid rgba(217, 182, 144, 0.5);
-  color: var(--gold-dk);
-  cursor: pointer;
-  transition: all 0.35s ease;
-}
-
-.icon-btn:hover {
-  background: var(--gold);
-  color: #ffffff;
-  border-color: var(--gold);
-}
-
-.dish-track {
-  position: relative;
-  display: flex;
-  gap: clamp(18px, 2vw, 28px);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  margin-top: clamp(22px, 2.5vw, 30px);
-  padding-bottom: 6px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.dish-card {
-  flex: 0 0 clamp(240px, 74vw, 300px);
-  scroll-snap-align: start;
-}
-
-.dish-image {
-  position: relative;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-}
-
-.dish-name {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: clamp(23px, 2.4vw, 27px);
-  margin: 24px 0 10px;
-  color: var(--ink);
-}
-
-.dish-desc {
-  font-size: 13.5px;
-  line-height: 1.75;
-  color: var(--ink-dim);
-  margin: 0;
-  font-weight: 300;
-}
-
-.dishes-cta {
-  position: relative;
-  margin-top: clamp(44px, 5vw, 64px);
-  display: flex;
-  justify-content: center;
-}
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--gold-dk);
-  background: transparent;
-  border: 1px solid var(--gold);
-  padding: 18px 40px;
-  text-decoration: none;
-  transition: all 0.4s ease;
-}
-
-.btn-outline:hover {
-  background: var(--gold);
-  color: #ffffff;
 }
 
 .experience-section {
