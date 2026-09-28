@@ -2,7 +2,20 @@
   <div class="yana-page">
     <!-- ===================== HERO ===================== -->
     <header id="home" class="hero">
-      <div class="hero-img" :class="{ 'no-zoom': !heroKenBurns }" :style="{ backgroundImage: `url('${heroImage}')` }" />
+      <video
+        v-if="heroVideo && !reducedMotion"
+        class="hero-video"
+        :poster="heroImage"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      >
+        <source :src="heroVideo" type="video/mp4">
+      </video>
+      <div v-else class="hero-img" :class="{ 'no-zoom': !heroKenBurns }" :style="{ backgroundImage: `url('${heroImage}')` }" />
       <div class="hero-scrim" />
       <div class="hero-content">
         <div v-reveal="{ y: 24, duration: 1.1 }">
@@ -25,91 +38,104 @@
 
     <div aria-hidden="true" class="hero-transition" />
 
-    <!-- ===================== FOOD (signature dish) ===================== -->
-    <section id="cuisine" class="section-pad section-light food-section">
+    <!-- ===================== INTRO STATEMENT ===================== -->
+    <section class="statement">
+      <p v-reveal="{ y: 26 }" class="statement-text">The spirit of Peru,<br>on the shores of Saadiyat.</p>
+    </section>
+
+    <!-- ===================== FOOD ===================== -->
+    <section id="cuisine" class="feature section-light">
       <span aria-hidden="true" class="ghost-word ghost-center">FOOD</span>
-      <div class="food-grid">
-        <div v-reveal="{ y: 30 }" class="food-text">
+      <div class="feature-grid">
+        <div v-reveal="{ y: 30 }" class="feature-text">
           <span class="eyebrow eyebrow-dark"><span class="rule-short" />01 — Food</span>
           <h2 class="h2-dark">Discover the flavours<br>of Peru at YANA</h2>
           <p class="body-copy">Experience the vibrant flavours of Peru, reimagined on Saadiyat Island.</p>
           <p class="body-copy">A curated menu of fresh ceviches, silken tiraditos and anticuchos charred over the Josper grill — Nikkei precision met with Peruvian soul.</p>
           <p class="body-copy">Set in a dining room of deep blue and brass, YANA offers a culinary journey that blends authentic Peruvian tastes with the fire of the East.</p>
-          <p class="body-copy">Ideal for those seeking a genuine taste of Peru in Abu Dhabi.</p>
           <NuxtLink to="/menu" class="link-underline">Explore the Menu</NuxtLink>
         </div>
-        <div v-reveal="{ y: 30, delay: 0.15 }" class="food-media">
-          <svg aria-hidden="true" class="food-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-media">
+          <svg aria-hidden="true" class="feature-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
             <polygon points="2.5,3.5 98,0 99.5,96.5 0,99" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
           </svg>
-          <div class="food-photo" :style="signatureDishImage ? { backgroundImage: `url('${signatureDishImage}')` } : undefined">
-            <ImagePlaceholder v-if="!signatureDishImage" label="Signature dish photo" on-light />
-          </div>
+          <div class="feature-photo" :style="{ backgroundImage: `url('${signatureDishImage}')` }" />
         </div>
       </div>
     </section>
 
-    <div class="divider-flourish" />
-
-    <!-- ===================== STORY ===================== -->
-    <section id="story" class="section-pad section-light">
-      <span aria-hidden="true" class="ghost-word ghost-left">PERU</span>
-      <div class="story-grid">
-        <div v-reveal="{ y: 30 }" class="story-image-wrap">
-          <div class="story-image" :style="{ backgroundImage: `url('${sideImage}')` }">
-            <div class="frame-border" />
-          </div>
+    <!-- ===================== PISCO BAR (dark band) ===================== -->
+    <section id="bar" class="feature feature--dark">
+      <div aria-hidden="true" class="pattern-dark pattern-dark--tall" />
+      <span aria-hidden="true" class="ghost-word ghost-word--light ghost-center">PISCO BAR</span>
+      <div class="feature-grid feature-grid--reverse">
+        <div v-reveal="{ y: 30 }" class="feature-text">
+          <span class="eyebrow eyebrow-light"><span class="rule-short" />02 — Pisco Bar</span>
+          <h2 class="h2-light">Unwind over pisco,<br>late into the night</h2>
+          <p class="body-copy body-copy--light">A bar built around Peru's national spirit — pisco sours shaken to order, chilcanos over crushed ice and Nikkei-leaning cocktails poured against deep blue and brass.</p>
+          <p class="body-copy body-copy--light">Matchas, coolers and cold-pressed juices run alongside, so every table finds its pour.</p>
+          <NuxtLink to="/menu?menu=drinks" class="link-underline link-underline--light">Discover the Drinks</NuxtLink>
         </div>
-        <div v-reveal="{ y: 30, delay: 0.15 }" class="story-text">
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />02 — Our Story</span>
+        <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-media">
+          <svg aria-hidden="true" class="feature-frame feature-frame--light" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="1.5,2.5 98.5,0.5 99,97.5 0.5,99" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
+          </svg>
+          <div class="feature-photo feature-photo--portrait" :style="{ backgroundImage: `url('${barImage}')` }" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TERRACE ===================== -->
+    <section id="terrace" class="feature section-light">
+      <span aria-hidden="true" class="ghost-word ghost-left">TERRACE</span>
+      <div class="feature-grid">
+        <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
+          <span class="eyebrow eyebrow-dark"><span class="rule-short" />03 — The Terrace</span>
+          <h2 class="h2-dark">Sea breeze, palms<br>and long lunches</h2>
+          <p class="body-copy">Marble-topped tables under the palms, the Gulf a few steps away. The terrace is made for slow afternoons — ceviche, a cooler in hand and the island quiet around you.</p>
+          <p class="body-copy">As the light drops, lanterns come on and lunch turns, unhurried, into dinner.</p>
+          <NuxtLink to="/gallery" class="link-underline">See the Gallery</NuxtLink>
+        </div>
+        <div v-reveal="{ y: 30 }" class="feature-media">
+          <svg aria-hidden="true" class="feature-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="1,3 99,0 97.5,97 2,99.5" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
+          </svg>
+          <div class="feature-photo feature-photo--tall" :style="{ backgroundImage: `url('${terraceImage}')` }" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EVENINGS (full-bleed) ===================== -->
+    <section id="evenings" class="bleed">
+      <div class="bleed-bg" :style="{ backgroundImage: `url('${eveningImage}')` }" />
+      <div aria-hidden="true" class="bleed-scrim" />
+      <span aria-hidden="true" class="ghost-word ghost-word--light ghost-bottom-left">EVENINGS</span>
+      <div class="bleed-inner">
+        <div v-reveal="{ y: 30 }" class="bleed-text">
+          <span class="eyebrow eyebrow-light"><span class="rule-short" />04 — Evenings</span>
+          <h2 class="h2-light">When the lights<br>come on</h2>
+          <p class="body-copy body-copy--light">Brass glows, the grill settles into rhythm and the room fills. Evenings at YANA are long and warm — a dining room wrapped in deep blue, a bar that keeps pouring, and a table worth lingering at.</p>
+          <NuxtLink to="/reservation" class="link-underline link-underline--light">Plan Your Evening</NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== OUR STORY ===================== -->
+    <section id="story" class="feature section-light">
+      <span aria-hidden="true" class="ghost-word ghost-left">PERU</span>
+      <div class="feature-grid feature-grid--reverse">
+        <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
+          <span class="eyebrow eyebrow-dark"><span class="rule-short" />05 — Our Story</span>
           <h2 class="h2-dark">Two coastlines,<br>one table.</h2>
           <p class="body-copy">YANA is a meeting of distant shores — the citrus-bright kitchens of coastal Peru and the quiet mastery of Pan-Asian cuisine. Set against the hush of Saadiyat Island, each plate is an invitation to linger over fire, sea and spice long into the Abu Dhabi night.</p>
-          <p class="body-copy" style="margin-top: 20px;">We cook over open flame, pour with intention, and treat every evening as a slow, deliberate occasion.</p>
+          <p class="body-copy">We cook over open flame, pour with intention, and treat every evening as a slow, deliberate occasion.</p>
           <p class="story-signoff">— The House of YANA</p>
         </div>
-      </div>
-    </section>
-
-    <!-- ===================== EXPERIENCE ===================== -->
-    <section id="experience" class="experience-section">
-      <div aria-hidden="true" class="pattern-dark pattern-dark--tall" />
-      <div aria-hidden="true" class="pattern-dark pattern-dark--square" />
-      <span aria-hidden="true" class="ghost-word ghost-word--light ghost-bottom-left">AMBIANCE</span>
-      <div class="experience-inner">
-        <div v-reveal class="experience-intro">
-          <span class="eyebrow eyebrow-light"><span class="rule-short" />03 — The Experience</span>
-          <h2 class="h2-light">Dusk, gold and open fire</h2>
-          <p class="body-copy-sm body-copy-sm--dark">A dining room wrapped in deep blue and brass, and a bar where the pisco flows late. YANA is made for evenings that unfold slowly.</p>
-        </div>
-        <div class="experience-grid">
-          <div v-reveal="{ y: 34 }" class="experience-card">
-            <div class="experience-card-bg experience-card-bg--a" />
-            <div class="experience-card-scrim" />
-            <div class="experience-card-caption">
-              <span class="micro-label">The Dining Room</span>
-              <p class="experience-card-title">Blue, brass &amp; candlelight</p>
-            </div>
-          </div>
-          <div v-reveal="{ y: 34, delay: 0.16 }" class="experience-card">
-            <div class="experience-card-bg experience-card-bg--b" />
-            <div class="experience-card-scrim" />
-            <div class="experience-card-caption">
-              <span class="micro-label">The Bar</span>
-              <p class="experience-card-title">The Pisco Lounge</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== QUOTE ===================== -->
-    <section class="quote-section">
-      <div v-reveal class="quote-inner">
-        <span class="quote-glyph">&ldquo;</span>
-        <p class="quote-text">A rare place where the fire of Lima and the calm of the East share one table — every course feels like an occasion.</p>
-        <div class="quote-attr">
-          <span class="rule-short rule-short--center" />
-          <span class="micro-label micro-label--dark">Abu Dhabi Fine Dining Review</span>
+        <div v-reveal="{ y: 30 }" class="feature-media">
+          <svg aria-hidden="true" class="feature-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="2,2 98.5,1 98,98 1,97" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
+          </svg>
+          <div class="feature-photo feature-photo--tall" :style="{ backgroundImage: `url('${storyImage}')` }" />
         </div>
       </div>
     </section>
@@ -131,7 +157,7 @@
     <section id="location" class="section-pad-tight section-light">
       <div class="location-grid">
         <div v-reveal>
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />04 — Visit</span>
+          <span class="eyebrow eyebrow-dark"><span class="rule-short" />06 — Visit</span>
           <h2 class="h2-dark h2-dark--tight">Find us on<br>Saadiyat Island</h2>
           <div class="location-details">
             <div>
@@ -179,11 +205,25 @@
 </template>
 
 <script setup lang="ts">
+// Drop YANA's own .mp4 into public/videos and set heroVideo to it, e.g. '/videos/hero.mp4'.
+// PREVIEW_VIDEO belongs to COYA and is only here to demo the effect while developing —
+// it is never served in production, and must be replaced before the hero goes live.
+const PREVIEW_VIDEO = 'https://coyarestaurant.com/uploads/content/pages/1698918469_44fefc7e-15ae-4f40-b8a4-dac51b658d78.mp4'
+const heroVideo = import.meta.dev ? PREVIEW_VIDEO : ''
 const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
-const sideImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
 const ctaImage = '/images/yana-image-2-mrt9pbly-db2c.webp'
 const signatureDishImage = '/images/food1.webp'
+const barImage = '/images/bar-cocktails.webp'
+const terraceImage = '/images/yana-image-3-mrt9rmoi-9m3z.webp'
+const storyImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
+const eveningImage = '/images/yana-image-4-mrt9n45r-v3w7.webp'
 const heroKenBurns = true
+
+// Visitors who ask for less motion get the still hero instead of the video.
+const reducedMotion = ref(false)
+onMounted(() => {
+  reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
 
 </script>
 
@@ -393,31 +433,77 @@ const heroKenBurns = true
   left: -1.5vw;
 }
 
-.food-section {
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* ---------- Statement line ---------- */
+.statement {
+  position: relative;
+  background: var(--ground);
+  padding: clamp(72px, 10vw, 140px) clamp(20px, 5vw, 64px) clamp(40px, 5vw, 72px);
+  text-align: center;
+}
+
+.statement-text {
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(30px, 4.6vw, 54px);
+  line-height: 1.16;
+  color: var(--ink);
+}
+
+/* ---------- Feature bands (text + angled-frame photo) ---------- */
+.feature {
   position: relative;
   overflow: hidden;
+  padding: clamp(64px, 9vw, 130px) clamp(20px, 5vw, 64px);
 }
 
-.food-grid {
+.feature--dark {
+  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 182, 144, 0.14), transparent 55%), linear-gradient(180deg, #0f1e2e, #12426d 52%, #0f1e2e);
+  border-top: 1px solid rgba(217, 182, 144, 0.35);
+  border-bottom: 1px solid rgba(217, 182, 144, 0.35);
+}
+
+.feature-grid {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(40px, 6vw, 96px);
+  gap: clamp(36px, 5vw, 90px);
   align-items: center;
+  max-width: 1320px;
+  margin: 0 auto;
 }
 
-.food-text {
+.feature-grid--reverse {
+  flex-direction: row-reverse;
+}
+
+.feature-text {
   flex: 1 1 400px;
-  min-width: 300px;
+  min-width: 280px;
 }
 
-.food-text .body-copy {
+.feature-text .body-copy {
   margin-top: 20px;
   max-width: 46ch;
 }
 
-.food-text .body-copy:first-of-type {
+.feature-text .body-copy:first-of-type {
   margin-top: 30px;
+}
+
+.body-copy.body-copy--light {
+  color: var(--cream-dim);
 }
 
 .link-underline {
@@ -437,15 +523,24 @@ const heroKenBurns = true
   border-color: var(--gold-dk);
 }
 
-/* The photo sits inside a hand-cut gold outline, as on COYA's food section. */
-.food-media {
+.link-underline--light {
+  color: #ffffff;
+}
+
+.link-underline--light:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* The photo sits inside a hand-cut gold outline, as on COYA's feature blocks. */
+.feature-media {
   position: relative;
   flex: 1 1 420px;
-  min-width: 300px;
+  min-width: 280px;
   padding: 26px 22px;
 }
 
-.food-frame {
+.feature-frame {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -455,7 +550,12 @@ const heroKenBurns = true
   pointer-events: none;
 }
 
-.food-photo {
+.feature-frame--light {
+  color: rgba(217, 182, 144, 0.6);
+  transform: rotate(1.6deg);
+}
+
+.feature-photo {
   position: relative;
   aspect-ratio: 4 / 4.5;
   background-color: var(--panel);
@@ -466,26 +566,68 @@ const heroKenBurns = true
   clip-path: polygon(1% 2.5%, 99.5% 0%, 98.5% 98%, 0.5% 100%);
 }
 
-.story-grid {
+.feature-photo--portrait {
+  aspect-ratio: 4 / 5.1;
+  background-position: center 62%;
+}
+
+.feature-photo--tall {
+  aspect-ratio: 4 / 4.2;
+  background-position: center;
+}
+
+/* ---------- Full-bleed band ---------- */
+.story-signoff {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--gold-dk);
+  margin: 34px 0 0;
+}
+
+/* ---------- Full-bleed band ---------- */
+.bleed {
   position: relative;
+  overflow: hidden;
+  min-height: clamp(520px, 78vh, 760px);
   display: flex;
-  flex-wrap: wrap;
-  gap: clamp(40px, 6vw, 84px);
   align-items: center;
 }
 
-.story-image-wrap {
-  flex: 1 1 360px;
-  min-width: 300px;
-}
-
-.story-image {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
+.bleed-bg {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
+}
+
+.bleed-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(15, 30, 46, 0.92) 0%, rgba(15, 30, 46, 0.72) 45%, rgba(15, 30, 46, 0.45) 100%);
+}
+
+.bleed-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: clamp(60px, 8vw, 96px) clamp(20px, 5vw, 64px);
+}
+
+.bleed-text {
+  max-width: 560px;
+}
+
+@media (max-width: 760px) {
+  .bleed-scrim {
+    background: linear-gradient(180deg, rgba(15, 30, 46, 0.78) 0%, rgba(15, 30, 46, 0.88) 100%);
+  }
+
+  .bleed {
+    min-height: 0;
+  }
 }
 
 .frame-border {
@@ -496,11 +638,6 @@ const heroKenBurns = true
 
 .frame-border--tint {
   border-color: rgba(217, 182, 144, 0.24);
-}
-
-.story-text {
-  flex: 1 1 380px;
-  min-width: 300px;
 }
 
 .eyebrow {
@@ -577,29 +714,11 @@ const heroKenBurns = true
   color: var(--cream-dim);
 }
 
-.story-signoff {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 22px;
-  color: var(--gold-dk);
-  margin: 34px 0 0;
-}
-
 .divider-flourish {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(217, 182, 144, 0.4), transparent);
   max-width: 1320px;
   margin: 0 auto;
-}
-
-.experience-section {
-  scroll-margin-top: 80px;
-  position: relative;
-  overflow: hidden;
-  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 182, 144, 0.14), transparent 55%), radial-gradient(100% 100% at 80% 120%, rgba(18, 66, 109, 0.6), transparent 60%), linear-gradient(180deg, #0f1e2e, #12426d 48%, #0f1e2e);
-  border-top: 1px solid rgba(217, 182, 144, 0.35);
-  border-bottom: 1px solid rgba(217, 182, 144, 0.35);
-  padding: clamp(84px, 13vw, 168px) clamp(20px, 5vw, 64px);
 }
 
 .pattern-dark {
@@ -627,56 +746,6 @@ const heroKenBurns = true
   mix-blend-mode: screen;
 }
 
-.experience-inner {
-  position: relative;
-  max-width: 1320px;
-  margin: 0 auto;
-}
-
-.experience-intro {
-  max-width: 640px;
-}
-
-.experience-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: clamp(20px, 3vw, 36px);
-  margin-top: clamp(48px, 6vw, 72px);
-}
-
-.experience-card {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border: 1px solid rgba(217, 182, 144, 0.28);
-}
-
-.experience-card-bg {
-  position: absolute;
-  inset: 0;
-}
-
-.experience-card-bg--a {
-  background: radial-gradient(120% 90% at 30% 20%, rgba(18, 66, 109, 0.9), transparent 60%), linear-gradient(160deg, #12426d, #0f1e2e 74%);
-}
-
-.experience-card-bg--b {
-  background: radial-gradient(120% 90% at 70% 25%, rgba(18, 66, 109, 0.9), transparent 60%), linear-gradient(150deg, #12426d, #0f1e2e 74%);
-}
-
-.experience-card-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(15, 30, 46, 0.82), transparent 55%);
-}
-
-.experience-card-caption {
-  position: absolute;
-  left: 28px;
-  bottom: 26px;
-  right: 28px;
-}
-
 .micro-label {
   font-size: 10px;
   letter-spacing: 0.3em;
@@ -686,54 +755,6 @@ const heroKenBurns = true
 
 .micro-label--dark {
   color: var(--gold-dk);
-}
-
-.experience-card-title {
-  font-family: var(--serif);
-  font-size: clamp(24px, 3vw, 32px);
-  color: #ffffff;
-  margin: 8px 0 0;
-  font-weight: 400;
-}
-
-.quote-section {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(88px, 13vw, 150px) clamp(20px, 5vw, 64px);
-}
-
-.quote-inner {
-  position: relative;
-  max-width: 920px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.quote-glyph {
-  font-family: var(--serif);
-  font-size: 96px;
-  line-height: 0.6;
-  color: var(--gold);
-  opacity: 0.6;
-  display: block;
-}
-
-.quote-text {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 300;
-  font-size: clamp(24px, 4vw, 42px);
-  line-height: 1.4;
-  color: var(--ink);
-  margin: 14px 0 0;
-}
-
-.quote-attr {
-  margin-top: 36px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
 }
 
 .cta-section {
