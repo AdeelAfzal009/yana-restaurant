@@ -99,8 +99,11 @@ function layout(opts: { preheader: string, heading: string, intro: string, rows:
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#FFFFFF;border:1px solid #E4DFD6;">
         <tr>
           <td style="background:${NAVY};padding:30px 32px;text-align:center;">
-            <div style="color:${GOLD};font-size:26px;letter-spacing:8px;font-weight:300;">YANA</div>
-            <div style="color:rgba(255,255,255,0.6);font-size:10px;letter-spacing:3px;margin-top:8px;text-transform:uppercase;">Pan-Asian Fusion &middot; Peruvian Flair</div>
+            <a href="${siteUrl}" style="text-decoration:none;">
+              <img src="${siteUrl}/images/email/yana-logo.png" width="190" height="53" alt="YANA"
+                   style="display:block;margin:0 auto;width:190px;height:auto;border:0;outline:none;text-decoration:none;color:${GOLD};font-size:24px;letter-spacing:8px;">
+            </a>
+            <div style="color:rgba(255,255,255,0.6);font-size:10px;letter-spacing:3px;margin-top:12px;text-transform:uppercase;">Pan-Asian Fusion &middot; Peruvian Flair</div>
           </td>
         </tr>
         <tr>
