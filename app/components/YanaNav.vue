@@ -140,10 +140,10 @@ onUnmounted(() => {
 }
 
 .nav-menu-label {
-  font-size: 11px;
-  letter-spacing: 0.28em;
+  font-size: 12px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .yana-nav-logo {
@@ -171,17 +171,19 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
-  letter-spacing: 0.22em;
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  font-weight: 500;
   color: inherit;
-  opacity: 0.72;
+  opacity: 0.92;
 }
 
 .nav-book-btn {
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--blue-dk);
   background: var(--gold);
   padding: 13px 24px;

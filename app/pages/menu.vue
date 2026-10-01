@@ -8,84 +8,118 @@
         <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
         <h1 class="banner-title">Menu</h1>
         <p class="banner-sub">Pan-Asian Fusion, Peruvian Flair</p>
-        <div class="group-tabs" role="tablist" aria-label="Menu">
-          <button
-            v-for="g in menuGroups"
-            :key="g.id"
-            type="button"
-            role="tab"
-            :aria-selected="g.id === activeGroup"
-            class="group-tab"
-            :class="{ 'is-active': g.id === activeGroup }"
-            @click="selectGroup(g.id)"
-          >
-            {{ g.label }}
-            <span class="group-tab-count">{{ itemCount(g) }}</span>
-          </button>
-        </div>
       </div>
     </header>
 
-    <!-- CATEGORY RAIL -->
-    <div class="category-rail">
-      <div class="category-rail-inner">
-        <a v-for="sec in group.sections" :key="sec.id" :href="`#${sec.id}`" class="rail-link">{{ sec.label }}</a>
-        <a :href="digitalMenuUrl" target="_blank" rel="noopener" class="rail-link rail-link--digital">Digital Menu →</a>
+    <!-- MENU TILES -->
+    <section class="tiles">
+      <div v-reveal class="tiles-head">
+        <span class="tiles-eyebrow">Our Menus</span>
       </div>
-    </div>
-
-    <!-- INTRO -->
-    <section class="intro-section">
-      <div aria-hidden="true" class="pattern-light" />
-      <div class="intro-inner">
-        <p class="intro-text">Our kitchen brings together Pan-Asian precision and Peruvian heat — bold in flavour, beautifully presented, and made to be remembered.</p>
-      </div>
-    </section>
-
-    <!-- ===================== MENU SECTIONS ===================== -->
-    <section
-      v-for="(sec, i) in group.sections"
-      :id="sec.id"
-      :key="sec.id"
-      class="menu-section"
-      :class="{ 'menu-section--dark': isDark(i) }"
-    >
-      <div v-if="isDark(i)" aria-hidden="true" class="pattern-dark" />
-      <div class="menu-section-inner">
-        <div class="menu-section-head" :class="{ 'menu-section-head--dark': isDark(i) }">
-          <h2 class="menu-h2" :class="{ 'menu-h2--light': isDark(i) }">{{ sec.label }}</h2>
-          <span class="menu-section-label" :class="{ 'menu-section-label--light': isDark(i) }">
-            {{ sec.items.length }} {{ activeGroup === 'drinks' ? (sec.items.length === 1 ? 'drink' : 'drinks') : (sec.items.length === 1 ? 'dish' : 'dishes') }}
+      <div class="tiles-grid">
+        <component
+          :is="tile.pdf ? 'a' : 'button'"
+          v-for="tile in menuTiles"
+          :key="tile.label"
+          v-reveal="{ y: 22 }"
+          class="tile"
+          :href="tile.pdf || undefined"
+          :target="tile.pdf ? '_blank' : undefined"
+          :rel="tile.pdf ? 'noopener' : undefined"
+          :type="tile.pdf ? undefined : 'button'"
+          @click="!tile.pdf && openFallback(tile)"
+        >
+          <span class="tile-art">
+            <svg class="tile-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="tileIcons[tile.icon]" />
           </span>
-        </div>
-
-        <div class="dish-grid">
-          <article v-for="item in sec.items" :key="item.name" class="dish-card">
-            <div class="dish-photo">
-              <img
-                v-if="item.image"
-                :src="item.image"
-                :alt="item.name"
-                width="800"
-                height="800"
-                loading="lazy"
-                decoding="async"
-              >
-              <ImagePlaceholder v-else label="Photo coming soon" :on-light="!isDark(i)" />
-              <span aria-hidden="true" class="dish-photo-frame" />
-            </div>
-            <div class="dish-head">
-              <h3 class="dish-name" :class="{ 'dish-name--light': isDark(i) }">{{ displayName(item.name) }}</h3>
-              <span class="dish-leader" :class="{ 'dish-leader--light': isDark(i) }" />
-              <span class="dish-price" :class="{ 'dish-price--light': isDark(i) }">{{ item.price }}</span>
-            </div>
-            <p v-if="item.desc" class="dish-desc" :class="{ 'dish-desc--light': isDark(i) }">{{ item.desc }}</p>
-          </article>
-        </div>
+          <span class="tile-label">{{ tile.label }}</span>
+          <span class="tile-rule" aria-hidden="true" />
+          <span class="tile-desc">{{ tile.desc }}</span>
+          <span class="tile-note">{{ tile.pdf ? 'Open PDF ↗' : 'View online ↗' }}</span>
+        </component>
       </div>
     </section>
 
-    <p class="price-disclaimer">All prices in AED and inclusive of applicable taxes.</p>
+    <!-- FOOD -->
+    <section id="food" class="feature">
+      <div class="feature-copy">
+        <h2 class="feature-title">Food</h2>
+        <p class="feature-text">YANA welcomes guests with a menu built on fire, citrus and restraint — the citrus-bright kitchens of coastal Peru meeting the quiet precision of Pan-Asian cooking.</p>
+        <p class="feature-text">Ceviches and tiraditos open the evening, the Josper grill carries it, and plates are made to be shared across the table. Signature dishes include the Hotate Tiradito, Miso Black Cod and the Andean Striploin.</p>
+        <a :href="foodTile?.pdf || digitalMenuUrl" target="_blank" rel="noopener" class="feature-link">View the Food Menu <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="feature-media">
+        <img src="/images/food1.webp" alt="Signature plates at YANA" width="1400" height="1842" loading="lazy" decoding="async">
+      </div>
+    </section>
+
+    <!-- DRINKS -->
+    <section id="drinks" class="feature feature--reverse feature--panel">
+      <div class="feature-copy">
+        <h2 class="feature-title">Signature Drinks</h2>
+        <p class="feature-text">A bar built around Peru&rsquo;s national spirit — pisco sours shaken to order, chilcanos over crushed ice and Nikkei-leaning cocktails poured against deep blue and brass.</p>
+        <p class="feature-text">Alongside them run matchas, mojitos, cold-pressed juices, coolers and a full coffee and tea list, so every table finds its pour.</p>
+        <a :href="drinksTile?.pdf || digitalMenuUrl" target="_blank" rel="noopener" class="feature-link">View the Drinks Menu <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="feature-media">
+        <img src="/images/bar-cocktails.webp" alt="Cocktails being finished at the YANA bar" width="1200" height="1599" loading="lazy" decoding="async">
+      </div>
+    </section>
+
+    <!-- FULL ITEM LIST (previous layout — hidden, kept for reference)
+         Flip showFullMenuList to true in the script to bring it back. -->
+    <template v-if="showFullMenuList">
+      <div class="category-rail">
+        <div class="category-rail-inner">
+          <a v-for="sec in group.sections" :key="sec.id" :href="`#${sec.id}`" class="rail-link">{{ sec.label }}</a>
+          <a :href="digitalMenuUrl" target="_blank" rel="noopener" class="rail-link rail-link--digital">Digital Menu →</a>
+        </div>
+      </div>
+
+      <section
+        v-for="(sec, i) in group.sections"
+        :id="sec.id"
+        :key="sec.id"
+        class="menu-section"
+        :class="{ 'menu-section--dark': isDark(i) }"
+      >
+        <div v-if="isDark(i)" aria-hidden="true" class="pattern-dark" />
+        <div class="menu-section-inner">
+          <div class="menu-section-head" :class="{ 'menu-section-head--dark': isDark(i) }">
+            <h2 class="menu-h2" :class="{ 'menu-h2--light': isDark(i) }">{{ sec.label }}</h2>
+            <span class="menu-section-label" :class="{ 'menu-section-label--light': isDark(i) }">
+              {{ sec.items.length }} {{ activeGroup === 'drinks' ? (sec.items.length === 1 ? 'drink' : 'drinks') : (sec.items.length === 1 ? 'dish' : 'dishes') }}
+            </span>
+          </div>
+
+          <div class="dish-grid">
+            <article v-for="item in sec.items" :key="item.name" class="dish-card">
+              <div class="dish-photo">
+                <img
+                  v-if="item.image"
+                  :src="item.image"
+                  :alt="item.name"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                >
+                <ImagePlaceholder v-else label="Photo coming soon" :on-light="!isDark(i)" />
+                <span aria-hidden="true" class="dish-photo-frame" />
+              </div>
+              <div class="dish-head">
+                <h3 class="dish-name" :class="{ 'dish-name--light': isDark(i) }">{{ displayName(item.name) }}</h3>
+                <span class="dish-leader" :class="{ 'dish-leader--light': isDark(i) }" />
+                <span class="dish-price" :class="{ 'dish-price--light': isDark(i) }">{{ item.price }}</span>
+              </div>
+              <p v-if="item.desc" class="dish-desc" :class="{ 'dish-desc--light': isDark(i) }">{{ item.desc }}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <p class="price-disclaimer">All prices in AED and inclusive of applicable taxes.</p>
+    </template>
 
     <!-- CTA -->
     <section class="cta-section">
@@ -101,40 +135,67 @@
         </div>
       </div>
     </section>
+
+    <!-- MARQUEE -->
+    <YanaMarquee />
   </div>
 </template>
 
 <script setup lang="ts">
-import { menuGroups, type MenuGroup } from '~/data/menu'
+import { menuGroups } from '~/data/menu'
 
 const digitalMenuUrl = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID=62881'
 
-// ?menu=drinks keeps a shared link on the right list.
-const route = useRoute()
-const router = useRouter()
-const fromQuery = typeof route.query.menu === 'string' && menuGroups.some(g => g.id === route.query.menu)
-  ? route.query.menu
-  : menuGroups[0]!.id
-
-const activeGroup = ref(fromQuery)
-const group = computed(() => menuGroups.find(g => g.id === activeGroup.value) ?? menuGroups[0]!)
-
-const itemCount = (g: MenuGroup) => g.sections.reduce((n, sec) => n + sec.items.length, 0)
-
-function selectGroup(id: string) {
-  if (id === activeGroup.value) return
-  activeGroup.value = id
-  router.replace({ query: id === menuGroups[0]!.id ? {} : { menu: id } })
+// One tile per printed menu. Drop the client's PDFs into public/menus and set
+// `pdf` to open them; until then each tile falls back to the digital menu.
+interface MenuTile {
+  label: string
+  desc: string
+  icon: keyof typeof tileIcons
+  pdf: string
+  fallback?: string
 }
+
+// One drawn mark per menu, on a 64px grid, so the grid isn't six of the same icon.
+const tileIcons = {
+  plate: '<circle cx="32" cy="34" r="17"/><circle cx="32" cy="34" r="11"/><path d="M14 18c3-5 7-7 11-7M39 11c4 0 8 2 11 7"/>',
+  sunrise: '<path d="M10 42h44"/><path d="M18 42a14 14 0 0 1 28 0"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 32h5M53 32h5"/>',
+  coupe: '<path d="M18 20h28l-14 15Z"/><path d="M32 35v14M24 49h16"/><path d="M44 14a5 5 0 1 1-5 5"/>',
+  cup: '<path d="M16 24h26v12a13 13 0 0 1-26 0Z"/><path d="M42 27h5a5 5 0 0 1 0 10h-5"/><path d="M14 52h32"/><path d="M24 12c-2 3 2 4 0 7M32 12c-2 3 2 4 0 7"/>',
+  highball: '<path d="M22 14h20l-2 36H24Z"/><path d="M27 26h.01M33 32h.01M29 40h.01M35 44h.01"/><path d="M42 14c5-3 9-2 11 1-4 2-7 3-11 2"/>',
+  dessert: '<path d="M16 38h32l-4 14H20Z"/><path d="M18 38a14 14 0 0 1 28 0"/><circle cx="32" cy="22" r="3"/><path d="M32 19v-4"/>'
+} as const
+
+const QR = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID='
+
+const menuTiles: MenuTile[] = [
+  { label: 'À la Carte', desc: 'Ceviches, tiraditos and the Josper grill', icon: 'plate', pdf: '', fallback: `${QR}62881` },
+  { label: 'Breakfast', desc: 'From 9am, every morning', icon: 'sunrise', pdf: '', fallback: `${QR}60876` },
+  { label: 'Drinks', desc: 'Pisco, signatures and the full bar', icon: 'coupe', pdf: '', fallback: `${QR}56458` },
+  { label: 'Coffee & Tea', desc: 'Espresso, matcha and loose leaf', icon: 'cup', pdf: '', fallback: `${QR}56501` },
+  { label: 'Mocktails & Coolers', desc: 'Juices, mojitos and coolers', icon: 'highball', pdf: '', fallback: `${QR}61626` },
+  { label: 'Desserts', desc: 'Mochi, cheesecake and quinoa textures', icon: 'dessert', pdf: '', fallback: `${QR}62881` }
+]
+
+const foodTile = computed(() => menuTiles.find(t => t.label === 'À la Carte'))
+const drinksTile = computed(() => menuTiles.find(t => t.label === 'Drinks'))
+
+function openFallback(tile: MenuTile) {
+  window.open(tile.fallback || digitalMenuUrl, '_blank', 'noopener')
+}
+
+// The full illustrated item list is kept below but switched off; the tiles above
+// replaced it because the page had grown too crowded.
+const showFullMenuList = false
+const activeGroup = ref(menuGroups[0]!.id)
+const group = computed(() => menuGroups.find(g => g.id === activeGroup.value) ?? menuGroups[0]!)
+const isDark = (i: number) => i % 2 === 1
 
 // A few names arrive shouting from the digital menu (ESPRESSO); even them out.
 function displayName(name: string) {
   if (name.length < 4 || name !== name.toUpperCase()) return name
   return name.toLowerCase().replace(/(^|[\s(-])([a-z])/g, (_, pre, ch) => pre + ch.toUpperCase())
 }
-
-// Alternate light and dark bands down the page.
-const isDark = (i: number) => i % 2 === 1
 
 useHead({ title: 'Menu · YANA Restaurant' })
 </script>
@@ -253,6 +314,233 @@ useHead({ title: 'Menu · YANA Restaurant' })
 
 .group-tab.is-active .group-tab-count {
   color: var(--gold-lt);
+}
+
+/* ---------- Menu tiles ---------- */
+.tiles {
+  position: relative;
+  background: var(--panel);
+  padding: clamp(56px, 7vw, 104px) clamp(20px, 5vw, 64px) clamp(60px, 8vw, 112px);
+}
+
+.tiles-head {
+  max-width: 1280px;
+  margin: 0 auto clamp(34px, 4vw, 54px);
+  text-align: center;
+}
+
+.tiles-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+}
+
+.tiles-eyebrow::before,
+.tiles-eyebrow::after {
+  content: '';
+  width: 34px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: clamp(16px, 2vw, 26px);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: clamp(32px, 3.6vw, 48px) clamp(18px, 2vw, 30px) clamp(26px, 3vw, 38px);
+  border: 1px solid rgba(217, 182, 144, 0.45);
+  background: rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+  color: var(--ink);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+.tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(217, 182, 144, 0.16), rgba(217, 182, 144, 0));
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.tile:hover,
+.tile:focus-visible {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  background: #FFFDF9;
+}
+
+.tile:hover::before,
+.tile:focus-visible::before {
+  opacity: 1;
+}
+
+.tile > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tile-art {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(217, 182, 144, 0.5);
+  border-radius: 50%;
+  color: var(--gold-dk);
+  transition: background 0.4s ease, border-color 0.4s ease, transform 0.6s ease;
+}
+
+.tile:hover .tile-art {
+  background: rgba(217, 182, 144, 0.16);
+  border-color: var(--gold);
+  transform: rotate(-4deg);
+}
+
+.tile-mark {
+  width: 46px;
+  height: 46px;
+}
+
+.tile-label {
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+}
+
+.tile-rule {
+  width: 26px;
+  height: 1px;
+  margin: 14px 0;
+  background: var(--gold);
+  transition: width 0.4s ease;
+}
+
+.tile:hover .tile-rule {
+  width: 54px;
+}
+
+.tile-desc {
+  max-width: 24ch;
+  font-size: 13px;
+  line-height: 1.7;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.tile-note {
+  margin-top: 16px;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.tile:hover .tile-note,
+.tile:focus-visible .tile-note {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Food / Drinks features ---------- */
+.feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(32px, 5vw, 84px);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 104px) clamp(20px, 5vw, 64px);
+}
+
+.feature--reverse .feature-copy {
+  order: 2;
+}
+
+/* The section is width-capped, so the tint is painted edge to edge behind it. */
+.feature--panel {
+  background: var(--panel);
+  box-shadow: 0 0 0 100vmax var(--panel);
+  clip-path: inset(0 -100vmax);
+}
+
+.feature-title {
+  margin: 0 0 22px;
+  font-size: clamp(21px, 2.3vw, 31px);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+}
+
+.feature-text {
+  margin: 0 0 18px;
+  max-width: 52ch;
+  font-size: 15px;
+  line-height: 1.95;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--ink);
+  font-size: 11.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  transition: gap 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.feature-link:hover {
+  gap: 16px;
+  color: var(--gold-dk);
+  border-color: var(--gold-dk);
+}
+
+.feature-media img {
+  display: block;
+  width: 100%;
+  height: clamp(320px, 42vw, 560px);
+  object-fit: cover;
+}
+
+@media (max-width: 860px) {
+  .feature {
+    grid-template-columns: 1fr;
+  }
+
+  .feature--reverse .feature-copy {
+    order: 0;
+  }
 }
 
 .category-rail {

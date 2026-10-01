@@ -17,6 +17,7 @@
       </video>
       <div v-else class="hero-img" :class="{ 'no-zoom': !heroKenBurns }" :style="{ backgroundImage: `url('${heroImage}')` }" />
       <div class="hero-scrim" />
+      <div aria-hidden="true" class="hero-fade" />
       <div class="hero-content">
         <div v-reveal="{ y: 24, duration: 1.1 }">
           <span class="hero-eyebrow">
@@ -36,15 +37,73 @@
       </div>
     </header>
 
-    <div aria-hidden="true" class="hero-transition" />
 
-    <!-- ===================== INTRO STATEMENT ===================== -->
-    <section class="statement">
-      <p v-reveal="{ y: 26 }" class="statement-text">The spirit of Peru,<br>on the shores of Saadiyat.</p>
+    <!-- ===================== INTRO ===================== -->
+    <section class="intro">
+      <div v-reveal="{ y: 26 }" class="intro-head">
+        <!-- Fire & sea, drawn in one line: a flame over a wave. -->
+        <svg class="intro-mark" viewBox="0 0 120 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M60 6c6 9 10 14 10 21a10 10 0 0 1-20 0c0-4 2-7 4-10 1 4 3 6 5 7-1-7 0-12 1-18Z" />
+          <path d="M26 44c6 0 6-5 12-5s6 5 12 5 6-5 12-5 6 5 12 5 6-5 12-5" />
+          <path d="M20 54c7 0 7-5 14-5s7 5 14 5 7-5 14-5 7 5 14 5 7-5 14-5" opacity="0.55" />
+        </svg>
+        <h2 class="intro-title">YANA Abu Dhabi: a Pan-Asian kitchen<br>with Peruvian flair on Saadiyat Island</h2>
+        <p class="intro-copy">Set on Al Saadiyat Island, YANA brings together the citrus-bright kitchens of coastal Peru and the quiet precision of Pan-Asian cooking. Guests dine in a room of deep blue and brass, take long lunches on the terrace under the palms, and linger at the bar over pisco, matcha and cold-pressed coolers. Ceviches and tiraditos open the evening; the Josper grill carries it late into the night.</p>
+        <NuxtLink to="/reservation" class="intro-btn">Make a Reservation</NuxtLink>
+      </div>
+
+      <div v-reveal="{ y: 26, delay: 0.12 }" class="intro-cols">
+        <div class="intro-col">
+          <h3 class="intro-col-title">Restaurant</h3>
+          <svg aria-hidden="true" class="intro-flourish" viewBox="0 0 48 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
+            <path d="M2 6h14" /><path d="M32 6h14" />
+            <path d="M24 2.6c-2.4 0-3.6 1.4-3.6 3.4S21.6 9.4 24 9.4 27.6 8 27.6 6 26.4 2.6 24 2.6Z" />
+          </svg>
+          <p>Lunch &amp; Dinner | Sunday &ndash; Thursday | 9am &ndash; 10pm</p>
+          <p>Friday &amp; Saturday | 9am &ndash; midnight</p>
+        </div>
+        <div class="intro-col">
+          <h3 class="intro-col-title">The Terrace &amp; Bar</h3>
+          <svg aria-hidden="true" class="intro-flourish" viewBox="0 0 48 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
+            <path d="M2 6h14" /><path d="M32 6h14" />
+            <path d="M24 2.6c-2.4 0-3.6 1.4-3.6 3.4S21.6 9.4 24 9.4 27.6 8 27.6 6 26.4 2.6 24 2.6Z" />
+          </svg>
+          <p>Open daily alongside the dining room</p>
+          <p>Pisco, matcha, coolers &amp; cold-pressed juices</p>
+        </div>
+        <div class="intro-col">
+          <h3 class="intro-col-title">Reservations</h3>
+          <svg aria-hidden="true" class="intro-flourish" viewBox="0 0 48 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
+            <path d="M2 6h14" /><path d="M32 6h14" />
+            <path d="M24 2.6c-2.4 0-3.6 1.4-3.6 3.4S21.6 9.4 24 9.4 27.6 8 27.6 6 26.4 2.6 24 2.6Z" />
+          </svg>
+          <p><a href="tel:+97124476998">+971 2 447 6998</a></p>
+          <p><a href="mailto:info@yanarestaurants.com">info@yanarestaurants.com</a></p>
+        </div>
+      </div>
     </section>
 
-    <!-- ===================== FOOD ===================== -->
-    <section id="cuisine" class="feature section-light">
+    <!-- ===================== KITCHEN (split feature) ===================== -->
+    <section id="cuisine" class="split">
+      <div class="split-media">
+        <div class="split-photo" :style="{ backgroundImage: `url('${kitchenRoomImage}')` }" role="img" aria-label="The YANA dining room" />
+      </div>
+      <div class="split-panel">
+        <div aria-hidden="true" class="split-pattern" />
+        <div v-reveal="{ y: 28 }" class="split-inner">
+          <div class="split-dish" :style="{ backgroundImage: `url('${signatureDishImage}')` }" role="img" aria-label="Signature plates at YANA" />
+          <span class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />01 — Food</span>
+          <h2 class="split-title">La Cocina de YANA</h2>
+          <p class="split-copy">YANA is a Pan-Asian kitchen with Peruvian flair, built on fire, citrus and restraint. Plates are made to be shared, and the room is made to be lingered in.</p>
+          <p class="split-copy">Signature dishes like Hotate Tiradito, Miso Black Cod and the Andean Striploin carry the Nikkei thread, while Chocolate &amp; Lucuma Mochi and the Matcha Cheesecake close the evening.</p>
+          <NuxtLink to="/menu" class="split-link">Discover Our Menus <span aria-hidden="true">→</span></NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FOOD (previous layout — hidden, kept for reference) =====================
+         Flip showLegacyFoodSection to true in the script below to bring it back. -->
+    <section v-if="showLegacyFoodSection" id="cuisine-legacy" class="feature section-light">
       <span aria-hidden="true" class="ghost-word ghost-center">FOOD</span>
       <div class="feature-grid">
         <div v-reveal="{ y: 30 }" class="feature-text">
@@ -62,6 +121,13 @@
           <div class="feature-photo" :style="{ backgroundImage: `url('${signatureDishImage}')` }" />
         </div>
       </div>
+    </section>
+
+    <!-- ===================== PULL QUOTE ===================== -->
+    <section class="pull-quote">
+      <blockquote v-reveal="{ y: 24 }" class="pull-quote-text">
+        &lsquo;YANA is not a fusion restaurant. It&rsquo;s one kitchen that remembers two coastlines.&rsquo;
+      </blockquote>
     </section>
 
     <!-- ===================== PISCO BAR (dark band) ===================== -->
@@ -153,8 +219,52 @@
       </div>
     </section>
 
-    <!-- ===================== LOCATION & HOURS ===================== -->
-    <section id="location" class="section-pad-tight section-light">
+    <!-- ===================== VISIT (map + details) ===================== -->
+    <section id="location" class="visit">
+      <a
+        class="visit-map"
+        :href="mapsProfileUrl"
+        target="_blank"
+        rel="noopener"
+        aria-label="Open YANA on Google Maps"
+      >
+        <img src="/images/yana-map.webp" alt="Map showing YANA on Al Saadiyat Island, Abu Dhabi" width="1200" height="1200" loading="lazy" decoding="async">
+        <span class="visit-map-cta">View on Google Maps <span aria-hidden="true">↗</span></span>
+      </a>
+      <div class="visit-panel">
+        <div aria-hidden="true" class="split-pattern" />
+        <div v-reveal="{ y: 26 }" class="visit-inner">
+          <h2 class="visit-title">YANA Abu Dhabi</h2>
+          <p class="visit-copy">On Al Saadiyat Island, minutes from the museums and the beach — a Pan-Asian kitchen with Peruvian flair, open from morning coffee to late dinner.</p>
+          <dl class="visit-rows">
+            <div class="visit-row">
+              <dt>Address</dt>
+              <dd><a href="https://maps.google.com/?q=YANA+Restaurant+Al+Saadiyat+Island+Abu+Dhabi" target="_blank" rel="noopener">Al Saadiyat Island &ndash; Abu Dhabi</a></dd>
+            </div>
+            <div class="visit-row">
+              <dt>Phone</dt>
+              <dd><a href="tel:+97124476998">+971 2 447 6998</a></dd>
+            </div>
+            <div class="visit-row">
+              <dt>Contact</dt>
+              <dd><a href="mailto:info@yanarestaurants.com">info@yanarestaurants.com</a></dd>
+            </div>
+            <div class="visit-row">
+              <dt>Opening hours</dt>
+              <dd>Sunday &ndash; Thursday | 9am &ndash; 10pm<br>Friday &amp; Saturday | 9am &ndash; midnight</dd>
+            </div>
+            <div class="visit-row">
+              <dt>Reservations</dt>
+              <dd><NuxtLink to="/reservation">Book a table online</NuxtLink></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LOCATION & HOURS (previous layout — hidden, kept for reference)
+         Flip showLegacyLocationSection to true in the script to bring it back. -->
+    <section v-if="showLegacyLocationSection" id="location-legacy" class="section-pad-tight section-light">
       <div class="location-grid">
         <div v-reveal>
           <span class="eyebrow eyebrow-dark"><span class="rule-short" />06 — Visit</span>
@@ -195,12 +305,7 @@
     </section>
 
     <!-- ===================== MARQUEE ===================== -->
-    <div aria-hidden="true" class="marquee">
-      <div class="marquee-track">
-        <span class="marquee-text">Ceviche&nbsp;&middot;&nbsp;Nikkei&nbsp;&middot;&nbsp;Josper Grill&nbsp;&middot;&nbsp;Anticuchos&nbsp;&middot;&nbsp;Pisco Lounge&nbsp;&middot;&nbsp;Tiradito&nbsp;&middot;&nbsp;Wagyu&nbsp;&middot;&nbsp;</span>
-        <span class="marquee-text">Ceviche&nbsp;&middot;&nbsp;Nikkei&nbsp;&middot;&nbsp;Josper Grill&nbsp;&middot;&nbsp;Anticuchos&nbsp;&middot;&nbsp;Pisco Lounge&nbsp;&middot;&nbsp;Tiradito&nbsp;&middot;&nbsp;Wagyu&nbsp;&middot;&nbsp;</span>
-      </div>
-    </div>
+    <YanaMarquee />
   </div>
 </template>
 
@@ -212,6 +317,13 @@ const heroVideo = 'https://coyarestaurant.com/uploads/content/pages/1698918469_4
 const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
 const ctaImage = '/images/yana-image-2-mrt9pbly-db2c.webp'
 const signatureDishImage = '/images/food1.webp'
+const kitchenRoomImage = '/images/yana-image-2-mruiybvd-26zk.webp'
+// The previous "01 — Food" band is kept in the template but switched off.
+const showLegacyFoodSection = false
+// The previous "06 — Visit" block is kept in the template but switched off.
+const showLegacyLocationSection = false
+// YANA's Google listing — swap for the exact share link from the business profile.
+const mapsProfileUrl = 'https://www.google.com/maps/search/?api=1&query=Yana+Restaurant+Al+Saadiyat+Island+Abu+Dhabi'
 const barImage = '/images/bar-cocktails.webp'
 const terraceImage = '/images/yana-image-3-mrt9rmoi-9m3z.webp'
 const storyImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
@@ -254,7 +366,19 @@ onMounted(() => {
 .hero-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 30, 46, 0.55) 0%, rgba(15, 30, 46, 0.12) 34%, rgba(15, 30, 46, 0.6) 68%, #0f1e2e 92%, #0f1e2e 100%);
+  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72) 0%, rgba(15, 30, 46, 0.42) 38%, rgba(15, 30, 46, 0.3) 100%);
+}
+
+.hero-fade {
+  /* A light lift into the cream section below — not the old white band. */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: clamp(130px, 20vh, 260px);
+  background: linear-gradient(180deg, rgba(243, 236, 225, 0) 0%, rgba(243, 236, 225, 0.3) 45%, rgba(243, 236, 225, 0.62) 74%, rgba(243, 236, 225, 0.9) 100%);
+  pointer-events: none;
 }
 
 .hero-content {
@@ -354,20 +478,15 @@ onMounted(() => {
   font-size: 9.5px;
   letter-spacing: 0.36em;
   text-transform: uppercase;
-  color: var(--ink-dim);
+  color: var(--ink);
 }
 
 .scroll-bar {
   display: block;
   width: 1px;
   height: 54px;
-  background: linear-gradient(var(--gold), transparent);
+  background: linear-gradient(var(--ink), rgba(15, 30, 46, 0));
   animation: yanaScroll 2.6s ease-in-out infinite;
-}
-
-.hero-transition {
-  height: clamp(130px, 16vh, 210px);
-  background: linear-gradient(180deg, #0f1e2e 0%, #0d1f38 32%, var(--ground) 100%);
 }
 
 .section-pad {
@@ -441,23 +560,300 @@ onMounted(() => {
   z-index: 0;
 }
 
-/* ---------- Statement line ---------- */
-.statement {
+/* ---------- Intro: mark, statement, hours ---------- */
+.intro {
   position: relative;
-  background: var(--ground);
-  padding: clamp(72px, 10vw, 140px) clamp(20px, 5vw, 64px) clamp(40px, 5vw, 72px);
+  background: var(--panel);
+  padding: clamp(60px, 8vw, 120px) clamp(20px, 5vw, 64px) clamp(56px, 7vw, 104px);
   text-align: center;
 }
 
-.statement-text {
-  letter-spacing: -0.015em;
-  max-width: 900px;
+.intro-head {
+  max-width: 980px;
   margin: 0 auto;
-  font-family: var(--serif);
+}
+
+.intro-mark {
+  width: clamp(92px, 11vw, 132px);
+  height: auto;
+  color: var(--gold-dk);
+}
+
+.intro-title {
+  margin: clamp(26px, 3.5vw, 44px) 0 0;
+  font-size: clamp(19px, 2.2vw, 30px);
   font-weight: 300;
-  font-size: clamp(30px, 4.6vw, 54px);
-  line-height: 1.16;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+}
+
+.intro-copy {
+  max-width: 76ch;
+  margin: clamp(22px, 3vw, 34px) auto 0;
+  font-size: 15px;
+  line-height: 2;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.intro-btn {
+  display: inline-block;
+  margin-top: clamp(30px, 4vw, 46px);
+  padding: 17px 38px;
+  border: 1px solid rgba(15, 30, 46, 0.5);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
   color: var(--ink);
+  text-decoration: none;
+  transition: background 0.35s, color 0.35s, border-color 0.35s;
+}
+
+.intro-btn:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+.intro-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  max-width: 1240px;
+  margin: clamp(56px, 7vw, 104px) auto 0;
+}
+
+.intro-col {
+  position: relative;
+  padding: 0 clamp(10px, 2vw, 28px);
+}
+
+.intro-col + .intro-col::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: rgba(138, 107, 69, 0.45);
+}
+
+.intro-col-title {
+  margin: 0;
+  font-size: clamp(14px, 1.5vw, 17px);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+}
+
+.intro-flourish {
+  display: block;
+  width: 48px;
+  height: 12px;
+  margin: 14px auto 20px;
+  color: var(--gold);
+}
+
+.intro-col p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.intro-col a {
+  color: var(--ink-dim);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(217, 182, 144, 0.7);
+  transition: color 0.3s;
+}
+
+.intro-col a:hover {
+  color: var(--gold-dk);
+}
+
+@media (max-width: 860px) {
+  .intro-cols {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .intro-col + .intro-col::before {
+    left: 50%;
+    right: auto;
+    top: -18px;
+    bottom: auto;
+    width: 64px;
+    height: 1px;
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- Visit: map beside the details panel ---------- */
+.visit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  background: var(--panel);
+}
+
+.visit-map {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: clamp(380px, 46vw, 680px);
+}
+
+.visit-map img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.visit-map:hover img {
+  transform: scale(1.04);
+}
+
+.visit-map-cta {
+  position: absolute;
+  left: clamp(18px, 2.5vw, 34px);
+  bottom: clamp(18px, 2.5vw, 34px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: background 0.3s, color 0.3s;
+}
+
+.visit-map:hover .visit-map-cta {
+  background: var(--ink);
+  color: #ffffff;
+}
+
+.visit-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(44px, 5vw, 92px) clamp(22px, 4.5vw, 78px);
+  background: #F6F1E9;
+}
+
+.visit-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 620px;
+}
+
+.visit-title {
+  margin: 0 0 18px;
+  font-size: clamp(21px, 2.1vw, 29px);
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+}
+
+.visit-copy {
+  margin: 0 0 34px;
+  max-width: 52ch;
+  font-size: 15px;
+  line-height: 1.95;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.visit-rows {
+  margin: 0;
+}
+
+.visit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 24px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(138, 107, 69, 0.35);
+}
+
+.visit-row:last-child {
+  border-bottom: 1px solid rgba(138, 107, 69, 0.35);
+}
+
+.visit-row dt {
+  font-family: 'Playfair Display', Georgia, var(--serif);
+  font-style: italic;
+  font-size: clamp(17px, 1.7vw, 22px);
+  color: var(--gold-dk);
+}
+
+.visit-row dd {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  font-weight: 300;
+  color: var(--ink);
+  text-align: right;
+}
+
+.visit-row a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(217, 182, 144, 0.8);
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.visit-row a:hover {
+  color: var(--gold-dk);
+  border-color: var(--gold-dk);
+}
+
+@media (max-width: 900px) {
+  .visit {
+    grid-template-columns: 1fr;
+  }
+
+  .visit-map {
+    min-height: clamp(260px, 60vw, 420px);
+  }
+
+  .visit-row dd {
+    text-align: left;
+  }
+}
+
+/* ---------- Pull quote ---------- */
+.pull-quote {
+  background: #F3ECE1;
+  padding: clamp(64px, 9vw, 132px) clamp(22px, 6vw, 90px);
+  text-align: center;
+}
+
+.pull-quote-text {
+  max-width: 1120px;
+  margin: 0 auto;
+  /* Display italic, loaded only for this line; swap to var(--serif) to drop it. */
+  font-family: 'Playfair Display', Georgia, var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(24px, 3.4vw, 46px);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--gold-dk);
 }
 
 /* ---------- Feature bands (text + angled-frame photo) ---------- */
@@ -576,6 +972,123 @@ onMounted(() => {
 .feature-photo--tall {
   aspect-ratio: 4 / 4.2;
   background-position: center;
+}
+
+/* ---------- Split feature: photo one side, panel the other ---------- */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  background: var(--panel);
+}
+
+.split-media {
+  position: relative;
+}
+
+/* The photo pins to the viewport while the panel beside it scrolls past,
+   then releases when the section ends. */
+.split-photo {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+
+.split-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  /* The photo stays pinned for (this height - 100vh) of scrolling, so the
+     taller the panel, the longer it holds. */
+  min-height: 130vh;
+  padding: clamp(60px, 8vw, 120px) clamp(22px, 4.5vw, 78px);
+  background: #F6F1E9;
+}
+
+.split-pattern {
+  position: absolute;
+  inset: 0;
+  background: url('/images/yana-pattern-square.jpeg') center/cover no-repeat;
+  filter: invert(1) saturate(0.2) contrast(1.05);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.split-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 640px;
+}
+
+.split-dish {
+  aspect-ratio: 16 / 9;
+  margin-bottom: clamp(28px, 3.5vw, 48px);
+  background-size: cover;
+  background-position: center 58%;
+  box-shadow: 0 18px 44px rgba(15, 30, 46, 0.14);
+}
+
+.split-eyebrow {
+  margin-bottom: 14px;
+}
+
+.split-title {
+  margin: 0 0 22px;
+  font-size: clamp(22px, 2.3vw, 31px);
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-dk);
+}
+
+.split-copy {
+  margin: 0 0 18px;
+  max-width: 54ch;
+  font-size: 15px;
+  line-height: 1.95;
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.split-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ink);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.3s, border-color 0.3s, gap 0.3s;
+}
+
+.split-link:hover {
+  gap: 16px;
+  color: var(--gold-dk);
+  border-color: var(--gold-dk);
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  /* No pinning on phones: the photo simply sits above the panel. */
+  .split-photo {
+    position: relative;
+    height: clamp(260px, 56vw, 420px);
+  }
+
+  .split-panel {
+    min-height: 0;
+  }
 }
 
 /* ---------- Full-bleed band ---------- */
@@ -939,27 +1452,4 @@ onMounted(() => {
   color: var(--ink-dim);
 }
 
-.marquee {
-  overflow: hidden;
-  border-top: 1px solid rgba(217, 182, 144, 0.3);
-  border-bottom: 1px solid rgba(217, 182, 144, 0.3);
-  padding: clamp(26px, 4vw, 46px) 0;
-  background: var(--panel);
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  white-space: nowrap;
-  animation: yanaMarquee 34s linear infinite;
-}
-
-.marquee-text {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(28px, 5vw, 58px);
-  color: rgba(18, 66, 109, 0.14);
-  letter-spacing: 0.02em;
-  padding-right: 0.35em;
-}
 </style>

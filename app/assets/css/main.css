@@ -31,7 +31,7 @@ body {
   color: var(--ink);
   font-family: var(--sans);
   font-weight: 300;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
