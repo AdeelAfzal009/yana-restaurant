@@ -1,8 +1,9 @@
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { guests, reservations, restaurantTables } from '../../database/schema'
 import { diffReservation, logActivity } from '../../utils/activity'
 import { requireAuth } from '../../utils/auth'
 import { useDb } from '../../utils/db'
+import { queueEmail, sendReservationEmail, templateForStatus } from '../../utils/notify'
 import { parseReservationFields, stampStatusTimes, type ReservationBody } from '../../utils/reservation-input'
 import { formatReservation, reservationColumns } from '../../utils/reservation-query'
 import { badRequest } from '../../utils/validate'
@@ -41,6 +42,19 @@ export default defineEventHandler(async (event) => {
   if (changes.length) {
     const statusOnly = changes.length === 1 && changes[0]!.field === 'Status'
     await logActivity(db, id, me.id, statusOnly ? 'status' : 'updated', changes)
+  }
+
+  // Only a genuine status change triggers mail, so saving notes stays silent.
+  if (after && fields.status && fields.status !== before.status) {
+    const template = templateForStatus(after.status)
+    if (template) {
+      const [joined] = await db
+        .select({ tableName: restaurantTables.name, sectionName: sql<string | null>`(select name from floor_sections fs where fs.id = ${restaurantTables.sectionId})` })
+        .from(reservations)
+        .leftJoin(restaurantTables, eq(reservations.tableId, restaurantTables.id))
+        .where(eq(reservations.id, id))
+      queueEmail(event, () => sendReservationEmail(after, template, { tableName: joined?.tableName, sectionName: joined?.sectionName }))
+    }
   }
 
   const [row] = await db

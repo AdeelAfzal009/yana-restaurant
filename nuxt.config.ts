@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
+  // One fixed local port so `npm run dev` never lands on 3000 (taken by another
+  // project). Railway sets PORT itself, so production is unaffected.
+  devServer: { port: Number(process.env.PORT) || 3100 },
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   runtimeConfig: {

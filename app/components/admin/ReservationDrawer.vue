@@ -191,6 +191,15 @@
             <p class="rd-can">For this reservation, you can:</p>
             <div class="rd-actions">
               <button type="button" class="rd-action" @click="printWaiterTicket(reservation)"><AdminIcon name="note" :size="16" /> Print waiter ticket</button>
+              <button
+                v-if="reservation.email && emailTemplateForStatus"
+                type="button"
+                class="rd-action"
+                :disabled="resending"
+                @click="resendEmail"
+              >
+                <AdminIcon name="mail" :size="16" /> {{ resending ? 'Sending…' : 'Resend guest email' }}
+              </button>
               <a v-if="reservation.phone" class="rd-action" :href="`tel:${reservation.phone}`"><AdminIcon name="phone" :size="16" /> Call guest</a>
               <a v-if="reservation.phone" class="rd-action" :href="`https://wa.me/${reservation.phone.replace(/[^\d]/g, '')}`" target="_blank" rel="noopener"><AdminIcon name="mail" :size="16" /> WhatsApp guest</a>
               <a v-if="reservation.email" class="rd-action" :href="`mailto:${reservation.email}`"><AdminIcon name="mail" :size="16" /> Email guest</a>
@@ -237,6 +246,24 @@
 
       <!-- Activity -->
       <div v-else class="rd-body">
+        <p v-if="resendNote" class="resend-note" :class="{ 'is-error': resendFailed }">{{ resendNote }}</p>
+
+        <h3 class="log-title"><AdminIcon name="mail" :size="15" /> Emails</h3>
+        <p v-if="!emails" class="adm-muted log-empty">Loading…</p>
+        <p v-else-if="!emails.length" class="adm-muted log-empty">No emails sent for this booking yet.</p>
+        <ul v-else class="mail-log">
+          <li v-for="m in emails" :key="m.id">
+            <span class="mail-status" :class="m.status">{{ m.status }}</span>
+            <span class="mail-body">
+              <span class="mail-subject">{{ m.subject }}</span>
+              <span class="adm-muted mail-meta">
+                {{ m.recipient }} · {{ formatStamp(m.createdAt) }}<template v-if="m.error"> · {{ m.error }}</template>
+              </span>
+            </span>
+          </li>
+        </ul>
+
+        <h3 class="log-title"><AdminIcon name="history" :size="15" /> Changes</h3>
         <p v-if="activityError" class="adm-error">{{ activityError }}</p>
         <p v-else-if="!activity" class="adm-empty">Loading activity…</p>
         <p v-else-if="!activity.length" class="adm-empty">No activity recorded yet.</p>
@@ -329,6 +356,8 @@ watch(() => props.reservation, (next, prev) => {
     tab.value = 'reservation'
     profile.value = null
     activity.value = null
+    emails.value = null
+    resendNote.value = ''
     resetForm()
     return
   }
@@ -339,7 +368,11 @@ watch(() => props.reservation, (next, prev) => {
   // A saved change invalidates the loaded history and log.
   if (next && prev && next.updatedAt !== prev.updatedAt) {
     activity.value = null
-    if (tab.value === 'activity') loadActivity()
+    emails.value = null
+    if (tab.value === 'activity') {
+      loadActivity()
+      loadEmails()
+    }
   }
 }, { immediate: true })
 
@@ -462,6 +495,57 @@ const historyItems = computed(() => {
   return [...filtered].sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`) * dir)
 })
 
+// ---- Guest emails ----
+interface EmailEntry {
+  id: number
+  template: string
+  recipient: string
+  subject: string
+  status: string
+  error: string | null
+  createdAt: string
+}
+
+const emails = ref<EmailEntry[] | null>(null)
+const resending = ref(false)
+const resendNote = ref('')
+const resendFailed = ref(false)
+
+// Mirrors the server's status-to-template map: only these statuses email guests.
+const emailTemplateForStatus = computed(() => {
+  const s = props.reservation?.status
+  return s === 'pending' || s === 'confirmed' || s === 'cancelled' || s === 'waitlist'
+})
+
+async function loadEmails() {
+  if (!props.reservation) return
+  try {
+    emails.value = await $fetch<EmailEntry[]>(`/api/admin/reservations/${props.reservation.id}/emails`)
+  } catch {
+    emails.value = []
+  }
+}
+
+async function resendEmail() {
+  if (!props.reservation) return
+  resending.value = true
+  resendNote.value = ''
+  try {
+    const res = await $fetch<{ status: string, error?: string, template: string }>(`/api/admin/reservations/${props.reservation.id}/resend`, { method: 'POST' })
+    resendFailed.value = res.status !== 'sent'
+    resendNote.value = res.status === 'sent'
+      ? `Email sent to ${props.reservation.email}.`
+      : `Not sent: ${res.error ?? res.status}`
+    tab.value = 'activity'
+    await loadEmails()
+  } catch (err) {
+    resendFailed.value = true
+    resendNote.value = errorMessage(err, 'Could not send the email.')
+  } finally {
+    resending.value = false
+  }
+}
+
 // ---- Activity ----
 const activity = ref<ActivityEntry[] | null>(null)
 const activityError = ref('')
@@ -494,7 +578,10 @@ function showValue(field: string, v: unknown) {
 
 watch(tab, (t) => {
   if ((t === 'profile' || t === 'future' || t === 'past') && !profile.value) loadProfile()
-  if (t === 'activity' && !activity.value) loadActivity()
+  if (t === 'activity') {
+    if (!activity.value) loadActivity()
+    if (!emails.value) loadEmails()
+  }
 })
 
 const tabs = computed(() => [
@@ -905,6 +992,94 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 .history-list .current {
   box-shadow: 0 0 0 2px var(--adm-accent);
+}
+
+.log-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.log-title + .log-title,
+.mail-log + .log-title,
+.log-empty + .log-title {
+  margin-top: 26px;
+}
+
+.log-empty {
+  margin: 0;
+  font-size: 13px;
+}
+
+.resend-note {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: var(--adm-radius);
+  background: #E7F4EC;
+  color: var(--adm-success);
+  font-size: 13px;
+}
+
+.resend-note.is-error {
+  background: #FBECE9;
+  color: var(--adm-danger);
+}
+
+.mail-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+}
+
+.mail-log li {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.mail-log li + li {
+  border-top: 1px solid var(--adm-line);
+}
+
+.mail-status {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--adm-surface-2);
+  color: var(--adm-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  height: fit-content;
+}
+
+.mail-status.sent {
+  background: #E7F4EC;
+  color: var(--adm-success);
+}
+
+.mail-status.failed {
+  background: #FBECE9;
+  color: var(--adm-danger);
+}
+
+.mail-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mail-subject {
+  font-size: 13px;
+}
+
+.mail-meta {
+  font-size: 12px;
 }
 
 .activity {

@@ -130,6 +130,23 @@ export const reservationActivity = pgTable('reservation_activity', {
   index('reservation_activity_reservation_idx').on(table.reservationId)
 ])
 
+// One row per email we attempt, so the team has an audit trail and a booking
+// never gets the same notification twice.
+export const emailLog = pgTable('email_log', {
+  id: serial('id').primaryKey(),
+  reservationId: integer('reservation_id').references(() => reservations.id, { onDelete: 'cascade' }),
+  template: text('template').notNull(),
+  recipient: text('recipient').notNull(),
+  subject: text('subject').notNull(),
+  status: text('status').notNull(),
+  providerId: text('provider_id'),
+  error: text('error'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+}, table => [
+  index('email_log_reservation_idx').on(table.reservationId),
+  index('email_log_template_idx').on(table.template)
+])
+
 export const staff = pgTable('staff', {
   id: serial('id').primaryKey(),
   email: text('email').notNull().unique(),

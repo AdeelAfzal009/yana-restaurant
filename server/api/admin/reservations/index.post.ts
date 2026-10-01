@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { guests, reservations } from '../../../database/schema'
 import { logActivity } from '../../../utils/activity'
+import { queueEmail, sendReservationEmail, templateForStatus } from '../../../utils/notify'
 import { requireAuth } from '../../../utils/auth'
 import { generateReference, useDb } from '../../../utils/db'
 import { findOrCreateGuest } from '../../../utils/guests'
@@ -52,10 +53,12 @@ export default defineEventHandler(async (event) => {
       .insert(reservations)
       .values({ ...values, reference: generateReference() })
       .onConflictDoNothing({ target: reservations.reference })
-      .returning({ id: reservations.id, reference: reservations.reference })
+      .returning()
     if (created) {
       await logActivity(db, created.id, me.id, 'created')
-      return created
+      const template = templateForStatus(created.status)
+      if (template) queueEmail(event, () => sendReservationEmail(created, template))
+      return { id: created.id, reference: created.reference }
     }
   }
 

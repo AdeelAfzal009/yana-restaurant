@@ -2,6 +2,7 @@ import { reservations } from '../../database/schema'
 import { useDb, generateReference } from '../../utils/db'
 import { findOrCreateGuest } from '../../utils/guests'
 import { logActivity } from '../../utils/activity'
+import { queueEmail, sendReservationEmail, sendStaffNewBooking } from '../../utils/notify'
 import { DATE_RE, EMAIL_RE, TIME_RE } from '../../utils/validate'
 
 interface ReservationInput {
@@ -69,10 +70,15 @@ export default defineEventHandler(async (event) => {
       .insert(reservations)
       .values({ ...values, reference: generateReference() })
       .onConflictDoNothing({ target: reservations.reference })
-      .returning({ id: reservations.id, reference: reservations.reference })
+      .returning()
 
     if (created) {
       await logActivity(db, created.id, null, 'created')
+      // Fire-and-forget: a mail outage must not fail the guest's booking.
+      queueEmail(event, async () => {
+        await sendReservationEmail(created, 'booking_received')
+        await sendStaffNewBooking(created)
+      })
       return {
         reference: created.reference,
         date: body.date,

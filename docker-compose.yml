@@ -7,7 +7,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=yana
     ports:
-      - "5432:5432"
+      # Host port is overridable: DB_PORT=5433 docker compose up
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -19,7 +20,9 @@ services:
   web:
     build: .
     ports:
-      - "3000:3000"
+      # Host port is overridable: WEB_PORT=3200 docker compose up
+      # Defaults to 3100 because another local project already uses 3000.
+      - "${WEB_PORT:-3100}:3000"
     restart: unless-stopped
     depends_on:
       db:
@@ -28,6 +31,13 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/yana
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-change-me}
       - ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET:-dev-only-insecure-secret}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - MAIL_FROM=${MAIL_FROM:-}
+      - MAIL_REPLY_TO=${MAIL_REPLY_TO:-}
+      - MAIL_STAFF_TO=${MAIL_STAFF_TO:-}
+      - MAIL_SITE_URL=${MAIL_SITE_URL:-}
+      - MAIL_PHONE=${MAIL_PHONE:-}
+      - MAIL_DRY_RUN=${MAIL_DRY_RUN:-}
 
 volumes:
   postgres-data:
