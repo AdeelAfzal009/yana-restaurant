@@ -3,6 +3,7 @@
     <header class="contact-banner">
       <div aria-hidden="true" class="banner-bg" />
       <div aria-hidden="true" class="banner-scrim" />
+      <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
         <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
         <h1 class="banner-title">Reach Us</h1>
@@ -84,8 +85,11 @@
     <section class="map-section">
       <iframe
         title="YANA Restaurant on the map"
-        src="https://maps.google.com/maps?q=24.56190282214312%2C%2054.45993442883627&t=m&z=18&output=embed&iwloc=near"
+        src="https://www.google.com/maps/embed?origin=mfe&pb=!1m4!2m1!1s24.56190282214312,+54.45993442883627!5e0!6i18"
         class="map-iframe"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
       />
     </section>
 
@@ -124,9 +128,9 @@ function onSubmit(e: Event) {
 .contact-banner {
   position: relative;
   overflow: hidden;
-  min-height: clamp(360px, 48vh, 480px);
+  min-height: clamp(468px, 62.4vh, 624px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   background: #0f1e2e;
 }
 
@@ -139,7 +143,7 @@ function onSubmit(e: Event) {
 .banner-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72), rgba(15, 30, 46, 0.5) 45%, rgba(15, 30, 46, 0.94));
+  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72), rgba(15, 30, 46, 0.5) 45%, rgba(15, 30, 46, 0.4));
 }
 
 .banner-content {
@@ -148,7 +152,7 @@ function onSubmit(e: Event) {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px) clamp(46px, 6vw, 74px);
+  padding: 88px clamp(20px, 5vw, 64px) 0;
 }
 
 .eyebrow-plain {
@@ -288,6 +292,7 @@ function onSubmit(e: Event) {
 }
 
 .contact-link {
+  font-weight: 600;
   display: flex;
   gap: 16px;
   align-items: flex-start;
@@ -424,6 +429,7 @@ function onSubmit(e: Event) {
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
   color: #0f1e2e;
   background: var(--gold);
   padding: 19px 46px;

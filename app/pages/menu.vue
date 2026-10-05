@@ -4,6 +4,7 @@
     <header class="menu-banner">
       <div aria-hidden="true" class="banner-bg banner-bg--wide" />
       <div aria-hidden="true" class="banner-scrim banner-scrim--menu" />
+      <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
         <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
         <h1 class="banner-title">Menu</h1>
@@ -41,6 +42,7 @@
     </section>
 
     <!-- FOOD -->
+    <div aria-hidden="true" class="section-divider" />
     <section id="food" class="feature">
       <div class="feature-copy">
         <h2 class="feature-title">Food</h2>
@@ -54,6 +56,7 @@
     </section>
 
     <!-- DRINKS -->
+    <div aria-hidden="true" class="section-divider" />
     <section id="drinks" class="feature feature--reverse feature--panel">
       <div class="feature-copy">
         <h2 class="feature-title">Signature Drinks</h2>
@@ -204,9 +207,9 @@ useHead({ title: 'Menu · YANA Restaurant' })
 .menu-banner {
   position: relative;
   overflow: hidden;
-  min-height: clamp(380px, 52vh, 520px);
+  min-height: clamp(494px, 67.6vh, 676px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   background: #0f1e2e;
 }
 
@@ -225,7 +228,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
 }
 
 .banner-scrim--menu {
-  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72), rgba(15, 30, 46, 0.55) 45%, rgba(15, 30, 46, 0.94));
+  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72), rgba(15, 30, 46, 0.55) 45%, rgba(15, 30, 46, 0.4));
 }
 
 .banner-content {
@@ -234,7 +237,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px) clamp(46px, 6vw, 74px);
+  padding: 88px clamp(20px, 5vw, 64px) 0;
 }
 
 .eyebrow-plain {
@@ -515,6 +518,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
   font-size: 11.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--ink);
   text-decoration: none;
   transition: gap 0.3s, color 0.3s, border-color 0.3s;
@@ -547,7 +551,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
   position: sticky;
   top: 60px;
   z-index: 60;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--panel);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(217, 182, 144, 0.35);
@@ -567,6 +571,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
   font-size: 11px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--ink);
   text-decoration: none;
   padding: 20px 0;
@@ -849,6 +854,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
   color: #0f1e2e;
   background: var(--gold);
   padding: 19px 44px;
@@ -867,6 +873,7 @@ useHead({ title: 'Menu · YANA Restaurant' })
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--gold-lt);
   background: transparent;
   padding: 19px 44px;

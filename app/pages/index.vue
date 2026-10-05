@@ -48,38 +48,10 @@
           <path d="M20 54c7 0 7-5 14-5s7 5 14 5 7-5 14-5 7 5 14 5 7-5 14-5" opacity="0.55" />
         </svg>
         <h2 class="intro-title">YANA Abu Dhabi: a Pan-Asian kitchen<br>with Peruvian flair on Saadiyat Island</h2>
-        <p class="intro-copy">Set on Al Saadiyat Island, YANA brings together the citrus-bright kitchens of coastal Peru and the quiet precision of Pan-Asian cooking. Guests dine in a room of deep blue and brass, take long lunches on the terrace under the palms, and linger at the bar over pisco, matcha and cold-pressed coolers. Ceviches and tiraditos open the evening; the Josper grill carries it late into the night.</p>
+        <p class="intro-copy">Set on the beachfront of Saadiyat Island, YANA brings together the freshness and colour of coastal Peru with the precision of Pan-Asian cooking.</p>
+        <p class="intro-copy intro-copy--next">The menu moves from ceviches and tiraditos to sushi and dishes from the Josper grill, made for long lunches, sunset drinks and evenings that unfold at an easy pace.</p>
+        <p class="intro-copy intro-copy--next">Inside, deep blue and brass create a warm, intimate setting, while the terrace opens out to palms and views across the water. At the bar, pisco sits alongside matcha and cold-pressed coolers, bringing another layer to the experience.</p>
         <NuxtLink to="/reservation" class="intro-btn">Make a Reservation</NuxtLink>
-      </div>
-
-      <div v-reveal="{ y: 26, delay: 0.12 }" class="intro-cols">
-        <div class="intro-col">
-          <h3 class="intro-col-title">Restaurant</h3>
-          <svg aria-hidden="true" class="intro-flourish" viewBox="0 0 48 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
-            <path d="M2 6h14" /><path d="M32 6h14" />
-            <path d="M24 2.6c-2.4 0-3.6 1.4-3.6 3.4S21.6 9.4 24 9.4 27.6 8 27.6 6 26.4 2.6 24 2.6Z" />
-          </svg>
-          <p>Lunch &amp; Dinner | Sunday &ndash; Thursday | 9am &ndash; 10pm</p>
-          <p>Friday &amp; Saturday | 9am &ndash; midnight</p>
-        </div>
-        <div class="intro-col">
-          <h3 class="intro-col-title">The Terrace &amp; Bar</h3>
-          <svg aria-hidden="true" class="intro-flourish" viewBox="0 0 48 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
-            <path d="M2 6h14" /><path d="M32 6h14" />
-            <path d="M24 2.6c-2.4 0-3.6 1.4-3.6 3.4S21.6 9.4 24 9.4 27.6 8 27.6 6 26.4 2.6 24 2.6Z" />
-          </svg>
-          <p>Open daily alongside the dining room</p>
-          <p>Pisco, matcha, coolers &amp; cold-pressed juices</p>
-        </div>
-        <div class="intro-col">
-          <h3 class="intro-col-title">Reservations</h3>
-          <svg aria-hidden="true" class="intro-flourish" viewBox="0 0 48 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
-            <path d="M2 6h14" /><path d="M32 6h14" />
-            <path d="M24 2.6c-2.4 0-3.6 1.4-3.6 3.4S21.6 9.4 24 9.4 27.6 8 27.6 6 26.4 2.6 24 2.6Z" />
-          </svg>
-          <p><a href="tel:+97124476998">+971 2 447 6998</a></p>
-          <p><a href="mailto:info@yanarestaurants.com">info@yanarestaurants.com</a></p>
-        </div>
       </div>
     </section>
 
@@ -115,9 +87,6 @@
           <NuxtLink to="/menu" class="link-underline">Explore the Menu</NuxtLink>
         </div>
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-media">
-          <svg aria-hidden="true" class="feature-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="2.5,3.5 98,0 99.5,96.5 0,99" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-          </svg>
           <div class="feature-photo" :style="{ backgroundImage: `url('${signatureDishImage}')` }" />
         </div>
       </div>
@@ -126,7 +95,7 @@
     <!-- ===================== PULL QUOTE ===================== -->
     <section class="pull-quote">
       <blockquote v-reveal="{ y: 24 }" class="pull-quote-text">
-        &lsquo;YANA is not a fusion restaurant. It&rsquo;s one kitchen that remembers two coastlines.&rsquo;
+        &lsquo;YANA brings together the vibrancy of Peruvian cuisine with the elegance of Pan-Asian cuisine.&rsquo;
       </blockquote>
     </section>
 
@@ -143,9 +112,6 @@
           <NuxtLink to="/menu?menu=drinks" class="link-underline link-underline--light">Discover the Drinks</NuxtLink>
         </div>
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-media">
-          <svg aria-hidden="true" class="feature-frame feature-frame--light" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="1.5,2.5 98.5,0.5 99,97.5 0.5,99" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-          </svg>
           <div class="feature-photo feature-photo--portrait" :style="{ backgroundImage: `url('${barImage}')` }" />
         </div>
       </div>
@@ -163,9 +129,6 @@
           <NuxtLink to="/gallery" class="link-underline">See the Gallery</NuxtLink>
         </div>
         <div v-reveal="{ y: 30 }" class="feature-media">
-          <svg aria-hidden="true" class="feature-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="1,3 99,0 97.5,97 2,99.5" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-          </svg>
           <div class="feature-photo feature-photo--tall" :style="{ backgroundImage: `url('${terraceImage}')` }" />
         </div>
       </div>
@@ -198,10 +161,45 @@
           <p class="story-signoff">— The House of YANA</p>
         </div>
         <div v-reveal="{ y: 30 }" class="feature-media">
-          <svg aria-hidden="true" class="feature-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="2,2 98.5,1 98,98 1,97" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-          </svg>
           <div class="feature-photo feature-photo--tall" :style="{ backgroundImage: `url('${storyImage}')` }" />
+        </div>
+      </div>
+    </section>
+
+    <div aria-hidden="true" class="section-divider" />
+
+    <!-- ===================== BEST SHOTS (carousel) ===================== -->
+    <section class="shots-section">
+      <div class="shots" @mouseenter="pauseShots = true" @mouseleave="pauseShots = false" @focusin="pauseShots = true" @focusout="pauseShots = false">
+        <div v-reveal="{ y: 26 }" class="shots-head">
+          <div class="shots-intro">
+            <span class="eyebrow eyebrow-dark"><span class="rule-short" />06 — Moments</span>
+            <h2 class="h2-dark">A glimpse of<br>life at YANA.</h2>
+            <p class="body-copy shots-copy">The dining room, the terrace and the plates in between, as our guests see them.</p>
+          </div>
+          <div class="shots-controls">
+            <span class="shots-count" aria-hidden="true">{{ String(shotIndex + 1).padStart(2, '0') }} <span class="shots-count-total">/ {{ String(shots.length).padStart(2, '0') }}</span></span>
+            <div class="shots-nav">
+              <button type="button" class="shots-btn" aria-label="Previous photos" @click="scrollShots(-1)">
+                <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M21 6H1M6 1 1 6l5 5" /></svg>
+              </button>
+              <button type="button" class="shots-btn" aria-label="Next photos" @click="scrollShots(1)">
+                <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 6h20M16 1l5 5-5 5" /></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div v-reveal="{ y: 26, delay: 0.1 }" ref="shotsTrack" class="shots-track" role="region" aria-label="Photos of YANA" tabindex="0" @scroll.passive="onShotsScroll" @touchstart.passive="pauseShots = true">
+          <figure v-for="shot in shots" :key="shot.src" class="shot">
+            <img :src="shot.src" :alt="shot.alt" width="750" height="1000" loading="lazy" decoding="async">
+            <figcaption class="shot-caption">{{ shot.label }}</figcaption>
+          </figure>
+        </div>
+        <div class="shots-progress" aria-hidden="true">
+          <span class="shots-progress-bar" :style="{ transform: `scaleX(${shotsProgress})` }" />
+        </div>
+        <div class="shots-foot">
+          <NuxtLink to="/gallery" class="link-underline">See the Gallery</NuxtLink>
         </div>
       </div>
     </section>
@@ -330,11 +328,61 @@ const storyImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
 const eveningImage = '/images/yana-image-4-mrt9n45r-v3w7.webp'
 const heroKenBurns = true
 
+// "Best shots" carousel under the intro. Web-sized copies of the DSC originals.
+const shots = [
+  { src: '/images/carousel/yana-01.jpg', alt: 'The YANA dining room under its gold-lit ceiling', label: 'The Dining Room' },
+  { src: '/images/carousel/yana-02.jpg', alt: 'A signature plate served on marble', label: 'Signature Plates' },
+  { src: '/images/carousel/yana-03.jpg', alt: 'Coolers and cocktails at the bar', label: 'The Bar' },
+  { src: '/images/carousel/yana-04.jpg', alt: 'The palm-lined terrace entrance', label: 'The Terrace' },
+  { src: '/images/carousel/yana-05.jpg', alt: 'A table of sharing dishes and drinks', label: 'To Share' },
+  { src: '/images/carousel/yana-06.jpg', alt: 'Deep blue banquettes along the dining room', label: 'Deep Blue & Brass' },
+  { src: '/images/carousel/yana-07.jpg', alt: 'Striploin from the Josper grill', label: 'From the Josper' },
+  { src: '/images/yana-image-3-mrt9rmoi-9m3z.webp', alt: 'The terrace by the water on Saadiyat Island', label: 'By the Water' }
+]
+const shotsTrack = ref<HTMLElement | null>(null)
+const pauseShots = ref(false)
+const shotIndex = ref(0)
+const shotsProgress = ref(0)
+
+// Keeps the counter and progress line in step with the track's position.
+function onShotsScroll() {
+  const track = shotsTrack.value
+  const first = track?.firstElementChild as HTMLElement | null
+  if (!track || !first) return
+  const max = track.scrollWidth - track.clientWidth
+  const step = first.offsetWidth + parseFloat(getComputedStyle(track).columnGap || '0')
+  shotsProgress.value = max > 0 ? Math.max(0.08, track.scrollLeft / max) : 1
+  const atEnd = track.scrollLeft >= max - 4
+  shotIndex.value = atEnd ? shots.length - 1 : Math.min(shots.length - 1, Math.round(track.scrollLeft / step))
+}
+
+// Moves one photo along; wraps around at either end.
+function scrollShots(dir: 1 | -1) {
+  const track = shotsTrack.value
+  const first = track?.firstElementChild as HTMLElement | null
+  if (!track || !first) return
+  const step = first.offsetWidth + parseFloat(getComputedStyle(track).columnGap || '0')
+  const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4
+  const atStart = track.scrollLeft <= 4
+  if (dir > 0 && atEnd) track.scrollTo({ left: 0, behavior: 'smooth' })
+  else if (dir < 0 && atStart) track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' })
+  else track.scrollBy({ left: dir * step, behavior: 'smooth' })
+}
+
 // Visitors who ask for less motion get the still hero instead of the video.
 const reducedMotion = ref(false)
+let shotsTimer: ReturnType<typeof setInterval> | undefined
 onMounted(() => {
   reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  onShotsScroll()
+  // Gentle auto-advance, paused while the visitor is hovering or interacting.
+  if (!reducedMotion.value) {
+    shotsTimer = setInterval(() => {
+      if (!pauseShots.value && !document.hidden) scrollShots(1)
+    }, 4500)
+  }
 })
+onUnmounted(() => clearInterval(shotsTimer))
 
 </script>
 
@@ -449,6 +497,7 @@ onMounted(() => {
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--blue-dk);
   background: var(--gold);
   padding: 19px 44px;
@@ -598,6 +647,10 @@ onMounted(() => {
   color: var(--ink-dim);
 }
 
+.intro-copy--next {
+  margin-top: 18px;
+}
+
 .intro-btn {
   display: inline-block;
   margin-top: clamp(30px, 4vw, 46px);
@@ -606,6 +659,7 @@ onMounted(() => {
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--ink);
   text-decoration: none;
   transition: background 0.35s, color 0.35s, border-color 0.35s;
@@ -617,79 +671,188 @@ onMounted(() => {
   color: #ffffff;
 }
 
-.intro-cols {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(24px, 4vw, 56px);
-  max-width: 1240px;
-  margin: clamp(56px, 7vw, 104px) auto 0;
+/* ---------- Best shots carousel ---------- */
+.shots-section {
+  background: var(--panel);
+  padding: clamp(64px, 8vw, 112px) clamp(20px, 5vw, 64px);
+  overflow: hidden;
 }
 
-.intro-col {
-  position: relative;
-  padding: 0 clamp(10px, 2vw, 28px);
+.shots {
+  max-width: 1320px;
+  margin: 0 auto;
 }
 
-.intro-col + .intro-col::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 1px;
-  background: rgba(138, 107, 69, 0.45);
+/* Title on the left, counter + arrows on the right. */
+.shots-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  margin-bottom: clamp(32px, 4vw, 52px);
 }
 
-.intro-col-title {
-  margin: 0;
-  font-size: clamp(14px, 1.5vw, 17px);
-  font-weight: 400;
+.shots-intro {
+  max-width: 560px;
+  text-align: left;
+}
+
+.shots-copy {
+  margin: 18px 0 0;
+}
+
+.shots-controls {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.4vw, 32px);
+  flex-shrink: 0;
+}
+
+.shots-count {
+  font-size: 13px;
   letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-weight: 600;
   color: var(--gold-dk);
+  font-variant-numeric: tabular-nums;
 }
 
-.intro-flourish {
-  display: block;
-  width: 48px;
-  height: 12px;
-  margin: 14px auto 20px;
-  color: var(--gold);
-}
-
-.intro-col p {
-  margin: 0 0 14px;
-  font-size: 14px;
-  line-height: 1.7;
+.shots-count-total {
   font-weight: 300;
   color: var(--ink-dim);
 }
 
-.intro-col a {
-  color: var(--ink-dim);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(217, 182, 144, 0.7);
-  transition: color 0.3s;
+.shots-track {
+  display: flex;
+  gap: clamp(12px, 1.6vw, 20px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
 }
 
-.intro-col a:hover {
+.shots-track::-webkit-scrollbar {
+  display: none;
+}
+
+.shot {
+  position: relative;
+  flex: 0 0 clamp(240px, 27vw, 380px);
+  margin: 0;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  scroll-snap-align: start;
+  background: var(--panel-dk);
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s ease;
+}
+
+/* Soft navy wash at the foot so the caption reads on any photo. */
+.shot::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 42%;
+  background: linear-gradient(180deg, rgba(15, 30, 46, 0), rgba(15, 30, 46, 0.72));
+  pointer-events: none;
+}
+
+.shot-caption {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 20px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.shot-caption::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.5s ease;
+}
+
+.shot:hover img {
+  transform: scale(1.05);
+}
+
+.shot:hover .shot-caption::before {
+  width: 38px;
+}
+
+.shots-progress {
+  position: relative;
+  height: 1px;
+  margin-top: clamp(26px, 3vw, 36px);
+  background: rgba(138, 107, 69, 0.2);
+}
+
+.shots-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: var(--gold-dk);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
+}
+
+.shots-foot {
+  text-align: center;
+}
+
+.shots-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.shots-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(138, 107, 69, 0.45);
+  border-radius: 50%;
+  background: transparent;
   color: var(--gold-dk);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
-@media (max-width: 860px) {
-  .intro-cols {
-    grid-template-columns: 1fr;
-    gap: 36px;
+.shots-btn:hover {
+  background: var(--gold-dk);
+  border-color: var(--gold-dk);
+  color: var(--panel);
+}
+
+.shots-track:focus-visible {
+  outline: 1px solid var(--gold-dk);
+  outline-offset: 6px;
+}
+
+@media (max-width: 700px) {
+  .shots-head {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .intro-col + .intro-col::before {
-    left: 50%;
-    right: auto;
-    top: -18px;
-    bottom: auto;
-    width: 64px;
-    height: 1px;
-    transform: translateX(-50%);
+  .shots-controls {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
@@ -811,6 +974,7 @@ onMounted(() => {
 }
 
 .visit-row a {
+  font-weight: 600;
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid rgba(217, 182, 144, 0.8);
@@ -904,7 +1068,7 @@ onMounted(() => {
 
 .link-underline {
   letter-spacing: 0.01em;
-  font-weight: 400;
+  font-weight: 600;
   display: inline-block;
   margin-top: 36px;
   padding-bottom: 4px;
@@ -930,27 +1094,10 @@ onMounted(() => {
   border-color: var(--gold);
 }
 
-/* The photo sits inside a hand-cut gold outline, as on COYA's feature blocks. */
 .feature-media {
   position: relative;
   flex: 1 1 420px;
   min-width: 280px;
-  padding: 26px 22px;
-}
-
-.feature-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: rgba(217, 182, 144, 0.75);
-  transform: rotate(-1.8deg);
-  pointer-events: none;
-}
-
-.feature-frame--light {
-  color: rgba(217, 182, 144, 0.6);
-  transform: rotate(1.6deg);
 }
 
 .feature-photo {
@@ -961,7 +1108,6 @@ onMounted(() => {
   /* The dishes sit low in the frame, so bias the crop downward. */
   background-position: center 58%;
   background-repeat: no-repeat;
-  clip-path: polygon(1% 2.5%, 99.5% 0%, 98.5% 98%, 0.5% 100%);
 }
 
 .feature-photo--portrait {
@@ -1064,6 +1210,7 @@ onMounted(() => {
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--ink);
   text-decoration: none;
   transition: color 0.3s, border-color 0.3s, gap 0.3s;

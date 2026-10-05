@@ -3,6 +3,7 @@
     <header class="reservation-banner">
       <div aria-hidden="true" class="banner-bg" />
       <div aria-hidden="true" class="banner-scrim" />
+      <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
         <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
         <h1 class="banner-title">Reserve a Table</h1>
@@ -353,9 +354,9 @@ function resetForm() {
 .reservation-banner {
   position: relative;
   overflow: hidden;
-  min-height: clamp(320px, 40vh, 420px);
+  min-height: clamp(416px, 52vh, 546px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   background: #0f1e2e;
 }
 
@@ -368,7 +369,7 @@ function resetForm() {
 .banner-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72), rgba(15, 30, 46, 0.5) 45%, rgba(15, 30, 46, 0.94));
+  background: linear-gradient(180deg, rgba(15, 30, 46, 0.72), rgba(15, 30, 46, 0.5) 45%, rgba(15, 30, 46, 0.4));
 }
 
 .banner-content {
@@ -377,7 +378,7 @@ function resetForm() {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px) clamp(46px, 6vw, 74px);
+  padding: 88px clamp(20px, 5vw, 64px) 0;
 }
 
 .eyebrow-plain {
@@ -705,6 +706,7 @@ function resetForm() {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  font-weight: 600;
   padding: 14px 26px;
   border: 1px solid var(--gold);
   color: var(--gold-dk);

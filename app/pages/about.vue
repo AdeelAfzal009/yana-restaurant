@@ -3,6 +3,7 @@
     <header class="about-banner">
       <div aria-hidden="true" class="banner-bg" />
       <div aria-hidden="true" class="banner-scrim" />
+      <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
         <span class="eyebrow-plain"><span class="rule-short" />About Yana</span>
         <h1 class="banner-title">About us</h1>
@@ -117,9 +118,9 @@ const pillars = [
 .about-banner {
   position: relative;
   overflow: hidden;
-  min-height: clamp(380px, 52vh, 520px);
+  min-height: clamp(494px, 67.6vh, 676px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   background: #0f1e2e;
 }
 
@@ -132,7 +133,7 @@ const pillars = [
 .banner-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 30, 46, 0.7), rgba(15, 30, 46, 0.5) 45%, rgba(15, 30, 46, 0.94));
+  background: linear-gradient(180deg, rgba(15, 30, 46, 0.7), rgba(15, 30, 46, 0.5) 45%, rgba(15, 30, 46, 0.4));
 }
 
 .banner-pattern {
@@ -149,7 +150,7 @@ const pillars = [
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 64px) clamp(46px, 6vw, 74px);
+  padding: 88px clamp(20px, 5vw, 64px) 0;
 }
 
 .eyebrow-plain {
@@ -491,6 +492,7 @@ const pillars = [
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+  font-weight: 600;
   color: #0f1e2e;
   background: var(--gold);
   padding: 19px 46px;

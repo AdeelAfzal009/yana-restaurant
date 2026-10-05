@@ -15,13 +15,13 @@
     </NuxtLink>
 
     <div class="yana-nav-right">
-      <span class="yana-locale">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <NuxtLink to="/#location" class="yana-locale">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z" />
           <circle cx="12" cy="10" r="2.5" />
         </svg>
-        Abu Dhabi
-      </span>
+        <span><span class="yana-locale-area">Saadiyat Island, </span>Abu Dhabi</span>
+      </NuxtLink>
       <NuxtLink to="/reservation" class="yana-nav-book nav-book-btn">Book A Table</NuxtLink>
     </div>
   </nav>
@@ -110,7 +110,7 @@ onUnmounted(() => {
 }
 
 .yana-nav.is-scrolled {
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--panel);
   border-bottom-color: rgba(217, 182, 144, 0.28);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -177,6 +177,21 @@ onUnmounted(() => {
   font-weight: 500;
   color: inherit;
   opacity: 0.92;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
+.yana-locale:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 1100px) {
+  .yana-locale-area {
+    display: none;
+  }
 }
 
 .nav-book-btn {
@@ -202,7 +217,7 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--panel);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(217, 182, 144, 0.3);
@@ -267,6 +282,7 @@ onUnmounted(() => {
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--blue-dk);
   background: var(--gold);
   padding: 18px;

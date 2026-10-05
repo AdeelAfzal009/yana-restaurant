@@ -33,7 +33,7 @@ const line = `${words.join(' · ')} · `
   font-family: var(--serif);
   font-weight: 300;
   font-size: clamp(28px, 5vw, 58px);
-  color: rgba(18, 66, 109, 0.14);
+  color: #D9B690;
   letter-spacing: 0.02em;
   padding-right: 0.35em;
 }
