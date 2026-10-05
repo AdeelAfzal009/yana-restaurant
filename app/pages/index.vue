@@ -322,7 +322,7 @@ const showLegacyFoodSection = false
 const showLegacyLocationSection = false
 // YANA's Google listing — swap for the exact share link from the business profile.
 const mapsProfileUrl = 'https://www.google.com/maps/search/?api=1&query=Yana+Restaurant+Al+Saadiyat+Island+Abu+Dhabi'
-const barImage = '/images/bar-cocktails.webp'
+const barImage = '/images/DSC00730.jpeg'
 const terraceImage = '/images/yana-image-3-mrt9rmoi-9m3z.webp'
 const storyImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
 const eveningImage = '/images/yana-image-4-mrt9n45r-v3w7.webp'
@@ -1027,10 +1027,23 @@ onUnmounted(() => clearInterval(shotsTimer))
   padding: clamp(64px, 9vw, 130px) clamp(20px, 5vw, 64px);
 }
 
+/* Deep midnight sapphire with a soft pool of light behind the photo
+   (left column), so the imagery lifts off the background. */
 .feature--dark {
-  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 182, 144, 0.14), transparent 55%), linear-gradient(180deg, #0f1e2e, #12426d 52%, #0f1e2e);
+  background:
+    radial-gradient(48% 62% at 27% 50%, rgba(52, 106, 170, 0.42), transparent 72%),
+    radial-gradient(120% 70% at 50% 0%, rgba(217, 182, 144, 0.09), transparent 55%),
+    linear-gradient(180deg, #08172a 0%, #0d2440 50%, #08172a 100%);
   border-top: 1px solid rgba(217, 182, 144, 0.35);
   border-bottom: 1px solid rgba(217, 182, 144, 0.35);
+}
+
+.feature--dark .pattern-dark--tall {
+  opacity: 0.12;
+}
+
+.feature--dark .feature-photo {
+  box-shadow: 0 34px 70px -18px rgba(3, 10, 20, 0.7);
 }
 
 .feature-grid {

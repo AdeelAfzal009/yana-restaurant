@@ -51,7 +51,7 @@
         <a :href="foodTile?.pdf || digitalMenuUrl" target="_blank" rel="noopener" class="feature-link">View the Food Menu <span aria-hidden="true">→</span></a>
       </div>
       <div class="feature-media">
-        <img src="/images/food1.webp" alt="Signature plates at YANA" width="1400" height="1842" loading="lazy" decoding="async">
+        <img src="/images/web/menu-food.jpg" alt="A spread of YANA dishes and a cocktail on marble" width="1254" height="1600" loading="lazy" decoding="async">
       </div>
     </section>
 
@@ -65,7 +65,7 @@
         <a :href="drinksTile?.pdf || digitalMenuUrl" target="_blank" rel="noopener" class="feature-link">View the Drinks Menu <span aria-hidden="true">→</span></a>
       </div>
       <div class="feature-media">
-        <img src="/images/bar-cocktails.webp" alt="Cocktails being finished at the YANA bar" width="1200" height="1599" loading="lazy" decoding="async">
+        <img src="/images/DSC00730.jpeg" alt="A cocktail splashing into a crystal glass at the YANA bar" width="736" height="920" loading="lazy" decoding="async">
       </div>
     </section>
 

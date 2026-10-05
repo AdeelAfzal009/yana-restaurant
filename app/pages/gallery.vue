@@ -28,13 +28,19 @@
             <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${aboutBannerImage}')` }" />
           </div>
           <div class="mosaic-tile mosaic-tile--wide">
-            <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${contactCtaImage}')` }" />
+            <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${seafrontImage}')` }" />
           </div>
-          <div class="mosaic-tile mosaic-tile--placeholder mosaic-tile--placeholder-a">
-            <ImagePlaceholder label="Dining room" />
+          <div class="mosaic-tile">
+            <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${banquetteImage}')` }" />
           </div>
-          <div class="mosaic-tile mosaic-tile--placeholder mosaic-tile--placeholder-b">
-            <ImagePlaceholder label="Signature dish" />
+          <div class="mosaic-tile">
+            <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${diningRoomImage}')` }" />
+          </div>
+          <div class="mosaic-tile">
+            <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${eveningImage}')` }" />
+          </div>
+          <div class="mosaic-tile">
+            <div class="mosaic-tile-bg" :style="{ backgroundImage: `url('${marinaImage}')` }" />
           </div>
         </div>
       </div>
@@ -74,7 +80,11 @@ const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
 const sideImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
 const menuCtaImage = '/images/yana-image-3-mrt9rmoi-9m3z.webp'
 const aboutBannerImage = '/images/yana-image-4-mrt9n45r-v3w7.webp'
-const contactCtaImage = '/images/yana-image-4-mrt9r8ad-uvfn.webp'
+const seafrontImage = '/images/web/gallery-seafront.jpg'
+const banquetteImage = '/images/web/gallery-banquette.jpg'
+const diningRoomImage = '/images/web/gallery-dining-room.jpg'
+const eveningImage = '/images/web/gallery-evening.jpg'
+const marinaImage = '/images/web/gallery-marina.jpg'
 
 const rooms = [
   { label: 'Dining room, wide', gradient: 'linear-gradient(160deg, #12426d, #0f1e2e 74%)' },
@@ -198,18 +208,15 @@ const rooms = [
   background-repeat: no-repeat;
 }
 
-.mosaic-tile--placeholder-a {
-  background: linear-gradient(160deg, #f3ece1, #ead9bf 74%);
-}
-
-.mosaic-tile--placeholder-b {
-  background: linear-gradient(150deg, #f3ece1, #ead9bf 74%);
-}
-
 .room-section {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 182, 144, 0.14), transparent 55%), linear-gradient(180deg, #0f1e2e, #12426d 50%, #0f1e2e);
+  /* Same deep midnight sapphire as the homepage Pisco Bar band, with the
+     light pool centred behind the content. */
+  background:
+    radial-gradient(55% 60% at 50% 55%, rgba(52, 106, 170, 0.38), transparent 72%),
+    radial-gradient(120% 70% at 50% 0%, rgba(217, 182, 144, 0.09), transparent 55%),
+    linear-gradient(180deg, #08172a 0%, #0d2440 50%, #08172a 100%);
   border-top: 1px solid rgba(217, 182, 144, 0.35);
   border-bottom: 1px solid rgba(217, 182, 144, 0.35);
   padding: clamp(72px, 10vw, 132px) clamp(20px, 5vw, 64px);
@@ -219,7 +226,7 @@ const rooms = [
   position: absolute;
   inset: 0;
   background: url('/images/yana-pattern-square.jpeg') center/cover no-repeat;
-  opacity: 0.3;
+  opacity: 0.12;
   mix-blend-mode: screen;
   pointer-events: none;
 }

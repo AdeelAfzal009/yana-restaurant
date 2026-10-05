@@ -274,7 +274,12 @@ const pillars = [
 .founder-section {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 182, 144, 0.14), transparent 55%), linear-gradient(180deg, #0f1e2e, #12426d 50%, #0f1e2e);
+  /* Same deep midnight sapphire as the homepage Pisco Bar band, with the
+     light pool centred behind the content. */
+  background:
+    radial-gradient(55% 60% at 50% 55%, rgba(52, 106, 170, 0.38), transparent 72%),
+    radial-gradient(120% 70% at 50% 0%, rgba(217, 182, 144, 0.09), transparent 55%),
+    linear-gradient(180deg, #08172a 0%, #0d2440 50%, #08172a 100%);
   border-top: 1px solid rgba(217, 182, 144, 0.35);
   border-bottom: 1px solid rgba(217, 182, 144, 0.35);
   padding: clamp(76px, 11vw, 150px) clamp(20px, 5vw, 64px);
@@ -284,7 +289,7 @@ const pillars = [
   position: absolute;
   inset: 0;
   background: url('/images/yana-pattern-square.jpeg') center/cover no-repeat;
-  opacity: 0.3;
+  opacity: 0.12;
   mix-blend-mode: screen;
   pointer-events: none;
 }
