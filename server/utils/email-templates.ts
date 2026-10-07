@@ -1,14 +1,13 @@
-// Guest-facing email content. Table-based layout with inline styles, because
-// that is what Outlook and Gmail reliably render.
+// Reservation emails. The wording comes from the editable EmailContent
+// (shared/utils/email-content.ts, edited in Admin → Email templates); the
+// branded layout below is fixed. Table-based with inline styles, because that
+// is what Outlook and Gmail reliably render.
+import { DEFAULT_EMAIL_CONTENT, fillPlaceholders } from '#shared/utils/email-content'
+import type { EmailContent, EmailPlaceholder, EmailTemplateContent, EmailTemplateKey } from '#shared/utils/email-content'
 import { getMailConfig } from './mail'
 import type { MailMessage } from './mail'
 
-export type EmailTemplate =
-  | 'booking_received'
-  | 'booking_confirmed'
-  | 'booking_cancelled'
-  | 'waitlist_added'
-  | 'staff_new_booking'
+export type EmailTemplate = EmailTemplateKey
 
 export interface ReservationEmailData {
   reference: string
@@ -34,8 +33,6 @@ const GOLD = '#D9B690'
 const GOLD_DK = '#8A6B45'
 const CREAM = '#F3ECE1'
 const INK = '#16232F'
-
-const ADDRESS = 'Al Saadiyat Island, Abu Dhabi, United Arab Emirates'
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
@@ -76,8 +73,26 @@ function detailRows(r: ReservationEmailData, includeTable: boolean) {
   return rows
 }
 
-function layout(opts: { preheader: string, heading: string, intro: string, rows: [string, string][], body?: string, ctaLabel?: string, ctaUrl?: string, footerNote?: string }) {
-  const { siteUrl, phone } = getMailConfig()
+interface LayoutParts {
+  preheader: string
+  heading: string
+  /** Already-escaped HTML. */
+  intro: string
+  rows: [string, string][]
+  /** Already-escaped HTML. */
+  body?: string
+  ctaLabel?: string
+  ctaUrl?: string
+  /** Already-escaped HTML. */
+  footerNote?: string
+  tagline: string
+  address: string
+  /** Already-escaped HTML. */
+  changeNote?: string
+}
+
+function layout(opts: LayoutParts) {
+  const { siteUrl } = getMailConfig()
   const rows = opts.rows.map(([label, value]) => `
             <tr>
               <td style="padding:10px 0;border-bottom:1px solid #E4DFD6;color:#66707A;font-size:13px;width:38%;">${escapeHtml(label)}</td>
@@ -103,7 +118,7 @@ function layout(opts: { preheader: string, heading: string, intro: string, rows:
               <img src="${siteUrl}/images/email/yana-logo.png" width="190" height="53" alt="YANA"
                    style="display:block;margin:0 auto;width:190px;height:auto;border:0;outline:none;text-decoration:none;color:${GOLD};font-size:24px;letter-spacing:8px;">
             </a>
-            <div style="color:rgba(255,255,255,0.6);font-size:10px;letter-spacing:3px;margin-top:12px;text-transform:uppercase;">Pan-Asian Fusion &middot; Peruvian Flair</div>
+            ${opts.tagline ? `<div style="color:rgba(255,255,255,0.6);font-size:10px;letter-spacing:3px;margin-top:12px;text-transform:uppercase;">${escapeHtml(opts.tagline)}</div>` : ''}
           </td>
         </tr>
         <tr>
@@ -116,25 +131,23 @@ function layout(opts: { preheader: string, heading: string, intro: string, rows:
             ${opts.ctaLabel && opts.ctaUrl
               ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0 6px;">
               <tr><td style="background:${GOLD};">
-                <a href="${opts.ctaUrl}" style="display:inline-block;padding:14px 30px;color:${NAVY};font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-weight:600;">${escapeHtml(opts.ctaLabel)}</a>
+                <a href="${escapeHtml(opts.ctaUrl)}" style="display:inline-block;padding:14px 30px;color:${NAVY};font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-weight:600;">${escapeHtml(opts.ctaLabel)}</a>
               </td></tr>
             </table>`
               : ''}
           </td>
         </tr>
-        <tr>
+        ${opts.changeNote || opts.footerNote
+          ? `<tr>
           <td style="padding:22px 32px 30px;">
-            <p style="margin:0 0 6px;font-size:13px;line-height:1.7;color:#66707A;">
-              Need to change or cancel? Call us on
-              <a href="tel:${phone.replace(/\s/g, '')}" style="color:${GOLD_DK};text-decoration:none;">${escapeHtml(phone)}</a>
-              and quote your reference.
-            </p>
+            ${opts.changeNote ? `<p style="margin:0 0 6px;font-size:13px;line-height:1.7;color:#66707A;">${opts.changeNote}</p>` : ''}
             ${opts.footerNote ? `<p style="margin:10px 0 0;font-size:13px;line-height:1.7;color:#66707A;">${opts.footerNote}</p>` : ''}
           </td>
-        </tr>
+        </tr>`
+          : '<tr><td style="padding:0 0 22px;"></td></tr>'}
         <tr>
           <td style="background:${NAVY};padding:22px 32px;text-align:center;">
-            <p style="margin:0 0 6px;color:rgba(255,255,255,0.72);font-size:12px;line-height:1.7;">${escapeHtml(ADDRESS)}</p>
+            <p style="margin:0 0 6px;color:rgba(255,255,255,0.72);font-size:12px;line-height:1.7;">${escapeHtml(opts.address)}</p>
             <a href="${siteUrl}" style="color:${GOLD};font-size:12px;text-decoration:none;">${siteUrl.replace(/^https?:\/\//, '')}</a>
           </td>
         </tr>
@@ -146,28 +159,29 @@ function layout(opts: { preheader: string, heading: string, intro: string, rows:
 </html>`
 }
 
-function textBlock(heading: string, intro: string, rows: [string, string][], extra?: string) {
-  const { siteUrl, phone } = getMailConfig()
+function textBlock(parts: { heading: string, intro: string, rows: [string, string][], body?: string, ctaLabel?: string, ctaUrl?: string, footerNote?: string, changeNote?: string, address: string }) {
+  const { siteUrl } = getMailConfig()
   return [
     'YANA RESTAURANT',
     '',
-    heading,
+    parts.heading,
     '',
-    intro.replace(/<[^>]*>/g, ''),
+    parts.intro,
     '',
-    ...rows.map(([k, v]) => `${k}: ${v}`),
+    ...parts.rows.map(([k, v]) => `${k}: ${v}`),
     '',
-    ...(extra ? [extra.replace(/<[^>]*>/g, ''), ''] : []),
-    `Need to change or cancel? Call ${phone} and quote your reference.`,
-    '',
-    ADDRESS,
+    ...(parts.body ? [parts.body, ''] : []),
+    ...(parts.ctaLabel && parts.ctaUrl ? [`${parts.ctaLabel}: ${parts.ctaUrl}`, ''] : []),
+    ...(parts.changeNote ? [parts.changeNote, ''] : []),
+    ...(parts.footerNote ? [parts.footerNote, ''] : []),
+    parts.address,
     siteUrl
   ].join('\n')
 }
 
 // ---- Calendar invite -------------------------------------------------------
 
-export function buildIcs(r: ReservationEmailData) {
+export function buildIcs(r: ReservationEmailData, address = DEFAULT_EMAIL_CONTENT.shared.address) {
   const [y, m, d] = r.date.split('-')
   const [hh, mm] = r.time.split(':')
   const start = `${y}${m}${d}T${hh}${mm}00`
@@ -189,7 +203,7 @@ export function buildIcs(r: ReservationEmailData) {
     `DTEND;TZID=Asia/Dubai:${endStamp}`,
     `SUMMARY:${escape(`Dinner at YANA (${r.partySize} guests)`)}`,
     `DESCRIPTION:${escape(`Reservation ${r.reference} for ${r.partySize} guests.`)}`,
-    `LOCATION:${escape(ADDRESS)}`,
+    `LOCATION:${escape(address)}`,
     'END:VEVENT',
     'END:VCALENDAR'
   ].join('\r\n')
@@ -197,81 +211,127 @@ export function buildIcs(r: ReservationEmailData) {
 
 // ---- Templates -------------------------------------------------------------
 
-export function buildEmail(template: EmailTemplate, r: ReservationEmailData): MailMessage {
-  const { siteUrl } = getMailConfig()
-  const first = escapeHtml(r.firstName)
+function placeholderValues(r: ReservationEmailData): Record<EmailPlaceholder, string> {
+  const { siteUrl, phone } = getMailConfig()
+  return {
+    firstName: r.firstName,
+    lastName: r.lastName,
+    guestName: guestName(r) || r.firstName,
+    reference: r.reference,
+    date: formatEmailDate(r.date),
+    dateIso: r.date,
+    time: formatEmailTime(r.time),
+    partySize: String(r.partySize),
+    tableName: r.tableName ? (r.sectionName ? `${r.tableName} · ${r.sectionName}` : r.tableName) : '',
+    phone,
+    siteUrl
+  }
+}
 
-  switch (template) {
-    case 'booking_received': {
-      const rows = detailRows(r, false)
-      const heading = 'We have your reservation request'
-      const intro = `Thank you, ${first}. We have received your request and our team is confirming it now — you will get a second email once your table is held.`
-      return {
-        to: r.email,
-        subject: `Reservation request received — ${r.reference}`,
-        html: layout({ preheader: `We are confirming your table for ${formatEmailDate(r.date)}.`, heading, intro, rows, ctaLabel: 'View the Menu', ctaUrl: `${siteUrl}/menu` }),
-        text: textBlock(heading, intro, rows)
-      }
-    }
+// Turns one editable template into plain-text and HTML versions of each field.
+// In HTML the wording is escaped first and the guest's details are escaped as
+// they go in, so nothing typed in the dashboard or by a guest can inject markup.
+function renderFields(t: EmailTemplateContent, shared: EmailContent['shared'], r: ReservationEmailData) {
+  const vars = placeholderValues(r)
+  const plain = (tpl: string) => fillPlaceholders(tpl, vars)
 
-    case 'booking_confirmed': {
-      const rows = detailRows(r, true)
-      const heading = 'Your table is confirmed'
-      const intro = `We look forward to welcoming you, ${first}. Your table is held as below.`
-      const body = 'Please arrive a few minutes early. We hold tables for 15 minutes past the reservation time, after which we may need to release them.'
-      return {
-        to: r.email,
-        subject: `Confirmed: ${formatEmailDate(r.date)} at ${formatEmailTime(r.time)} — ${r.reference}`,
-        html: layout({ preheader: `${formatEmailDate(r.date)} at ${formatEmailTime(r.time)}, ${r.partySize} guests.`, heading, intro, rows, body, ctaLabel: 'Get Directions', ctaUrl: 'https://maps.google.com/?q=YANA+Restaurant+Saadiyat+Island+Abu+Dhabi', footerNote: 'A calendar invitation is attached to this email.' }),
-        text: textBlock(heading, intro, rows, body),
-        attachments: [{ filename: `yana-${r.reference}.ics`, content: buildIcs(r) }]
-      }
-    }
+  const htmlVars = Object.fromEntries(Object.entries(vars).map(([k, v]) => [k, escapeHtml(v)])) as Record<EmailPlaceholder, string>
+  htmlVars.phone = `<a href="tel:${escapeHtml(vars.phone.replace(/[^\d+]/g, ''))}" style="color:${GOLD_DK};text-decoration:none;">${escapeHtml(vars.phone)}</a>`
+  const html = (tpl: string) => fillPlaceholders(escapeHtml(tpl), htmlVars).replace(/\n/g, '<br>')
 
-    case 'booking_cancelled': {
-      const rows = detailRows(r, false)
-      const heading = 'Your reservation has been cancelled'
-      const intro = `Your booking below has been cancelled, ${first}. If this was not what you expected, please call us and we will put it right.`
-      return {
-        to: r.email,
-        subject: `Cancelled: your YANA reservation — ${r.reference}`,
-        html: layout({ preheader: 'Your reservation has been cancelled.', heading, intro, rows, ctaLabel: 'Book Another Evening', ctaUrl: `${siteUrl}/reservation` }),
-        text: textBlock(heading, intro, rows)
-      }
-    }
+  // Links must end up as http(s) once filled in; anything else drops the button.
+  const ctaUrl = plain(t.ctaUrl)
+  const ctaOk = !!t.ctaLabel && /^https?:\/\/\S+$/i.test(ctaUrl)
 
-    case 'waitlist_added': {
-      const rows = detailRows(r, false)
-      const heading = 'You are on the waitlist'
-      const intro = `Thank you, ${first}. We are fully booked at that time, so we have added you to the waitlist and will call you the moment a table frees up.`
-      return {
-        to: r.email,
-        subject: `Waitlisted for ${formatEmailDate(r.date)} — ${r.reference}`,
-        html: layout({ preheader: 'We will call you as soon as a table opens.', heading, intro, rows }),
-        text: textBlock(heading, intro, rows)
-      }
-    }
+  return {
+    subject: plain(t.subject),
+    preheader: plain(t.preheader),
+    heading: plain(t.heading),
+    intro: { text: plain(t.intro), html: html(t.intro) },
+    body: { text: plain(t.body), html: html(t.body) },
+    cta: ctaOk ? { label: plain(t.ctaLabel), url: ctaUrl } : null,
+    footerNote: { text: plain(t.footerNote), html: html(t.footerNote) },
+    changeNote: { text: plain(shared.changeNote), html: html(shared.changeNote) },
+    tagline: plain(shared.tagline),
+    address: shared.address
+  }
+}
 
-    case 'staff_new_booking': {
-      const rows: [string, string][] = [
-        ['Reference', r.reference],
-        ['Guest', guestName(r) || r.firstName],
-        ['Date', formatEmailDate(r.date)],
-        ['Time', formatEmailTime(r.time)],
-        ['Guests', String(r.partySize)],
-        ['Phone', r.phone || '—'],
-        ['Email', r.email || '—'],
-        ['Source', r.source || 'online']
-      ]
-      if (r.notes) rows.push(['Guest note', r.notes])
-      const heading = 'New online reservation'
-      const intro = 'A guest has just booked through the website. Confirm it in the dashboard to send their confirmation email.'
-      return {
-        to: '',
-        subject: `New booking — ${formatEmailDate(r.date)} ${formatEmailTime(r.time)}, ${r.partySize} guests (${r.reference})`,
-        html: layout({ preheader: intro, heading, intro, rows, ctaLabel: 'Open Dashboard', ctaUrl: `${siteUrl}/admin/reservations?date=${r.date}` }),
-        text: textBlock(heading, intro, rows)
-      }
-    }
+export function buildEmail(template: EmailTemplate, r: ReservationEmailData, content: EmailContent = DEFAULT_EMAIL_CONTENT): MailMessage {
+  const isStaff = template === 'staff_new_booking'
+
+  let rows: [string, string][]
+  if (isStaff) {
+    rows = [
+      ['Reference', r.reference],
+      ['Guest', guestName(r) || r.firstName],
+      ['Date', formatEmailDate(r.date)],
+      ['Time', formatEmailTime(r.time)],
+      ['Guests', String(r.partySize)],
+      ['Phone', r.phone || '—'],
+      ['Email', r.email || '—'],
+      ['Source', r.source || 'online']
+    ]
+    if (r.notes) rows.push(['Guest note', r.notes])
+  } else {
+    rows = detailRows(r, template === 'booking_confirmed')
+  }
+
+  const f = renderFields(content.templates[template], content.shared, r)
+  // The staff alert is internal, so it skips the guest-facing "change or cancel" line.
+  const changeNote = isStaff ? undefined : f.changeNote
+
+  return {
+    to: isStaff ? '' : r.email,
+    subject: f.subject,
+    html: layout({
+      preheader: f.preheader,
+      heading: f.heading,
+      intro: f.intro.html,
+      rows,
+      body: f.body.html || undefined,
+      ctaLabel: f.cta?.label,
+      ctaUrl: f.cta?.url,
+      footerNote: f.footerNote.html || undefined,
+      changeNote: changeNote?.html || undefined,
+      tagline: f.tagline,
+      address: f.address
+    }),
+    text: textBlock({
+      heading: f.heading,
+      intro: f.intro.text,
+      rows,
+      body: f.body.text || undefined,
+      ctaLabel: f.cta?.label,
+      ctaUrl: f.cta?.url,
+      footerNote: f.footerNote.text || undefined,
+      changeNote: changeNote?.text || undefined,
+      address: f.address
+    }),
+    ...(template === 'booking_confirmed'
+      ? { attachments: [{ filename: `yana-${r.reference}.ics`, content: buildIcs(r, f.address) }] }
+      : {})
+  }
+}
+
+// Sample booking used by the dashboard preview and test sends.
+export function sampleEmailData(email: string): ReservationEmailData {
+  const d = new Date(Date.now() + 3 * 86400000)
+  const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return {
+    reference: 'YN7K4Q',
+    firstName: 'Layla',
+    lastName: 'Haddad',
+    salutation: 'Ms',
+    email,
+    phone: '+971 50 123 4567',
+    date,
+    time: '20:00',
+    partySize: 4,
+    durationMinutes: 90,
+    tableName: 'T12',
+    sectionName: 'Terrace',
+    notes: 'Celebrating an anniversary',
+    source: 'online'
   }
 }

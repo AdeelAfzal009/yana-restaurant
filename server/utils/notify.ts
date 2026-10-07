@@ -7,6 +7,7 @@ import { emailLog, type Reservation } from '../database/schema'
 import { useDb } from './db'
 import { buildEmail, type EmailTemplate, type ReservationEmailData } from './email-templates'
 import { getMailConfig, sendMail } from './mail'
+import { getEmailContent } from './site-content'
 
 type Db = ReturnType<typeof useDb>
 
@@ -72,7 +73,7 @@ export async function sendReservationEmail(
     return { status: 'skipped', error: 'already sent' }
   }
 
-  const message = buildEmail(template, toEmailData(reservation, options))
+  const message = buildEmail(template, toEmailData(reservation, options), await getEmailContent())
   const result = await sendMail(message)
 
   await db.insert(emailLog).values({
@@ -96,7 +97,7 @@ export async function sendStaffNewBooking(reservation: Reservation) {
   if (!staffTo) return { status: 'skipped', error: 'MAIL_STAFF_TO not set' }
 
   const db = useDb()
-  const message = buildEmail('staff_new_booking', toEmailData(reservation))
+  const message = buildEmail('staff_new_booking', toEmailData(reservation), await getEmailContent())
   const result = await sendMail({ ...message, to: staffTo })
 
   await db.insert(emailLog).values({

@@ -38,6 +38,10 @@
               <AdminIcon name="chat" />
               <span class="side-text">Website chatbot</span>
             </NuxtLink>
+            <NuxtLink to="/admin/emails" class="side-link" title="Email templates" @click="mobileOpen = false">
+              <AdminIcon name="mail" />
+              <span class="side-text">Email templates</span>
+            </NuxtLink>
           </template>
         </nav>
 
