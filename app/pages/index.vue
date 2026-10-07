@@ -63,7 +63,7 @@
       <div class="split-panel">
         <div aria-hidden="true" class="split-pattern" />
         <div v-reveal="{ y: 28 }" class="split-inner">
-          <div class="split-dish" :style="{ backgroundImage: `url('${signatureDishImage}')` }" role="img" aria-label="Signature plates at YANA" />
+          <div class="split-dish" :style="{ backgroundImage: `url('${signatureDishImage}')` }" role="img" aria-label="A spread of YANA dishes and a cocktail on marble" />
           <span class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />01 — Food</span>
           <h2 class="split-title">La Cocina de YANA</h2>
           <p class="split-copy">YANA is a Pan-Asian kitchen with Peruvian flair, built on fire, citrus and restraint. Plates are made to be shared, and the room is made to be lingered in.</p>
@@ -198,9 +198,6 @@
         <div class="shots-progress" aria-hidden="true">
           <span class="shots-progress-bar" :style="{ transform: `scaleX(${shotsProgress})` }" />
         </div>
-        <div class="shots-foot">
-          <NuxtLink to="/gallery" class="link-underline">See the Gallery</NuxtLink>
-        </div>
       </div>
     </section>
 
@@ -314,7 +311,7 @@
 const heroVideo = 'https://coyarestaurant.com/uploads/content/pages/1698918469_44fefc7e-15ae-4f40-b8a4-dac51b658d78.mp4'
 const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
 const ctaImage = '/images/yana-image-2-mrt9pbly-db2c.webp'
-const signatureDishImage = '/images/food1.webp'
+const signatureDishImage = '/images/web/menu-food.jpg'
 const kitchenRoomImage = '/images/yana-image-2-mruiybvd-26zk.webp'
 // The previous "01 — Food" band is kept in the template but switched off.
 const showLegacyFoodSection = false
@@ -323,7 +320,7 @@ const showLegacyLocationSection = false
 // YANA's Google listing — swap for the exact share link from the business profile.
 const mapsProfileUrl = 'https://www.google.com/maps/search/?api=1&query=Yana+Restaurant+Al+Saadiyat+Island+Abu+Dhabi'
 const barImage = '/images/DSC00730.jpeg'
-const terraceImage = '/images/yana-image-3-mrt9rmoi-9m3z.webp'
+const terraceImage = '/images/web/gallery-seafront.jpg'
 const storyImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
 const eveningImage = '/images/yana-image-4-mrt9n45r-v3w7.webp'
 const heroKenBurns = true
@@ -331,13 +328,18 @@ const heroKenBurns = true
 // "Best shots" carousel under the intro. Web-sized copies of the DSC originals.
 const shots = [
   { src: '/images/carousel/yana-01.jpg', alt: 'The YANA dining room under its gold-lit ceiling', label: 'The Dining Room' },
-  { src: '/images/carousel/yana-02.jpg', alt: 'A signature plate served on marble', label: 'Signature Plates' },
-  { src: '/images/carousel/yana-03.jpg', alt: 'Coolers and cocktails at the bar', label: 'The Bar' },
-  { src: '/images/carousel/yana-04.jpg', alt: 'The palm-lined terrace entrance', label: 'The Terrace' },
-  { src: '/images/carousel/yana-05.jpg', alt: 'A table of sharing dishes and drinks', label: 'To Share' },
-  { src: '/images/carousel/yana-06.jpg', alt: 'Deep blue banquettes along the dining room', label: 'Deep Blue & Brass' },
-  { src: '/images/carousel/yana-07.jpg', alt: 'Striploin from the Josper grill', label: 'From the Josper' },
-  { src: '/images/yana-image-3-mrt9rmoi-9m3z.webp', alt: 'The terrace by the water on Saadiyat Island', label: 'By the Water' }
+  { src: '/images/carousel/web/signature-rolls.jpg', alt: 'Signature rolls finished with micro herbs', label: 'Signature Rolls' },
+  { src: '/images/carousel/web/live-violin.jpg', alt: 'A violinist playing in the dining room', label: 'Live Evenings' },
+  { src: '/images/carousel/web/prawn-croquettes.jpg', alt: 'Prawn croquettes on a hand-glazed plate', label: 'Small Plates' },
+  { src: '/images/carousel/web/bar-cocktail.jpg', alt: 'A violet cocktail with a flower garnish', label: 'The Bar' },
+  { src: '/images/carousel/web/shared-table.jpg', alt: 'Friends sharing dishes at a YANA table', label: 'Shared Tables' },
+  { src: '/images/carousel/web/sliders.jpg', alt: 'Sliders and a blue cooler on deep blue velvet', label: 'Bites & Pours' },
+  { src: '/images/carousel/web/terrace-saxophone.jpg', alt: 'A saxophonist on the terrace at night', label: 'Terrace Nights' },
+  { src: '/images/carousel/yana-02.jpg', alt: 'A signature bowl served on marble', label: 'From the Kitchen' },
+  { src: '/images/carousel/web/scallop.jpg', alt: 'A single scallop plated on marble', label: 'Plated with Care' },
+  { src: '/images/carousel/yana-03.jpg', alt: 'Coolers and cocktails at the bar', label: 'Coolers & Cocktails' },
+  { src: '/images/carousel/web/evening-music.jpg', alt: 'Live music among the tables in the evening', label: 'Evenings at YANA' },
+  { src: '/images/carousel/yana-04.jpg', alt: 'The palm-lined terrace entrance', label: 'The Terrace' }
 ]
 const shotsTrack = ref<HTMLElement | null>(null)
 const pauseShots = ref(false)
@@ -434,6 +436,26 @@ onUnmounted(() => clearInterval(shotsTimer))
   z-index: 2;
   padding: 80px 24px 120px;
   max-width: 900px;
+}
+
+/* Shorter hero on phones so the intro below peeks into view. */
+@media (max-width: 640px) {
+  .hero {
+    min-height: 72vh;
+    min-height: 72svh;
+  }
+
+  .hero-content {
+    padding: 96px 20px 84px;
+  }
+
+  .hero-fade {
+    height: 110px;
+  }
+
+  .hero .hero-cta-wrap {
+    margin-top: 30px;
+  }
 }
 
 .hero-eyebrow {
@@ -810,10 +832,6 @@ onUnmounted(() => clearInterval(shotsTimer))
   transition: transform 0.4s ease;
 }
 
-.shots-foot {
-  text-align: center;
-}
-
 .shots-nav {
   display: flex;
   gap: 10px;
@@ -1123,9 +1141,10 @@ onUnmounted(() => clearInterval(shotsTimer))
   background-repeat: no-repeat;
 }
 
+/* Pisco Bar photo: same frame as The Terrace so the two bands match. */
 .feature-photo--portrait {
-  aspect-ratio: 4 / 5.1;
-  background-position: center 62%;
+  aspect-ratio: 4 / 4.2;
+  background-position: center 60%;
 }
 
 .feature-photo--tall {
@@ -1183,11 +1202,13 @@ onUnmounted(() => clearInterval(shotsTimer))
   max-width: 640px;
 }
 
+/* Matches the photo's own portrait shape so nothing is cropped. */
 .split-dish {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1254 / 1600;
+  max-width: 440px;
   margin-bottom: clamp(28px, 3.5vw, 48px);
   background-size: cover;
-  background-position: center 58%;
+  background-position: center;
   box-shadow: 0 18px 44px rgba(15, 30, 46, 0.14);
 }
 
