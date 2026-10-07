@@ -183,6 +183,15 @@ export const blackoutDates = pgTable('blackout_dates', {
   reason: text('reason')
 })
 
+// Editable website content, one JSON document per key (e.g. 'concierge' for
+// the chatbot). A missing row means "use the built-in defaults".
+export const siteContent = pgTable('site_content', {
+  key: text('key').primaryKey(),
+  value: jsonb('value').notNull(),
+  updatedBy: integer('updated_by').references(() => staff.id, { onDelete: 'set null' }),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+})
+
 export type Reservation = typeof reservations.$inferSelect
 export type NewReservation = typeof reservations.$inferInsert
 export type Guest = typeof guests.$inferSelect

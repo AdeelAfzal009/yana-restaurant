@@ -34,6 +34,10 @@
               <AdminIcon name="editor" />
               <span class="side-text">Floorplan editor</span>
             </NuxtLink>
+            <NuxtLink to="/admin/chatbot" class="side-link" title="Website chatbot" @click="mobileOpen = false">
+              <AdminIcon name="chat" />
+              <span class="side-text">Website chatbot</span>
+            </NuxtLink>
           </template>
         </nav>
 

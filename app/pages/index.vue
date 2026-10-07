@@ -176,6 +176,10 @@
             <span class="eyebrow eyebrow-dark"><span class="rule-short" />06 — Moments</span>
             <h2 class="h2-dark">A glimpse of<br>life at YANA.</h2>
             <p class="body-copy shots-copy">The dining room, the terrace and the plates in between, as our guests see them.</p>
+            <a href="https://www.instagram.com/yanarestaurants/" target="_blank" rel="noopener" class="shots-insta">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg>
+              More moments on @yanarestaurants
+            </a>
           </div>
           <div class="shots-controls">
             <span class="shots-count" aria-hidden="true">{{ String(shotIndex + 1).padStart(2, '0') }} <span class="shots-count-total">/ {{ String(shots.length).padStart(2, '0') }}</span></span>
@@ -243,6 +247,14 @@
             <div class="visit-row">
               <dt>Contact</dt>
               <dd><a href="mailto:info@yanarestaurants.com">info@yanarestaurants.com</a></dd>
+            </div>
+            <div class="visit-row">
+              <dt>WhatsApp</dt>
+              <dd><a href="https://wa.me/971501906122" target="_blank" rel="noopener">+971 50 190 6122</a></dd>
+            </div>
+            <div class="visit-row">
+              <dt>Instagram</dt>
+              <dd><a href="https://www.instagram.com/yanarestaurants/" target="_blank" rel="noopener">@yanarestaurants</a></dd>
             </div>
             <div class="visit-row">
               <dt>Opening hours</dt>
@@ -717,6 +729,27 @@ onUnmounted(() => clearInterval(shotsTimer))
 .shots-intro {
   max-width: 560px;
   text-align: left;
+}
+
+.shots-insta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-dk);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(138, 107, 69, 0.4);
+  padding-bottom: 4px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.shots-insta:hover {
+  color: var(--ink);
+  border-color: var(--ink);
 }
 
 .shots-copy {

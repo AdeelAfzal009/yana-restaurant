@@ -3,6 +3,7 @@
     <YanaNav :active="active" />
     <slot />
     <YanaFooter />
+    <YanaConcierge />
   </div>
 </template>
 
