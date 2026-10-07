@@ -420,7 +420,7 @@ async function save() {
   gap: 6px;
   padding: 10px 14px;
   border-radius: var(--adm-radius);
-  background: #E7F4EC;
+  background: var(--adm-success-bg);
   color: var(--adm-success);
   font-size: 13px;
 }
@@ -472,7 +472,7 @@ async function save() {
 }
 
 .canvas-wrap {
-  background: #EEF2F7;
+  background: var(--adm-primary-50);
 }
 
 .canvas-foot {

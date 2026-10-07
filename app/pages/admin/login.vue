@@ -20,23 +20,27 @@
       </div>
     </aside>
 
-    <!-- Form side -->
+    <!-- Form side (Aura style, follows light/dark) -->
     <main class="login-main">
-      <div class="login-panel">
-        <img src="/images/yana-logo-gold.svg" alt="YANA" class="login-logo">
+      <div class="login-glow" aria-hidden="true" />
+      <AdminThemeToggle compact class="login-theme" />
 
-        <span class="login-eyebrow">Staff portal</span>
+      <div class="login-panel">
+        <span class="login-mark">
+          <img src="/images/yana-logo-gold.svg" alt="YANA" class="login-mark-logo">
+        </span>
         <h1 class="login-title">Welcome back</h1>
-        <p class="login-sub">Sign in to manage today's service.</p>
+        <p class="login-sub">Sign in to manage reservations and today's service</p>
 
         <form class="login-form" novalidate @submit.prevent="onSubmit">
-          <label class="field">
-            <span class="field-label">Email address</span>
-            <span class="field-control">
-              <AdminIcon name="mail" :size="17" class="field-icon" />
+          <div class="adm-field">
+            <label for="login-email" class="login-label">Email</label>
+            <div class="login-control">
+              <AdminIcon name="mail" :size="17" class="login-icon" />
               <input
+                id="login-email"
                 v-model.trim="email"
-                class="field-input"
+                class="adm-input login-input"
                 type="email"
                 placeholder="you@yanarestaurants.com"
                 autocomplete="username"
@@ -44,16 +48,17 @@
                 required
                 :aria-invalid="!!error"
               >
-            </span>
-          </label>
+            </div>
+          </div>
 
-          <label class="field">
-            <span class="field-label">Password</span>
-            <span class="field-control">
-              <AdminIcon name="key" :size="17" class="field-icon" />
+          <div class="adm-field">
+            <label for="login-password" class="login-label">Password</label>
+            <div class="login-control">
+              <AdminIcon name="key" :size="17" class="login-icon" />
               <input
+                id="login-password"
                 v-model="password"
-                class="field-input"
+                class="adm-input login-input login-input--pw"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="Your password"
                 autocomplete="current-password"
@@ -62,35 +67,34 @@
               >
               <button
                 type="button"
-                class="field-toggle"
+                class="login-toggle"
                 :aria-label="showPassword ? 'Hide password' : 'Show password'"
                 :aria-pressed="showPassword"
                 @click="showPassword = !showPassword"
               >
-                <svg v-if="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
-                <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.3-1M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+                <svg v-if="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
+                <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.3-1M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
               </button>
-            </span>
-          </label>
+            </div>
+          </div>
+
+          <p class="login-help">Forgot your password? Ask a manager to reset it.</p>
 
           <Transition name="login-err">
-            <p v-if="error" class="login-error" role="alert">
+            <p v-if="error" class="adm-error login-error" role="alert">
               <AdminIcon name="alert" :size="16" />
               {{ error }}
             </p>
           </Transition>
 
-          <button type="submit" class="login-btn" :disabled="loading">
+          <button type="submit" class="adm-btn adm-btn-primary login-btn" :disabled="loading">
             <span v-if="loading" class="login-spinner" aria-hidden="true" />
-            {{ loading ? 'Signing in…' : 'Sign in' }}
-            <svg v-if="!loading" width="20" height="10" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M1 6h20M16 1l5 5-5 5" /></svg>
+            {{ loading ? 'Signing in…' : 'Sign In' }}
           </button>
         </form>
 
-        <p class="login-help">Forgotten your password? Ask a manager to reset it.</p>
-
         <a href="/" class="login-back">
-          <svg width="16" height="8" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M21 6H1M6 1 1 6l5 5" /></svg>
+          <AdminIcon name="left" :size="15" />
           Back to website
         </a>
       </div>
@@ -132,13 +136,12 @@ async function onSubmit() {
 <style scoped>
 .login {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(440px, 0.95fr);
   min-height: 100vh;
   min-height: 100dvh;
-  font-family: var(--sans);
 }
 
-/* ---------- Brand side ---------- */
+/* ---------- Brand side (same in light and dark) ---------- */
 .login-brand {
   position: relative;
   overflow: hidden;
@@ -197,8 +200,9 @@ async function onSubmit() {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 11px;
-  letter-spacing: 0.3em;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #D9B690;
 }
@@ -210,19 +214,18 @@ async function onSubmit() {
 }
 
 .brand-title {
-  margin: 22px 0 0;
-  font-family: var(--serif);
-  font-size: clamp(36px, 4vw, 54px);
-  font-weight: 300;
+  margin: 20px 0 0;
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 600;
   line-height: 1.08;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.03em;
 }
 
 .brand-sub {
-  margin: 16px 0 0;
-  font-size: 15px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.72);
+  margin: 14px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .brand-points {
@@ -238,13 +241,14 @@ async function onSubmit() {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 14px;
-  border: 1px solid rgba(217, 182, 144, 0.35);
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
-  background: rgba(8, 23, 42, 0.45);
-  backdrop-filter: blur(6px);
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .brand-points li :deep(svg) {
@@ -258,159 +262,144 @@ async function onSubmit() {
   align-items: center;
   justify-content: center;
   padding: clamp(32px, 6vw, 72px) clamp(20px, 5vw, 64px);
-  background: #F3ECE1;
+  background: var(--adm-surface);
   overflow: hidden;
 }
 
-/* Same faint line-drawing texture as the website's cream panels. */
-.login-main::before {
-  content: '';
+.login-glow {
   position: absolute;
   inset: 0;
-  background: url('/images/yana-pattern-square.jpeg') center/cover no-repeat;
-  filter: invert(1) saturate(0.2) contrast(1.05);
-  opacity: 0.22;
+  background:
+    radial-gradient(45% 40% at 85% 8%, var(--adm-primary-50), transparent 70%),
+    radial-gradient(40% 35% at 10% 95%, var(--adm-warm-50), transparent 70%);
   pointer-events: none;
+}
+
+.login-theme {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
 }
 
 .login-panel {
   position: relative;
   width: 100%;
   max-width: 400px;
-  animation: panelIn 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: panelIn 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes panelIn {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
 }
 
-.login-logo {
-  display: none;
-  width: 92px;
-  margin-bottom: 30px;
+.login-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  background: var(--adm-nav);
+  box-shadow: 0 0 0 5px var(--adm-primary-50);
 }
 
-.login-eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: #8A6B45;
+.login-mark-logo {
+  width: 34px;
+  height: auto;
 }
 
 .login-title {
-  margin: 12px 0 0;
-  font-family: var(--serif);
-  font-size: clamp(32px, 3vw, 40px);
-  font-weight: 400;
-  line-height: 1.1;
-  color: #0F1E2E;
+  margin: 0;
+  font-size: clamp(26px, 2.6vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--adm-heading);
 }
 
 .login-sub {
-  margin: 10px 0 0;
-  font-size: 14px;
-  color: rgba(15, 30, 46, 0.62);
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--adm-muted);
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 34px;
+  gap: 20px;
+  margin-top: 32px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.login-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--adm-heading);
 }
 
-.field-label {
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: rgba(15, 30, 46, 0.7);
-}
-
-.field-control {
+.login-control {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.field-icon {
+.login-icon {
   position: absolute;
-  left: 15px;
-  color: #8A6B45;
+  left: 13px;
+  color: var(--adm-faint);
   pointer-events: none;
 }
 
-.field-input {
-  width: 100%;
-  height: 52px;
-  padding: 0 46px 0 46px;
-  border: 1px solid rgba(138, 107, 69, 0.35);
-  border-radius: 8px;
-  background: #ffffff;
-  font-family: inherit;
+.login-input {
+  height: 46px;
+  padding-left: 40px;
   font-size: 15px;
-  color: #0F1E2E;
-  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.field-input::placeholder {
-  color: rgba(15, 30, 46, 0.35);
+.login-input--pw {
+  padding-right: 46px;
 }
 
-.field-input:focus {
-  outline: none;
-  border-color: #8A6B45;
-  box-shadow: 0 0 0 4px rgba(217, 182, 144, 0.28);
+.login-input[aria-invalid='true'] {
+  border-color: var(--adm-danger);
 }
 
-.field-input[aria-invalid='true'] {
-  border-color: rgba(194, 65, 45, 0.6);
-}
-
-.field-toggle {
+.login-toggle {
   position: absolute;
-  right: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: var(--adm-radius);
   background: none;
-  color: rgba(15, 30, 46, 0.5);
+  color: var(--adm-faint);
   cursor: pointer;
-  transition: color 0.2s, background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
-.field-toggle:hover {
-  color: #0F1E2E;
-  background: rgba(217, 182, 144, 0.18);
+.login-toggle:hover {
+  background: var(--adm-surface-3);
+  color: var(--adm-text);
+}
+
+.login-help {
+  margin: -4px 0 0;
+  font-size: 13.5px;
+  color: var(--adm-muted);
 }
 
 .login-error {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   margin: 0;
-  padding: 11px 14px;
-  border: 1px solid rgba(194, 65, 45, 0.25);
-  border-radius: 8px;
-  background: rgba(194, 65, 45, 0.07);
-  font-size: 13px;
-  color: #a5361f;
 }
 
 .login-err-enter-active,
 .login-err-leave-active {
-  transition: opacity 0.25s, transform 0.25s;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .login-err-enter-from,
@@ -420,53 +409,17 @@ async function onSubmit() {
 }
 
 .login-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  height: 54px;
-  margin-top: 6px;
-  border: 1px solid #0F1E2E;
-  border-radius: 8px;
-  background: #0F1E2E;
-  font-family: inherit;
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: #D9B690;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.2s;
-}
-
-.login-btn:hover:not(:disabled) {
-  background: #D9B690;
-  border-color: #D9B690;
-  color: #0F1E2E;
-}
-
-.login-btn:hover:not(:disabled) svg {
-  transform: translateX(3px);
-}
-
-.login-btn svg {
-  transition: transform 0.3s;
-}
-
-.login-btn:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
-.login-btn:disabled {
-  opacity: 0.75;
-  cursor: wait;
+  width: 100%;
+  height: 46px;
+  margin-top: 4px;
+  font-size: 15px;
 }
 
 .login-spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(217, 182, 144, 0.35);
-  border-top-color: #D9B690;
+  border: 2px solid rgba(127, 127, 127, 0.4);
+  border-top-color: var(--adm-on-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -475,31 +428,23 @@ async function onSubmit() {
   to { transform: rotate(360deg); }
 }
 
-.login-help {
-  margin: 22px 0 0;
-  font-size: 13px;
-  color: rgba(15, 30, 46, 0.55);
-}
-
 .login-back {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 34px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(138, 107, 69, 0.22);
+  gap: 6px;
   width: 100%;
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: #8A6B45;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--adm-line);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--adm-muted);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .login-back:hover {
-  color: #0F1E2E;
+  color: var(--adm-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -509,7 +454,7 @@ async function onSubmit() {
   }
 }
 
-/* Tablet: shorter brand band on top. */
+/* Tablet: photo becomes a band on top. */
 @media (max-width: 960px) {
   .login {
     grid-template-columns: 1fr;
@@ -533,7 +478,7 @@ async function onSubmit() {
   }
 }
 
-/* Phone: drop the photo band and keep the logo above the form. */
+/* Phone: form only. */
 @media (max-width: 560px) {
   .login {
     grid-template-rows: 1fr;
@@ -543,13 +488,9 @@ async function onSubmit() {
     display: none;
   }
 
-  .login-logo {
-    display: block;
-  }
-
   .login-main {
     align-items: flex-start;
-    padding-top: 56px;
+    padding-top: 72px;
   }
 }
 </style>

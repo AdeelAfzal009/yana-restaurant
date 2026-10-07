@@ -1,76 +1,182 @@
 /* ===== YANA admin — operations dashboard ===== */
+/* PrimeVue "Aura"-style theme in YANA colours: Inter, slate neutrals,
+   6px controls / 12px cards, soft Tailwind-style shadows, navy primary and
+   gold accent. Every admin page and component reads these tokens. */
 .adm {
-  --adm-bg: #F4F2EE;
+  --adm-bg: #F8FAFC;
   --adm-surface: #FFFFFF;
-  --adm-surface-2: #FAF8F4;
-  --adm-line: #E4DFD6;
-  --adm-line-strong: #CFC7B9;
-  --adm-text: #16232F;
-  --adm-muted: #66707A;
-  --adm-faint: #98A0A8;
+  --adm-surface-2: #F8FAFC;
+  --adm-surface-3: #F1F5F9;
+  --adm-line: #E2E8F0;
+  --adm-line-strong: #CBD5E1;
+  --adm-text: #1E293B;
+  --adm-text-2: #334155;
+  --adm-muted: #64748B;
+  --adm-faint: #94A3B8;
   --adm-nav: #0F1E2E;
   --adm-nav-2: #172A3D;
   --adm-primary: #12426D;
   --adm-primary-hover: #0E3558;
+  --adm-primary-50: #EEF3F9;
+  --adm-primary-100: #DCE7F2;
   --adm-accent: #D9B690;
   --adm-accent-dk: #8A6B45;
-  --adm-danger: #C2412D;
-  --adm-success: #1E8A5A;
-  --adm-radius: 8px;
-  --adm-shadow: 0 1px 2px rgba(15, 30, 46, 0.06), 0 1px 1px rgba(15, 30, 46, 0.04);
-  --adm-shadow-lg: 0 18px 50px rgba(15, 30, 46, 0.22);
+  --adm-heading: #0F172A;
+  --adm-text-3: #475569;
+  --adm-on-primary: #FFFFFF;
+  --adm-warm-50: #FBF5EC;
+  --adm-warm-100: #EEE9E1;
+  --adm-danger: #DC2626;
+  --adm-danger-strong: #B91C1C;
+  --adm-danger-bg: #FEF2F2;
+  --adm-danger-bg-2: #FEE2E2;
+  --adm-danger-line: #FECACA;
+  --adm-success: #16A34A;
+  --adm-success-strong: #15803D;
+  --adm-success-bg: #ECFDF3;
+  --adm-success-line: #BBF7D0;
+  --adm-radius: 6px;
+  --adm-radius-lg: 12px;
+  --adm-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --adm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --adm-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Inter everywhere in the dashboard, including headings that ask for --serif. */
+  --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: var(--sans);
 
   font-family: var(--sans);
   font-weight: 400;
   font-size: 14px;
+  line-height: 1.5;
   color: var(--adm-text);
   background: var(--adm-bg);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+/* Dark mode: the dashboard's original navy palette, with gold taking over as
+   the highlight colour (as on the old navy sidebar). */
+.adm.adm-dark {
+  --adm-bg: #0A1622;
+  --adm-surface: #0F1E2E;
+  --adm-surface-2: #132436;
+  --adm-surface-3: #172A3D;
+  --adm-line: #1E3346;
+  --adm-line-strong: #2A445E;
+  --adm-text: #E2E8F0;
+  --adm-text-2: #CBD5E1;
+  --adm-text-3: #A9B5C4;
+  --adm-heading: #F8FAFC;
+  --adm-muted: #8E9BAE;
+  --adm-faint: #66788D;
+  --adm-nav: #1B3350;
+  --adm-nav-2: #22405F;
+  --adm-primary: #D9B690;
+  --adm-primary-hover: #E6CBA9;
+  --adm-on-primary: #0F1E2E;
+  --adm-primary-50: rgba(217, 182, 144, 0.12);
+  --adm-primary-100: rgba(217, 182, 144, 0.22);
+  --adm-accent: #D9B690;
+  --adm-accent-dk: #E2C49F;
+  --adm-warm-50: rgba(217, 182, 144, 0.08);
+  --adm-warm-100: rgba(217, 182, 144, 0.15);
+  --adm-danger: #F87171;
+  --adm-danger-strong: #FCA5A5;
+  --adm-danger-bg: rgba(248, 113, 113, 0.12);
+  --adm-danger-bg-2: rgba(248, 113, 113, 0.2);
+  --adm-danger-line: rgba(248, 113, 113, 0.35);
+  --adm-success: #4ADE80;
+  --adm-success-strong: #86EFAC;
+  --adm-success-bg: rgba(74, 222, 128, 0.12);
+  --adm-success-line: rgba(74, 222, 128, 0.3);
+  --adm-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --adm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+  --adm-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.45);
+
+  color-scheme: dark;
+}
+
+/* Inputs and soft buttons read better a shade lighter than the card behind them. */
+.adm-dark .adm-input,
+.adm-dark .adm-select,
+.adm-dark .adm-textarea {
+  background: var(--adm-surface-2);
+}
+
+.adm-dark .adm-btn:not(.adm-btn-primary):not(.adm-btn-accent):not(.adm-btn-ghost):not(.adm-btn-danger) {
+  background: var(--adm-surface-3);
+  border-color: var(--adm-surface-3);
+  color: var(--adm-text-2);
+}
+
+.adm-dark .adm-btn:not(.adm-btn-primary):not(.adm-btn-accent):not(.adm-btn-ghost):not(.adm-btn-danger):hover:not(:disabled) {
+  background: var(--adm-line-strong);
+  border-color: var(--adm-line-strong);
+  color: var(--adm-heading);
+}
+
+.adm-dark .adm-error {
+  background: var(--adm-danger-bg);
+  border-color: var(--adm-danger-line);
+  color: var(--adm-danger-strong);
+}
+
+.adm-dark .adm-chip {
+  background: var(--adm-warm-100);
+}
+
+.adm-dark .adm-backdrop {
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .adm *:focus-visible {
-  outline: 2px solid var(--adm-accent);
+  outline: 1px solid var(--adm-primary);
   outline-offset: 2px;
 }
 
 /* ---- Buttons ---- */
+/* Default = Aura "secondary": soft slate fill, no heavy border. */
 .adm-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  height: 36px;
+  height: 38px;
   padding: 0 14px;
-  border: 1px solid var(--adm-line-strong);
+  border: 1px solid var(--adm-surface-3);
   border-radius: var(--adm-radius);
-  background: var(--adm-surface);
-  color: var(--adm-text);
+  background: var(--adm-surface-3);
+  color: var(--adm-text-3);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .adm-btn:hover:not(:disabled) {
-  background: var(--adm-surface-2);
-  border-color: var(--adm-muted);
+  background: var(--adm-line);
+  border-color: var(--adm-line);
+  color: var(--adm-text);
 }
 
 .adm-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .adm-btn-primary {
   background: var(--adm-primary);
   border-color: var(--adm-primary);
-  color: #fff;
+  color: var(--adm-on-primary);
 }
 
 .adm-btn-primary:hover:not(:disabled) {
   background: var(--adm-primary-hover);
   border-color: var(--adm-primary-hover);
+  color: var(--adm-on-primary);
 }
 
 .adm-btn-accent {
@@ -82,52 +188,82 @@
 .adm-btn-accent:hover:not(:disabled) {
   background: #CFA87F;
   border-color: #CFA87F;
+  color: var(--adm-nav);
 }
 
 .adm-btn-danger {
+  background: var(--adm-danger-bg);
+  border-color: #FEF2F2;
   color: var(--adm-danger);
+}
+
+.adm-btn-danger:hover:not(:disabled) {
+  background: var(--adm-danger-bg-2);
+  border-color: #FEE2E2;
+  color: var(--adm-danger-strong);
 }
 
 .adm-btn-ghost {
   border-color: transparent;
   background: transparent;
+  color: var(--adm-muted);
+}
+
+.adm-btn-ghost:hover:not(:disabled) {
+  background: var(--adm-surface-3);
+  border-color: var(--adm-surface-3);
+}
+
+.adm-btn-ghost.adm-btn-danger {
+  color: var(--adm-danger);
+}
+
+.adm-btn-ghost.adm-btn-danger:hover:not(:disabled) {
+  background: var(--adm-danger-bg);
+  border-color: #FEF2F2;
+  color: var(--adm-danger-strong);
 }
 
 .adm-btn-icon {
-  width: 36px;
+  width: 38px;
   padding: 0;
 }
 
 .adm-btn-sm {
-  height: 30px;
-  padding: 0 10px;
-  font-size: 12.5px;
+  height: 32px;
+  padding: 0 11px;
+  font-size: 13px;
 }
 
-/* ---- Segmented control ---- */
+.adm-btn-icon.adm-btn-sm {
+  width: 32px;
+}
+
+/* ---- Segmented control (Aura SelectButton) ---- */
 .adm-seg {
   display: inline-flex;
-  padding: 3px;
+  padding: 4px;
   gap: 2px;
-  border: 1px solid var(--adm-line-strong);
+  border: 0;
   border-radius: var(--adm-radius);
-  background: var(--adm-surface);
+  background: var(--adm-surface-3);
 }
 
 .adm-seg button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 28px;
-  padding: 0 10px;
+  height: 30px;
+  padding: 0 12px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 4px;
   background: transparent;
   color: var(--adm-muted);
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .adm-seg button:hover {
@@ -135,30 +271,44 @@
 }
 
 .adm-seg button.is-active {
-  background: var(--adm-nav);
-  color: #fff;
+  background: var(--adm-surface);
+  color: var(--adm-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-/* ---- Forms ---- */
+/* ---- Forms (Aura InputText / Select / Textarea) ---- */
 .adm-input,
 .adm-select,
 .adm-textarea {
   width: 100%;
-  height: 36px;
-  padding: 0 11px;
+  height: 40px;
+  padding: 0 12px;
   border: 1px solid var(--adm-line-strong);
   border-radius: var(--adm-radius);
   background: var(--adm-surface);
   color: var(--adm-text);
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 14px;
+  box-shadow: 0 1px 2px 0 rgba(18, 18, 23, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.adm-input::placeholder,
+.adm-textarea::placeholder {
+  color: var(--adm-faint);
+}
+
+.adm-input:hover:not(:disabled):not(:focus),
+.adm-select:hover:not(:disabled):not(:focus),
+.adm-textarea:hover:not(:disabled):not(:focus) {
+  border-color: var(--adm-faint);
 }
 
 .adm-textarea {
   height: auto;
-  min-height: 76px;
-  padding: 9px 11px;
-  line-height: 1.45;
+  min-height: 80px;
+  padding: 9px 12px;
+  line-height: 1.5;
   resize: vertical;
 }
 
@@ -167,7 +317,15 @@
 .adm-textarea:focus {
   outline: none;
   border-color: var(--adm-primary);
-  box-shadow: 0 0 0 3px rgba(18, 66, 109, 0.12);
+  box-shadow: 0 1px 2px 0 rgba(18, 18, 23, 0.05);
+}
+
+.adm-input:disabled,
+.adm-select:disabled,
+.adm-textarea:disabled {
+  background: var(--adm-surface-3);
+  color: var(--adm-muted);
+  cursor: not-allowed;
 }
 
 .adm-field {
@@ -178,11 +336,11 @@
 }
 
 .adm-label {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--adm-muted);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--adm-text-2);
 }
 
 .adm-grid-2 {
@@ -203,13 +361,13 @@
   align-items: center;
   gap: 6px;
   padding: 3px 9px 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--adm-radius);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
-  color: var(--adm-text);
-  background: var(--adm-surface-2);
-  border: 1px solid var(--adm-line);
+  color: var(--adm-text-2);
+  background: var(--adm-surface-3);
+  border: 0;
 }
 
 .adm-dot {
@@ -225,15 +383,15 @@
   gap: 4px;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11.5px;
-  font-weight: 500;
-  background: #F1EADF;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--adm-warm-50);
   color: var(--adm-accent-dk);
   white-space: nowrap;
 }
 
 .adm-chip-guest {
-  background: #E6EDF4;
+  background: var(--adm-primary-50);
   color: var(--adm-primary);
 }
 
@@ -248,7 +406,7 @@
 .adm-chip-btn.is-on {
   border-style: solid;
   border-color: var(--adm-accent);
-  background: #F1EADF;
+  background: var(--adm-warm-100);
   color: var(--adm-accent-dk);
 }
 
@@ -256,7 +414,7 @@
 .adm-card {
   background: var(--adm-surface);
   border: 1px solid var(--adm-line);
-  border-radius: 10px;
+  border-radius: var(--adm-radius-lg);
   box-shadow: var(--adm-shadow);
 }
 
@@ -269,8 +427,9 @@
 .adm-error {
   padding: 10px 14px;
   border-radius: var(--adm-radius);
-  background: #FBECE9;
-  color: var(--adm-danger);
+  background: var(--adm-danger-bg);
+  border: 1px solid var(--adm-danger-line);
+  color: var(--adm-danger-strong);
   font-size: 13px;
 }
 
@@ -285,20 +444,20 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  padding: 11px 14px;
-  background: var(--adm-surface-2);
+  padding: 12px 16px;
+  background: var(--adm-surface);
   border-bottom: 1px solid var(--adm-line);
   text-align: left;
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--adm-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--adm-text-2);
   white-space: nowrap;
 }
 
 .adm-table td {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--adm-line);
   vertical-align: middle;
 }
@@ -309,11 +468,15 @@
 }
 
 .adm-table tbody tr:hover {
-  background: #FBF8F3;
+  background: var(--adm-surface-2);
 }
 
 .adm-table tbody tr.is-selected {
-  background: #F5EEE3;
+  background: var(--adm-primary-50);
+}
+
+.adm-table tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .adm-sort {
@@ -335,7 +498,7 @@
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: rgba(15, 30, 46, 0.35);
+  background: rgba(15, 23, 42, 0.4);
 }
 
 .adm-drawer {
@@ -361,9 +524,10 @@
   width: min(640px, calc(100vw - 32px));
   max-height: calc(100vh - 48px);
   transform: translate(-50%, -50%);
-  border-radius: 12px;
+  border-radius: var(--adm-radius-lg);
   background: var(--adm-surface);
   box-shadow: var(--adm-shadow-lg);
+  overflow: hidden;
 }
 
 .adm-panel-head {
@@ -371,8 +535,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--adm-line);
+  padding: 20px 22px 14px;
+  border-bottom: 0;
 }
 
 .adm-panel-body {
@@ -385,9 +549,9 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding: 14px 22px;
-  border-top: 1px solid var(--adm-line);
-  background: var(--adm-surface-2);
+  padding: 14px 22px 20px;
+  border-top: 0;
+  background: var(--adm-surface);
 }
 
 .adm-slide-enter-active,
@@ -423,16 +587,17 @@
 
 .adm-page-title {
   margin: 0;
-  font-family: var(--serif);
-  font-size: 28px;
-  font-weight: 500;
-  line-height: 1.1;
-  color: var(--adm-text);
+  font-family: var(--sans);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--adm-heading);
 }
 
 .adm-page-sub {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--adm-muted);
 }
 

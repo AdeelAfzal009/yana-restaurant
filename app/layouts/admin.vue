@@ -1,5 +1,5 @@
 <template>
-  <div class="adm" :class="{ 'adm-bare': isLogin }">
+  <div class="adm" :class="{ 'adm-bare': isLogin, 'adm-dark': isDark }">
     <template v-if="isLogin">
       <slot />
     </template>
@@ -55,6 +55,7 @@
             <AdminIcon name="home" />
             <span class="side-text">View website</span>
           </a>
+          <AdminThemeToggle class="side-theme" :compact="collapsed" />
           <NuxtLink to="/admin/password" class="side-link" title="Change password" @click="mobileOpen = false">
             <AdminIcon name="key" />
             <span class="side-text">Password</span>
@@ -92,6 +93,13 @@
 <script setup lang="ts">
 import '~/assets/css/admin.css'
 
+// Inter, the typeface of the Aura theme, loaded only for the dashboard.
+useHead({
+  link: [
+    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' }
+  ]
+})
+
 interface SessionUser {
   name: string
   email: string
@@ -100,6 +108,7 @@ interface SessionUser {
 }
 
 const route = useRoute()
+const { isDark } = useAdminTheme()
 const isLogin = computed(() => route.path === '/admin/login')
 
 const { data: session, refresh } = await useFetch<{ authed: boolean, user?: SessionUser }>('/api/admin/session')
@@ -154,6 +163,8 @@ async function logout() {
   --side-w: 68px;
 }
 
+/* Aura-style light menu: white panel, slate text, rounded items, navy
+   highlight for the current page. */
 .adm-side {
   position: sticky;
   top: 0;
@@ -162,8 +173,9 @@ async function logout() {
   flex-shrink: 0;
   width: var(--side-w);
   height: 100vh;
-  background: var(--adm-nav);
-  color: rgba(255, 255, 255, 0.72);
+  background: var(--adm-surface);
+  border-right: 1px solid var(--adm-line);
+  color: var(--adm-text-3);
   transition: width 0.2s ease;
   overflow: hidden;
   z-index: 40;
@@ -176,7 +188,6 @@ async function logout() {
   gap: 8px;
   height: 64px;
   padding: 0 14px 0 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .side-logo {
@@ -188,18 +199,19 @@ async function logout() {
 .side-collapse {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--adm-radius);
   background: transparent;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--adm-faint);
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
 .side-collapse:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: var(--adm-surface-3);
+  color: var(--adm-text);
 }
 
 .is-collapsed .side-brand {
@@ -214,24 +226,28 @@ async function logout() {
 
 .side-nav {
   flex: 1;
-  padding: 10px 10px;
+  padding: 4px 12px 12px;
   overflow-y: auto;
 }
 
 .side-group {
-  margin: 16px 10px 6px;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  margin: 18px 10px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--adm-heading);
   white-space: nowrap;
+}
+
+.side-nav .side-group:first-child {
+  margin-top: 6px;
 }
 
 .is-collapsed .side-group {
   height: 1px;
   margin: 14px 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--adm-line);
   color: transparent;
   overflow: hidden;
 }
@@ -240,32 +256,45 @@ async function logout() {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 40px;
-  padding: 0 12px;
+  gap: 10px;
+  height: 38px;
+  padding: 0 10px;
   margin-bottom: 2px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.72);
+  border-radius: var(--adm-radius);
+  color: var(--adm-text-3);
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s, color 0.2s;
+}
+
+.side-link :deep(.adm-icon) {
+  flex-shrink: 0;
+  color: var(--adm-faint);
+  transition: color 0.2s;
 }
 
 .side-link:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  background: var(--adm-surface-3);
+  color: var(--adm-heading);
+}
+
+.side-link:hover :deep(.adm-icon) {
+  color: var(--adm-text-3);
 }
 
 .side-link.router-link-active {
-  background: var(--adm-nav-2);
-  color: var(--adm-accent);
+  background: var(--adm-primary-50);
+  color: var(--adm-primary);
+  font-weight: 600;
 }
 
-.side-link.router-link-active::before {
+/* Gold marker on the current page, as on the original navy sidebar. */
+.adm-dark .side-link.router-link-active::before {
   content: '';
   position: absolute;
-  left: -10px;
+  left: -12px;
   top: 8px;
   bottom: 8px;
   width: 3px;
@@ -273,8 +302,8 @@ async function logout() {
   background: var(--adm-accent);
 }
 
-.side-link :deep(.adm-icon) {
-  flex-shrink: 0;
+.side-link.router-link-active :deep(.adm-icon) {
+  color: var(--adm-primary);
 }
 
 .is-collapsed .side-link {
@@ -287,20 +316,34 @@ async function logout() {
 }
 
 .side-foot {
-  padding: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 12px;
+  border-top: 1px solid var(--adm-line);
+}
+
+.side-theme.is-compact {
+  margin: 0 auto 2px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: var(--adm-radius);
 }
 
 .side-user {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 4px 4px 6px;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: var(--adm-radius);
+  background: var(--adm-surface-2);
+  border: 1px solid var(--adm-line);
 }
 
 .is-collapsed .side-user {
   flex-direction: column;
-  padding: 8px 0 0;
+  padding: 8px 0;
+  background: none;
+  border: 0;
 }
 
 .side-avatar {
@@ -310,10 +353,10 @@ async function logout() {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--adm-accent);
-  color: var(--adm-nav);
+  background: var(--adm-nav);
+  color: var(--adm-accent);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .side-user-meta {
@@ -325,17 +368,17 @@ async function logout() {
 
 .side-user-name {
   overflow: hidden;
-  font-size: 13px;
-  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--adm-heading);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .side-user-role {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  color: var(--adm-muted);
+  text-transform: capitalize;
 }
 
 .side-logout {
@@ -344,15 +387,16 @@ async function logout() {
   width: 32px;
   height: 32px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--adm-radius);
   background: transparent;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--adm-faint);
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
 .side-logout:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: var(--adm-danger-bg);
+  color: var(--adm-danger);
 }
 
 .adm-content {
@@ -361,7 +405,7 @@ async function logout() {
 }
 
 .adm-main {
-  padding: 22px clamp(16px, 2.2vw, 32px) 40px;
+  padding: 28px clamp(16px, 2.6vw, 40px) 48px;
 }
 
 .adm-mobile-bar,
@@ -386,12 +430,16 @@ async function logout() {
     transform: none;
   }
 
+  .is-mobile-open .adm-side {
+    box-shadow: var(--adm-shadow-lg);
+  }
+
   .is-mobile-open .adm-scrim {
     display: block;
     position: fixed;
     inset: 0;
     z-index: 39;
-    background: rgba(15, 30, 46, 0.4);
+    background: rgba(15, 23, 42, 0.4);
   }
 
   .side-collapse {
@@ -417,13 +465,8 @@ async function logout() {
     gap: 12px;
     height: 56px;
     padding: 0 16px;
-    background: var(--adm-nav);
-  }
-
-  .adm-mobile-bar .adm-btn {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    background: var(--adm-surface);
+    border-bottom: 1px solid var(--adm-line);
   }
 
   .mobile-logo {

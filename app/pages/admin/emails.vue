@@ -546,7 +546,7 @@ onBeforeRouteLeave(() => {
   padding: 4px 9px;
   border: 1px solid rgba(138, 107, 69, 0.35);
   border-radius: 6px;
-  background: #fff;
+  background: var(--adm-surface);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11.5px;
   color: var(--adm-accent-dk);

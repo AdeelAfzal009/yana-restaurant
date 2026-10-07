@@ -1,28 +1,39 @@
 <template>
   <div class="pw-wrap">
-    <h1 class="page-title">{{ mustChange ? 'Set your password' : 'Change Password' }}</h1>
-    <p class="page-sub">Signed in as {{ email }}</p>
+    <div class="adm-page-head">
+      <div>
+        <h1 class="adm-page-title">{{ mustChange ? 'Set your password' : 'Change password' }}</h1>
+        <p class="adm-page-sub">Signed in as {{ email }}</p>
+      </div>
+    </div>
 
     <p v-if="mustChange" class="pw-first">
-      Welcome! Your account was set up with a temporary password. Choose your own password to start using the dashboard.
+      <AdminIcon name="key" :size="18" />
+      <span>Welcome! Your account was set up with a temporary password. Choose your own password to start using the dashboard.</span>
     </p>
 
-    <form class="pw-card" @submit.prevent="onSubmit">
-      <label class="pw-label">{{ mustChange ? 'Temporary password' : 'Current password' }}</label>
-      <input v-model="currentPassword" class="yana-input" type="password" autocomplete="current-password" required>
+    <form class="adm-card pw-card" @submit.prevent="onSubmit">
+      <label class="adm-field">
+        <span class="adm-label">{{ mustChange ? 'Temporary password' : 'Current password' }}</span>
+        <input v-model="currentPassword" class="adm-input" type="password" autocomplete="current-password" required>
+      </label>
 
-      <label class="pw-label">New password</label>
-      <input v-model="newPassword" class="yana-input" type="password" autocomplete="new-password" required>
-      <p class="pw-hint">At least 12 characters. A phrase like three words and a number works well.</p>
+      <label class="adm-field">
+        <span class="adm-label">New password</span>
+        <input v-model="newPassword" class="adm-input" type="password" autocomplete="new-password" required>
+        <span class="pw-hint">At least 12 characters. A phrase like three words and a number works well.</span>
+      </label>
 
-      <label class="pw-label">Confirm new password</label>
-      <input v-model="confirmPassword" class="yana-input" type="password" autocomplete="new-password" required>
+      <label class="adm-field">
+        <span class="adm-label">Confirm new password</span>
+        <input v-model="confirmPassword" class="adm-input" type="password" autocomplete="new-password" required>
+      </label>
 
-      <p v-if="error" class="pw-error">{{ error }}</p>
+      <p v-if="error" class="adm-error">{{ error }}</p>
       <p v-if="success" class="pw-success">{{ success }}</p>
 
-      <button type="submit" class="pw-btn" :disabled="saving">
-        {{ saving ? 'Saving…' : 'Update Password' }}
+      <button type="submit" class="adm-btn adm-btn-primary pw-btn" :disabled="saving">
+        {{ saving ? 'Saving…' : mustChange ? 'Set password & continue' : 'Update password' }}
       </button>
     </form>
   </div>
@@ -76,83 +87,52 @@ async function onSubmit() {
 
 <style scoped>
 .pw-wrap {
-  max-width: 460px;
-}
-
-.page-title {
-  font-family: var(--serif);
-  font-size: 30px;
-  margin: 0;
+  max-width: 480px;
 }
 
 .pw-first {
-  margin: -12px 0 22px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 0 16px;
   padding: 12px 14px;
-  border: 1px solid rgba(217, 182, 144, 0.6);
-  border-radius: 8px;
-  background: rgba(217, 182, 144, 0.14);
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--ink);
+  border: 1px solid var(--adm-primary-100);
+  border-radius: var(--adm-radius);
+  background: var(--adm-primary-50);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--adm-primary);
 }
 
-.page-sub {
-  font-size: 13.5px;
-  color: var(--ink-dim);
-  margin: 6px 0 28px;
+.pw-first :deep(svg) {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .pw-card {
-  background: #ffffff;
-  padding: 32px;
   display: flex;
   flex-direction: column;
-}
-
-.pw-label {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin-top: 18px;
-}
-
-.pw-label:first-child {
-  margin-top: 0;
+  gap: 18px;
+  padding: 24px;
 }
 
 .pw-hint {
   font-size: 12.5px;
-  color: var(--ink-dim);
-  margin: 8px 0 0;
-}
-
-.pw-error {
-  font-size: 13px;
-  color: #b3432f;
-  margin: 18px 0 0;
+  color: var(--adm-muted);
 }
 
 .pw-success {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--adm-success-line);
+  border-radius: var(--adm-radius);
+  background: var(--adm-success-bg);
   font-size: 13px;
-  color: #2f7a4f;
-  margin: 18px 0 0;
+  color: var(--adm-success-strong);
 }
 
 .pw-btn {
-  margin-top: 28px;
-  background: var(--gold);
-  color: #ffffff;
-  border: none;
-  padding: 15px;
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.pw-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
+  width: 100%;
+  margin-top: 4px;
 }
 </style>

@@ -195,7 +195,7 @@ th.center .adm-sort {
 }
 
 tr.is-done td {
-  background: #F7F6F3;
+  background: var(--adm-warm-50);
 }
 
 .time-cell {
@@ -273,7 +273,7 @@ tr.is-done td {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #E6EDF4;
+  background: var(--adm-primary-50);
   color: var(--adm-primary);
   cursor: help;
 }
@@ -311,7 +311,7 @@ tr.is-done td {
   display: block;
   padding: 8px 6px;
   border-radius: 6px;
-  background: #E3EAF2;
+  background: var(--adm-primary-100);
   color: var(--adm-primary);
   font-size: 15px;
   font-weight: 500;

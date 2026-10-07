@@ -331,7 +331,7 @@ function exportCsv() {
 .hbar-track {
   height: 10px;
   border-radius: 5px;
-  background: #EEF1F4;
+  background: var(--adm-primary-50);
   overflow: hidden;
 }
 

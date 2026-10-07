@@ -620,7 +620,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   width: 72px;
   height: 72px;
   border-radius: 14px;
-  background: #E9EDF2;
+  background: var(--adm-primary-50);
   color: var(--adm-nav);
   font-size: 22px;
   font-weight: 500;
@@ -814,7 +814,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 
 .internal .adm-textarea {
-  background: #FFFBF3;
+  background: var(--adm-warm-50);
   border-color: #E8D9BF;
 }
 
@@ -1018,13 +1018,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   margin: 0 0 16px;
   padding: 10px 12px;
   border-radius: var(--adm-radius);
-  background: #E7F4EC;
+  background: var(--adm-success-bg);
   color: var(--adm-success);
   font-size: 13px;
 }
 
 .resend-note.is-error {
-  background: #FBECE9;
+  background: var(--adm-danger-bg);
   color: var(--adm-danger);
 }
 
@@ -1059,12 +1059,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 
 .mail-status.sent {
-  background: #E7F4EC;
+  background: var(--adm-success-bg);
   color: var(--adm-success);
 }
 
 .mail-status.failed {
-  background: #FBECE9;
+  background: var(--adm-danger-bg);
   color: var(--adm-danger);
 }
 

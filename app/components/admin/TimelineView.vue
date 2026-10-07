@@ -364,7 +364,7 @@ const TimelineBlock = defineComponent({
   align-items: center;
   justify-content: space-between;
   padding: 9px 12px;
-  background: #EEEAE3;
+  background: var(--adm-warm-100);
   border-right: 1px solid var(--adm-line);
   border-bottom: 1px solid var(--adm-line);
   font-size: 12px;
@@ -381,7 +381,7 @@ const TimelineBlock = defineComponent({
 }
 
 .tl-group-fill {
-  background: #EEEAE3;
+  background: var(--adm-warm-100);
   border-bottom: 1px solid var(--adm-line);
 }
 

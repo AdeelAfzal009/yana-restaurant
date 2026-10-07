@@ -413,7 +413,7 @@ function showToast(message: string) {
 
 .status-tab.is-active {
   color: var(--adm-text);
-  background: #FBF7F0;
+  background: var(--adm-warm-50);
 }
 
 .status-tab.is-active::after {
@@ -453,7 +453,7 @@ function showToast(message: string) {
   margin-bottom: 14px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: #EDF2F7;
+  background: var(--adm-primary-50);
   color: var(--adm-primary);
   font-size: 13px;
 }

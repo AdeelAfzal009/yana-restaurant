@@ -312,7 +312,7 @@ const totalCovers = computed(() => props.reservations
   gap: 8px;
   margin: 0;
   padding: 10px 16px;
-  background: #FBF4E8;
+  background: var(--adm-warm-50);
   border-bottom: 1px solid #EFDFC4;
   font-size: 13px;
   color: var(--adm-accent-dk);
@@ -324,7 +324,7 @@ const totalCovers = computed(() => props.reservations
 
 .canvas-wrap {
   padding: 18px;
-  background: #ECEAE5;
+  background: var(--adm-warm-100);
 }
 
 .legend {
@@ -439,11 +439,11 @@ const totalCovers = computed(() => props.reservations
 }
 
 .side-res:hover {
-  background: #FBF8F3;
+  background: var(--adm-surface-2);
 }
 
 .side-res.is-assigning {
-  background: #FBF4E8;
+  background: var(--adm-warm-50);
   box-shadow: inset 3px 0 0 var(--adm-accent);
 }
 
@@ -494,7 +494,7 @@ const totalCovers = computed(() => props.reservations
 }
 
 .side-assign:hover {
-  background: #FBF4E8;
+  background: var(--adm-warm-50);
 }
 
 @media (max-width: 1180px) {

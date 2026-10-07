@@ -393,7 +393,7 @@ async function save() {
 .vip-toggle {
   padding: 8px 10px;
   border-radius: 6px;
-  background: #FBF4E8;
+  background: var(--adm-warm-50);
 }
 
 .vip-star {

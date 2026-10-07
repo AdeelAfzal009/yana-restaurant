@@ -288,7 +288,7 @@ function exportCsv() {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #E9E4DA;
+  background: var(--adm-warm-100);
   font-size: 12px;
   font-weight: 500;
 }
@@ -424,7 +424,7 @@ function exportCsv() {
   padding: 10px 12px;
   border: 1px solid #EFDFC4;
   border-radius: var(--adm-radius);
-  background: #FBF4E8;
+  background: var(--adm-warm-50);
   font-size: 13px;
   cursor: pointer;
 }
