@@ -1,10 +1,14 @@
 <template>
   <div class="pw-wrap">
-    <h1 class="page-title">Change Password</h1>
+    <h1 class="page-title">{{ mustChange ? 'Set your password' : 'Change Password' }}</h1>
     <p class="page-sub">Signed in as {{ email }}</p>
 
+    <p v-if="mustChange" class="pw-first">
+      Welcome! Your account was set up with a temporary password. Choose your own password to start using the dashboard.
+    </p>
+
     <form class="pw-card" @submit.prevent="onSubmit">
-      <label class="pw-label">Current password</label>
+      <label class="pw-label">{{ mustChange ? 'Temporary password' : 'Current password' }}</label>
       <input v-model="currentPassword" class="yana-input" type="password" autocomplete="current-password" required>
 
       <label class="pw-label">New password</label>
@@ -27,8 +31,10 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
 
-const { data: session } = await useFetch<{ user?: { email: string } }>('/api/admin/session')
+const { data: session } = await useFetch<{ user?: { email: string, mustChangePassword?: boolean } }>('/api/admin/session')
 const email = computed(() => session.value?.user?.email ?? '')
+// Locked to the first value so the banner doesn't vanish mid-submit.
+const mustChange = ref(!!session.value?.user?.mustChangePassword)
 
 const currentPassword = ref('')
 const newPassword = ref('')
@@ -52,6 +58,10 @@ async function onSubmit() {
       method: 'POST',
       body: { currentPassword: currentPassword.value, newPassword: newPassword.value }
     })
+    if (mustChange.value) {
+      await navigateTo('/admin/reservations')
+      return
+    }
     success.value = 'Password updated. Use it next time you sign in.'
     currentPassword.value = ''
     newPassword.value = ''
@@ -73,6 +83,17 @@ async function onSubmit() {
   font-family: var(--serif);
   font-size: 30px;
   margin: 0;
+}
+
+.pw-first {
+  margin: -12px 0 22px;
+  padding: 12px 14px;
+  border: 1px solid rgba(217, 182, 144, 0.6);
+  border-radius: 8px;
+  background: rgba(217, 182, 144, 0.14);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink);
 }
 
 .page-sub {

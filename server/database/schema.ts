@@ -154,6 +154,10 @@ export const staff = pgTable('staff', {
   passwordHash: text('password_hash').notNull(),
   role: staffRoleEnum('role').notNull().default('host'),
   active: boolean('active').notNull().default(true),
+  // Set when a manager creates the account or resets its password with "ask to
+  // change on first login"; the dashboard stays locked until the user picks
+  // their own password.
+  mustChangePassword: boolean('must_change_password').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   lastLoginAt: timestamp('last_login_at', { withTimezone: true })
 })

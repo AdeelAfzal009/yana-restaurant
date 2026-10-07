@@ -24,10 +24,14 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Current password is incorrect' })
   }
 
+  if (body.newPassword === body.currentPassword) {
+    throw createError({ statusCode: 400, statusMessage: 'Choose a password different from your current one' })
+  }
+
   const db = useDb()
   await db
     .update(staff)
-    .set({ passwordHash: await hashPassword(body.newPassword) })
+    .set({ passwordHash: await hashPassword(body.newPassword), mustChangePassword: false })
     .where(eq(staff.id, current.id))
 
   return { ok: true }

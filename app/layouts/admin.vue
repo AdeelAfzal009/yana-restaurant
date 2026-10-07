@@ -15,7 +15,7 @@
           </button>
         </div>
 
-        <nav class="side-nav">
+        <nav v-if="!user?.mustChangePassword" class="side-nav">
           <p class="side-group">Service</p>
           <NuxtLink v-for="item in serviceNav" :key="item.to" :to="item.to" class="side-link" :title="item.label" @click="mobileOpen = false">
             <AdminIcon :name="item.icon" />
@@ -42,8 +42,13 @@
               <AdminIcon name="mail" />
               <span class="side-text">Email templates</span>
             </NuxtLink>
+            <NuxtLink to="/admin/users" class="side-link" title="Users" @click="mobileOpen = false">
+              <AdminIcon name="users" />
+              <span class="side-text">Users</span>
+            </NuxtLink>
           </template>
         </nav>
+        <div v-else class="side-nav" />
 
         <div class="side-foot">
           <a href="/" target="_blank" rel="noopener" class="side-link" title="View website">
@@ -91,6 +96,7 @@ interface SessionUser {
   name: string
   email: string
   role: 'manager' | 'host'
+  mustChangePassword?: boolean
 }
 
 const route = useRoute()

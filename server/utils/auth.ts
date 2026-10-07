@@ -69,10 +69,17 @@ export async function getCurrentStaff(event: H3Event): Promise<Staff | null> {
   return row
 }
 
+// While an account still has a temporary password, only these endpoints work,
+// so the dashboard can't be used until the user has set their own.
+const ALLOWED_BEFORE_PASSWORD_CHANGE = ['/api/admin/password']
+
 export async function requireAuth(event: H3Event) {
   const current = await getCurrentStaff(event)
   if (!current) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+  if (current.mustChangePassword && !ALLOWED_BEFORE_PASSWORD_CHANGE.some(p => event.path.startsWith(p))) {
+    throw createError({ statusCode: 403, statusMessage: 'Please set a new password to continue' })
   }
   return current
 }

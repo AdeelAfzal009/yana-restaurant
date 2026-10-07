@@ -116,11 +116,11 @@ async function onSubmit() {
   }
   loading.value = true
   try {
-    await $fetch('/api/admin/login', {
+    const res = await $fetch<{ mustChangePassword?: boolean }>('/api/admin/login', {
       method: 'POST',
       body: { email: email.value, password: password.value }
     })
-    await navigateTo('/admin/reservations')
+    await navigateTo(res.mustChangePassword ? '/admin/password' : '/admin/reservations')
   } catch (err: any) {
     error.value = err?.data?.statusMessage || 'Login failed'
   } finally {
