@@ -101,8 +101,7 @@ const defaults = {
       { image: img('/images/carousel/yana-02.jpg', 'A signature bowl served on marble'), label: 'From the Kitchen' },
       { image: img('/images/carousel/web/scallop.jpg', 'A single scallop plated on marble'), label: 'Plated with Care' },
       { image: img('/images/carousel/yana-03.jpg', 'Coolers and cocktails at the bar'), label: 'Coolers & Cocktails' },
-      { image: img('/images/carousel/web/evening-music.jpg', 'Live music among the tables in the evening'), label: 'Evenings at YANA' },
-      { image: img('/images/carousel/yana-04.jpg', 'The palm-lined terrace entrance'), label: 'The Terrace' }
+      { image: img('/images/carousel/web/evening-music.jpg', 'Live music among the tables in the evening'), label: 'Evenings at YANA' }
     ]
   },
   reserve: {

@@ -15,13 +15,14 @@ const defaults = {
     items: [
       photo('/images/web/gallery-seafront.jpg', 'Palms along the Saadiyat seafront at dusk', 'landscape'),
       photo('/images/yana-side-image-mrt8vz5a-90ny.webp', 'The YANA dining room'),
-      photo('/images/yana-image-3-mrt9rmoi-9m3z.webp', 'The terrace by the water'),
+      photo('/images/carousel/yana-04.jpg', 'The palm-lined terrace entrance'),
+      photo('/images/web/gallery-evening.jpg', 'An evening of live music'),
       photo('/images/yana-image-4-mrt9n45r-v3w7.webp', 'The entrance to YANA'),
       photo('/images/yana-image-2-mruiybvd-26zk.webp', 'Deep blue banquettes and brass lights'),
       photo('/images/web/gallery-banquette.jpg', 'Blue velvet banquettes'),
       photo('/images/web/gallery-dining-room.jpg', 'The dining room and its blue carpet'),
-      photo('/images/web/gallery-evening.jpg', 'An evening of live music'),
-      photo('/images/web/gallery-marina.jpg', 'The marina view from the terrace')
+      photo('/images/web/gallery-marina.jpg', 'The marina view from the terrace'),
+      photo('/images/DSC01122.jpeg', 'A table by the windows in the sunlit dining room')
     ]
   },
   room: {
