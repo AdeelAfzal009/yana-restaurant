@@ -42,6 +42,12 @@ export const DEFAULT_HOST_ACCESS = ['reservations', 'guests', 'reports']
 
 const ASSIGNABLE_KEYS = new Set(ASSIGNABLE_ACCESS.map(a => a.key))
 
+// "Reservations", "Home page" — permission keys in words.
+export function accessLabels(keys: string[]) {
+  return ASSIGNABLE_ACCESS.filter(a => keys.includes(a.key))
+    .map(a => a.group === 'Website content' ? `${a.label} page` : a.label)
+}
+
 export function cleanPermissions(value: unknown): string[] {
   if (!Array.isArray(value)) return []
   return [...new Set(value.filter((v): v is string => typeof v === 'string' && ASSIGNABLE_KEYS.has(v)))]
@@ -53,7 +59,8 @@ export interface AccessHolder {
 }
 
 export function effectivePermissions(user: AccessHolder): string[] {
-  if (user.role === 'manager') return [...ASSIGNABLE_KEYS, 'users']
+  // users and logs aren't assignable: only managers have them.
+  if (user.role === 'manager') return [...ASSIGNABLE_KEYS, 'users', 'logs']
   return cleanPermissions(user.permissions)
 }
 
@@ -64,6 +71,7 @@ export const hasContentAccess = (permissions: string[]) => permissions.some(p =>
 // null means every signed-in user may open it.
 export function accessForPath(path: string): string[] | null {
   if (path === '/admin/users' || path.startsWith('/admin/users/')) return ['users']
+  if (path === '/admin/logs' || path.startsWith('/admin/logs/')) return ['logs']
   if (path === '/admin/content' || path === '/admin/content/') return CONTENT_ACCESS.map(a => a.key)
   const page = /^\/admin\/content\/([^/]+)/.exec(path)?.[1]
   if (page) return [contentPermission(page)]

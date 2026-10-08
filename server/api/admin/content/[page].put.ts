@@ -1,6 +1,7 @@
 import { getContentPage } from '#shared/content'
 import { normalizeSection, sectionDefaults, validateSection } from '#shared/content/schema'
 import { contentPermission } from '#shared/utils/permissions'
+import { audit } from '../../../utils/audit'
 import { requirePermission } from '../../../utils/auth'
 import { resetSection, saveSection } from '../../../utils/page-content'
 import { badRequest } from '../../../utils/validate'
@@ -18,6 +19,7 @@ export default defineEventHandler(async (event) => {
 
   if (body.reset) {
     await resetSection(page, section)
+    await audit(event, current, 'content.reset', { target: `${page.label} › ${section.label}`, details: { page: page.key } })
     return { value: sectionDefaults(section), isDefault: true, updatedAt: null, updatedByName: null }
   }
 
@@ -27,5 +29,6 @@ export default defineEventHandler(async (event) => {
 
   const value = normalizeSection(section, body.value)
   await saveSection(page, section, value, current.id)
+  await audit(event, current, 'content.saved', { target: `${page.label} › ${section.label}`, details: { page: page.key } })
   return { value, isDefault: false, updatedAt: new Date(), updatedByName: current.name }
 })

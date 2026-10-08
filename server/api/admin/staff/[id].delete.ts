@@ -1,5 +1,6 @@
 import { and, eq, ne } from 'drizzle-orm'
 import { staff } from '../../../database/schema'
+import { audit } from '../../../utils/audit'
 import { requireManager } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { badRequest } from '../../../utils/validate'
@@ -26,5 +27,6 @@ export default defineEventHandler(async (event) => {
   }
 
   await db.delete(staff).where(eq(staff.id, id))
+  await audit(event, current, 'users.deleted', { target: `${existing.name} (${existing.email})`, details: { role: existing.role } })
   return { ok: true }
 })

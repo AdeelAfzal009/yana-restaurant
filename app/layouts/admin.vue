@@ -106,7 +106,10 @@ const navGroups = computed(() => [
   },
   {
     label: 'Insights',
-    items: [{ to: '/admin/reports', label: 'Reports', icon: 'reports' as const, show: can('reports') }]
+    items: [
+      { to: '/admin/reports', label: 'Reports', icon: 'reports' as const, show: can('reports') },
+      { to: '/admin/logs', label: 'Activity log', icon: 'history' as const, show: can('logs') }
+    ]
   },
   {
     label: 'Setup',

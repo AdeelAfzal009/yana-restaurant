@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { staff } from '../../database/schema'
+import { audit } from '../../utils/audit'
 import { requireAuth } from '../../utils/auth'
 import { useDb } from '../../utils/db'
 import { hashPassword, verifyPassword } from '../../utils/password'
@@ -34,5 +35,6 @@ export default defineEventHandler(async (event) => {
     .set({ passwordHash: await hashPassword(body.newPassword), mustChangePassword: false })
     .where(eq(staff.id, current.id))
 
+  await audit(event, current, 'auth.password_changed')
   return { ok: true }
 })

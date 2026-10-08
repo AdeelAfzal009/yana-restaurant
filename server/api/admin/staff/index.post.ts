@@ -1,5 +1,6 @@
-import { cleanPermissions, DEFAULT_HOST_ACCESS } from '#shared/utils/permissions'
+import { accessLabels, cleanPermissions, DEFAULT_HOST_ACCESS } from '#shared/utils/permissions'
 import { staff } from '../../../database/schema'
+import { audit } from '../../../utils/audit'
 import { requireManager } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { hashPassword } from '../../../utils/password'
@@ -8,7 +9,7 @@ import { assertEmailFree, checkPassword, cleanEmail, cleanName, cleanRole, staff
 // Creates a dashboard user. With mustChangePassword the password is a temporary
 // one: the user has to replace it before they can use the dashboard.
 export default defineEventHandler(async (event) => {
-  await requireManager(event)
+  const current = await requireManager(event)
   const body = await readBody<Record<string, unknown>>(event)
 
   const name = cleanName(body?.name)
@@ -31,5 +32,9 @@ export default defineEventHandler(async (event) => {
     })
     .returning(staffPublicColumns)
 
+  await audit(event, current, 'users.created', {
+    target: `${name} (${email})`,
+    details: { role, access: role === 'manager' ? ['Everything'] : accessLabels(permissions) }
+  })
   return { user }
 })

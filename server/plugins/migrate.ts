@@ -1,4 +1,5 @@
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
+import { pruneAuditLog } from '../utils/audit'
 import { useDb } from '../utils/db'
 import { getDatabaseUrl, getSessionSecret, INSECURE_SESSION_SECRET } from '../utils/env'
 
@@ -28,4 +29,7 @@ export default defineNitroPlugin(async () => {
     if (import.meta.dev) throw error
     process.exit(1)
   }
+
+  // Old log entries are cleared at each start; a failure here is harmless.
+  await pruneAuditLog().catch(error => console.error('[startup] Could not prune the audit log:', error))
 })

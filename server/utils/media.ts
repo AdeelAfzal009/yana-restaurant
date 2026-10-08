@@ -157,12 +157,13 @@ export async function findMediaUsage(id: number) {
   })
 }
 
+// Returns the deleted file's name, or null if there was no such file.
 export async function deleteMedia(id: number) {
-  const [row] = await useDb().delete(media).where(eq(media.id, id)).returning({ id: media.id })
+  const [row] = await useDb().delete(media).where(eq(media.id, id)).returning({ filename: media.filename })
   const cached = fileCache.get(id)
   if (cached) {
     fileCache.delete(id)
     cachedBytes -= cached.data.length
   }
-  return !!row
+  return row?.filename ?? null
 }

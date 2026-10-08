@@ -1,5 +1,6 @@
-import { EMAIL_TEMPLATE_KEYS, normalizeEmailContent } from '#shared/utils/email-content'
+import { EMAIL_TEMPLATE_KEYS, EMAIL_TEMPLATE_META, normalizeEmailContent } from '#shared/utils/email-content'
 import type { EmailTemplateKey } from '#shared/utils/email-content'
+import { audit } from '../../../utils/audit'
 import { requirePermission } from '../../../utils/auth'
 import { buildEmail, sampleEmailData } from '../../../utils/email-templates'
 import { sendMail } from '../../../utils/mail'
@@ -16,5 +17,6 @@ export default defineEventHandler(async (event) => {
 
   const message = buildEmail(template, sampleEmailData(current.email), normalizeEmailContent(body?.content))
   const result = await sendMail({ ...message, to: current.email, subject: `[Test] ${message.subject}` })
+  await audit(event, current, 'emails.test_sent', { target: EMAIL_TEMPLATE_META[template].name, details: { to: current.email } })
   return { ...result, to: current.email }
 })

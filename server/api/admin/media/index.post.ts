@@ -1,3 +1,4 @@
+import { audit } from '../../../utils/audit'
 import { requireContentAccess } from '../../../utils/auth'
 import { storeUpload } from '../../../utils/media'
 import { badRequest } from '../../../utils/validate'
@@ -8,5 +9,7 @@ export default defineEventHandler(async (event) => {
   const parts = await readMultipartFormData(event)
   const file = parts?.find(p => p.name === 'file' && p.data?.length)
   if (!file) badRequest('Choose a file to upload')
-  return { item: await storeUpload(file, current.id) }
+  const item = await storeUpload(file, current.id)
+  await audit(event, current, 'media.uploaded', { target: item.filename, details: { kind: item.kind, size: item.size } })
+  return { item }
 })

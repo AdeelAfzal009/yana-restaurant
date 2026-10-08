@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { guests } from '../../../database/schema'
+import { audit } from '../../../utils/audit'
 import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { badRequest, cleanTags, EMAIL_RE, optionalText } from '../../../utils/validate'
@@ -18,7 +19,7 @@ const DATE_PARTS = [
 ] as const
 
 export default defineEventHandler(async (event) => {
-  await requirePermission(event, 'reservations', 'guests')
+  const current = await requirePermission(event, 'reservations', 'guests')
 
   const id = Number(getRouterParam(event, 'id'))
   if (!Number.isInteger(id)) badRequest('Invalid guest id')
@@ -66,6 +67,7 @@ export default defineEventHandler(async (event) => {
   try {
     const [updated] = await db.update(guests).set({ ...set, updatedAt: new Date() }).where(eq(guests.id, id)).returning()
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Guest not found' })
+    await audit(event, current, 'guests.updated', { target: `${updated.firstName} ${updated.lastName}`.trim(), details: { guestId: id, fields: Object.keys(set) } })
     return updated
   } catch (error: any) {
     if (error?.cause?.code === '23505' || error?.code === '23505') badRequest('Another guest already uses this email')

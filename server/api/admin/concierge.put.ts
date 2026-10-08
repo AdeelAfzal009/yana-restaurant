@@ -1,4 +1,5 @@
 import { DEFAULT_CONCIERGE, normalizeConcierge, CONCIERGE_LIMITS } from '#shared/utils/concierge'
+import { audit } from '../../utils/audit'
 import { requirePermission } from '../../utils/auth'
 import { resetConciergeConfig, saveConciergeConfig } from '../../utils/site-content'
 import { badRequest } from '../../utils/validate'
@@ -10,6 +11,7 @@ export default defineEventHandler(async (event) => {
 
   if (body?.reset) {
     await resetConciergeConfig()
+    await audit(event, current, 'chatbot.reset')
     return { config: DEFAULT_CONCIERGE, updatedAt: null, isDefault: true }
   }
 
@@ -25,5 +27,6 @@ export default defineEventHandler(async (event) => {
   if (!config.topics.some(t => t.enabled)) badRequest('Keep at least one option switched on')
 
   const updatedAt = await saveConciergeConfig(config, current.id)
+  await audit(event, current, 'chatbot.saved')
   return { config, updatedAt, isDefault: false }
 })

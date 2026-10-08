@@ -1,6 +1,7 @@
 import { and, eq, ne } from 'drizzle-orm'
-import { cleanPermissions } from '#shared/utils/permissions'
+import { accessLabels, cleanPermissions } from '#shared/utils/permissions'
 import { staff } from '../../../database/schema'
+import { audit } from '../../../utils/audit'
 import { requireManager } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { hashPassword } from '../../../utils/password'
@@ -56,5 +57,26 @@ export default defineEventHandler(async (event) => {
   if (!Object.keys(updates).length) badRequest('Nothing to update')
 
   const [user] = await db.update(staff).set(updates).where(eq(staff.id, id)).returning(staffPublicColumns)
+  const changes = describeChanges(existing, updates)
+  if (changes.length) await audit(event, current, 'users.updated', { target: `${existing.name} (${existing.email})`, details: { changes } })
   return { user }
 })
+
+// What changed, in words, for the Logs page. Never includes the password itself.
+function describeChanges(before: typeof staff.$inferSelect, updates: Partial<typeof staff.$inferInsert>) {
+  const changes: { field: string, from?: unknown, to?: unknown }[] = []
+  if (updates.name !== undefined && updates.name !== before.name) changes.push({ field: 'Name', from: before.name, to: updates.name })
+  if (updates.email !== undefined && updates.email !== before.email) changes.push({ field: 'Email', from: before.email, to: updates.email })
+  if (updates.role !== undefined && updates.role !== before.role) changes.push({ field: 'Role', from: before.role, to: updates.role })
+  if (updates.active !== undefined && updates.active !== before.active) {
+    changes.push({ field: 'Status', from: before.active ? 'Active' : 'Deactivated', to: updates.active ? 'Active' : 'Deactivated' })
+  }
+  if (updates.permissions !== undefined) {
+    const added = updates.permissions.filter(p => !before.permissions.includes(p))
+    const removed = before.permissions.filter(p => !updates.permissions!.includes(p))
+    if (added.length) changes.push({ field: 'Access given', to: accessLabels(added).join(', ') })
+    if (removed.length) changes.push({ field: 'Access removed', to: accessLabels(removed).join(', ') })
+  }
+  if (updates.passwordHash) changes.push({ field: 'Password', to: 'Reset by a manager' })
+  return changes
+}

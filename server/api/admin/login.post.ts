@@ -1,6 +1,7 @@
 import { effectivePermissions, homePathFor } from '#shared/utils/permissions'
 import { eq } from 'drizzle-orm'
 import { staff } from '../../database/schema'
+import { audit } from '../../utils/audit'
 import { setSessionCookie } from '../../utils/auth'
 import { useDb } from '../../utils/db'
 import { verifyPassword } from '../../utils/password'
@@ -30,6 +31,8 @@ function hitRateLimit(key: string) {
 export default defineEventHandler(async (event) => {
   const key = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   if (hitRateLimit(key)) {
+    // Logged once per lockout, not for every blocked attempt.
+    if (attempts.get(key)?.count === MAX_ATTEMPTS + 1) await audit(event, null, 'auth.rate_limited')
     throw createError({ statusCode: 429, statusMessage: 'Too many attempts. Try again later.' })
   }
 
@@ -47,13 +50,20 @@ export default defineEventHandler(async (event) => {
   // used to discover which addresses have accounts.
   const invalid = () => createError({ statusCode: 401, statusMessage: 'Incorrect email or password' })
 
-  if (!account || !account.active) throw invalid()
-  if (!(await verifyPassword(body.password, account.passwordHash))) throw invalid()
+  // The log keeps the reason; the person signing in only ever sees "incorrect".
+  const fail = async (reason: string) => {
+    await audit(event, account ? { id: account.id, name: account.name } : null, 'auth.sign_in_failed', { target: email, details: { reason } })
+    return invalid()
+  }
+  if (!account) throw await fail('No account with this email')
+  if (!account.active) throw await fail('Account is deactivated')
+  if (!(await verifyPassword(body.password, account.passwordHash))) throw await fail('Wrong password')
 
   attempts.delete(key)
 
   await db.update(staff).set({ lastLoginAt: new Date() }).where(eq(staff.id, account.id))
   setSessionCookie(event, account.id)
+  await audit(event, account, 'auth.sign_in')
 
   return {
     ok: true,

@@ -209,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-import { ASSIGNABLE_ACCESS, DEFAULT_HOST_ACCESS } from '#shared/utils/permissions'
+import { accessLabels, ASSIGNABLE_ACCESS, DEFAULT_HOST_ACCESS } from '#shared/utils/permissions'
 import type { AccessOption } from '#shared/utils/permissions'
 
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
@@ -279,8 +279,7 @@ function toggleGroup(options: AccessOption[]) {
 // "Reservations, Guests +3" for the users table.
 function accessSummary(u: StaffUser) {
   if (u.role === 'manager') return 'Everything'
-  const labels = ASSIGNABLE_ACCESS.filter(a => u.permissions.includes(a.key))
-    .map(a => a.group === 'Website content' ? `${a.label} page` : a.label)
+  const labels = accessLabels(u.permissions)
   if (!labels.length) return 'No access'
   return labels.length > 3 ? `${labels.slice(0, 3).join(', ')} +${labels.length - 3}` : labels.join(', ')
 }

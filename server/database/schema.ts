@@ -219,6 +219,25 @@ export const media = pgTable('media', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 })
 
+// Dashboard actions for the Logs page: sign-ins, user and access changes,
+// website content, setup changes. Bookings and emails have their own logs
+// (reservation_activity, email_log), which the Logs page shows alongside.
+export const auditLog = pgTable('audit_log', {
+  id: serial('id').primaryKey(),
+  // Kept even if the account is deleted later, so old entries still say who.
+  staffId: integer('staff_id').references(() => staff.id, { onDelete: 'set null' }),
+  staffName: text('staff_name'),
+  action: text('action').notNull(),
+  // What it was done to, in words: "Home › Hero", "Sara (sara@…)".
+  target: text('target'),
+  details: jsonb('details').$type<Record<string, unknown>>().notNull().default({}),
+  ip: text('ip'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+}, table => [
+  index('audit_log_created_idx').on(table.createdAt),
+  index('audit_log_action_idx').on(table.action)
+])
+
 export type Reservation = typeof reservations.$inferSelect
 export type NewReservation = typeof reservations.$inferInsert
 export type Guest = typeof guests.$inferSelect

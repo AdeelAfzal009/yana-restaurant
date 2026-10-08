@@ -1,4 +1,5 @@
 import { DEFAULT_EMAIL_CONTENT, normalizeEmailContent } from '#shared/utils/email-content'
+import { audit } from '../../../utils/audit'
 import { requirePermission } from '../../../utils/auth'
 import { resetContent, saveContent } from '../../../utils/site-content'
 import { badRequest } from '../../../utils/validate'
@@ -10,11 +11,13 @@ export default defineEventHandler(async (event) => {
 
   if (body?.reset) {
     await resetContent('email_templates')
+    await audit(event, current, 'emails.templates_reset')
     return { config: DEFAULT_EMAIL_CONTENT, updatedAt: null, isDefault: true }
   }
   if (!body?.content || typeof body.content !== 'object') badRequest('Missing email content')
 
   const content = normalizeEmailContent(body.content)
   const updatedAt = await saveContent('email_templates', content, current.id)
+  await audit(event, current, 'emails.templates_saved')
   return { config: content, updatedAt, isDefault: false }
 })
