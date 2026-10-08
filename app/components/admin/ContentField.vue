@@ -138,14 +138,14 @@
             />
           </div>
           <div class="cf-item-tools">
-            <button type="button" class="adm-btn adm-btn-icon adm-btn-ghost adm-btn-sm" aria-label="Move up" :disabled="disabled || i === 0" @click="move(i, -1)">
-              <AdminIcon name="up" :size="15" />
+            <button type="button" class="adm-btn adm-btn-icon adm-btn-ghost cf-tool" aria-label="Move up" title="Move up" :disabled="disabled || i === 0" @click="move(i, -1)">
+              <AdminIcon name="up" :size="20" />
             </button>
-            <button type="button" class="adm-btn adm-btn-icon adm-btn-ghost adm-btn-sm" aria-label="Move down" :disabled="disabled || i === items.length - 1" @click="move(i, 1)">
-              <AdminIcon name="down" :size="15" />
+            <button type="button" class="adm-btn adm-btn-icon adm-btn-ghost cf-tool" aria-label="Move down" title="Move down" :disabled="disabled || i === items.length - 1" @click="move(i, 1)">
+              <AdminIcon name="down" :size="20" />
             </button>
-            <button type="button" class="adm-btn adm-btn-icon adm-btn-ghost adm-btn-sm adm-btn-danger" :aria-label="`Delete ${field.itemLabel.toLowerCase()}`" :disabled="disabled" @click="removeItem(i)">
-              <AdminIcon name="trash" :size="15" />
+            <button type="button" class="adm-btn adm-btn-icon adm-btn-ghost cf-tool cf-tool--danger" :aria-label="`Delete ${field.itemLabel.toLowerCase()}`" :title="`Delete ${field.itemLabel.toLowerCase()}`" :disabled="disabled" @click="removeItem(i)">
+              <AdminIcon name="trash" :size="19" />
             </button>
           </div>
         </div>
@@ -439,8 +439,33 @@ function move(i: number, dir: -1 | 1) {
 
 .cf-item-tools {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   flex-shrink: 0;
+}
+
+/* Move up / down / delete: full-size targets that are easy to hit. */
+.cf-tool {
+  width: 38px;
+  height: 38px;
+  color: var(--adm-text-3);
+}
+
+.cf-tool:hover:not(:disabled) {
+  background: var(--adm-surface-3);
+  color: var(--adm-heading);
+}
+
+.cf-tool--danger {
+  color: var(--adm-danger);
+}
+
+.cf-tool--danger:hover:not(:disabled) {
+  background: var(--adm-danger-bg);
+  color: var(--adm-danger-strong);
+}
+
+.cf-tool:disabled {
+  opacity: 0.3;
 }
 
 .cf-item-body {
