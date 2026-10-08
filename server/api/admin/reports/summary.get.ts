@@ -1,11 +1,11 @@
 import { and, gte, lte, sql } from 'drizzle-orm'
 import { reservations } from '../../../database/schema'
-import { requireAuth } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { badRequest, DATE_RE } from '../../../utils/validate'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reports')
 
   const query = getQuery(event)
   const from = String(query.from ?? '')

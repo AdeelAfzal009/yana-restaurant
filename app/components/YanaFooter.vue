@@ -5,15 +5,15 @@
       <div class="yana-footer-cols">
         <div class="yana-footer-brand">
           <img src="/images/yana-logo-gold.svg" alt="YANA" class="footer-logo-img">
-          <p class="footer-tagline">Pan-Asian Fusion, Peruvian Flair — on Al Saadiyat Island.</p>
+          <p v-if="layout.footer.tagline" class="footer-tagline">{{ layout.footer.tagline }}</p>
           <div class="footer-socials">
-            <a href="https://wa.me/971501906122" aria-label="WhatsApp" class="social-btn" target="_blank" rel="noopener">
+            <a :href="whatsappHref(site.contact.whatsapp)" aria-label="WhatsApp" class="social-btn" target="_blank" rel="noopener">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21l1.6-4.2A8 8 0 1 1 8 20.4L3 21z" /><path d="M9 9c0 3 3 6 6 6M9 9c0-.6.5-1 1-1M15 15c.6 0 1-.5 1-1" /></svg>
             </a>
-            <a href="https://www.instagram.com/yanarestaurants/" aria-label="Instagram" class="social-btn" target="_blank" rel="noopener">
+            <a v-if="site.social.instagramUrl" :href="site.social.instagramUrl" aria-label="Instagram" class="social-btn" target="_blank" rel="noopener">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
             </a>
-            <a href="https://www.linkedin.com/company/yana-restaurants" aria-label="LinkedIn" class="social-btn" target="_blank" rel="noopener">
+            <a v-if="site.social.linkedinUrl" :href="site.social.linkedinUrl" aria-label="LinkedIn" class="social-btn" target="_blank" rel="noopener">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3 9h4v12H3zM10 9h3.8v1.7c.6-1 1.8-1.9 3.7-1.9 2.7 0 4.5 1.7 4.5 5.3V21h-4v-6c0-1.6-.6-2.6-2-2.6-1.2 0-2 .8-2 2.6V21h-4z" /></svg>
             </a>
           </div>
@@ -34,10 +34,12 @@
         <div class="yana-footer-contact">
           <span class="footer-heading">Contact</span>
           <div class="footer-contact-list">
-            <a href="tel:+97124476998" class="footer-link">t. +971 2 447 6998</a>
-            <a href="tel:+971501906122" class="footer-link">m. +971 50 190 6122</a>
-            <a href="mailto:info@yanarestaurants.com" class="footer-link">e. info@yanarestaurants.com</a>
-            <a href="https://www.google.com/maps/place/yana+restaurant+saadiyat" target="_blank" rel="noopener" class="footer-link footer-address">Al Saadiyat Island,<br>Abu Dhabi, UAE</a>
+            <a :href="telHref(site.contact.phone)" class="footer-link">t. {{ site.contact.phone }}</a>
+            <a v-if="site.contact.mobile" :href="telHref(site.contact.mobile)" class="footer-link">m. {{ site.contact.mobile }}</a>
+            <a :href="`mailto:${site.contact.email}`" class="footer-link">e. {{ site.contact.email }}</a>
+            <a :href="site.contact.mapsUrl" target="_blank" rel="noopener" class="footer-link footer-address">
+              <template v-for="(line, i) in addressLines(site.contact.address)" :key="i"><br v-if="i">{{ line }}</template>
+            </a>
           </div>
         </div>
       </div>
@@ -45,13 +47,19 @@
       <div class="footer-rule" />
 
       <div class="footer-bottom">
-        <span class="footer-copy">Copyright © 2026 Yana Restaurant</span>
-        <span class="footer-copy">Al Saadiyat Island · Abu Dhabi</span>
+        <span class="footer-copy">{{ fillTemplate(layout.footer.copyright, { year: new Date().getFullYear() }) }}</span>
+        <span class="footer-copy">{{ layout.footer.bottomLine }}</span>
       </div>
     </div>
   </footer>
 </template>
 
+<script setup lang="ts">
+import { addressLines, telHref, whatsappHref } from '#shared/content/site'
+
+const site = useContent('site')
+const layout = useContent('layout')
+</script>
 
 <style scoped>
 .yana-footer {

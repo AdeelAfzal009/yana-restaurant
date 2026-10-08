@@ -1,10 +1,10 @@
 import { asc } from 'drizzle-orm'
 import { floorDecor, floorSections, restaurantTables } from '../../../database/schema'
-import { requireAuth } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reservations', 'guests', 'floorplan')
 
   const db = useDb()
   const [sections, tables, decor] = await Promise.all([

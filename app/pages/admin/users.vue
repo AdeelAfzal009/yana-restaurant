@@ -3,7 +3,7 @@
     <div class="adm-page-head">
       <div>
         <h1 class="adm-page-title">Users</h1>
-        <p class="adm-page-sub">Who can sign in to this dashboard. Managers can change setup pages and users; hosts run the service.</p>
+        <p class="adm-page-sub">Who can sign in to this dashboard and what each person can open. Managers can open everything, including this page.</p>
       </div>
       <button v-if="isManager" type="button" class="adm-btn adm-btn-primary" @click="openCreate">
         <AdminIcon name="plus" :size="16" /> Add user
@@ -20,6 +20,7 @@
           <tr>
             <th>Name</th>
             <th>Role</th>
+            <th class="us-hide-sm">Access</th>
             <th>Status</th>
             <th class="us-hide-sm">Last sign-in</th>
             <th aria-label="Actions" />
@@ -37,6 +38,7 @@
               </div>
             </td>
             <td><span class="us-role" :class="`is-${u.role}`">{{ u.role === 'manager' ? 'Manager' : 'Host' }}</span></td>
+            <td class="us-hide-sm us-access">{{ accessSummary(u) }}</td>
             <td>
               <span v-if="!u.active" class="us-status is-off">Deactivated</span>
               <span v-else-if="u.mustChangePassword" class="us-status is-pending">Must set password</span>
@@ -87,7 +89,7 @@
                 <input v-model="panel.role" type="radio" value="host" :disabled="isSelf">
                 <span>
                   <strong>Host</strong>
-                  <span>Reservations, guests, floor and reports.</span>
+                  <span>Only the areas you choose below.</span>
                 </span>
               </label>
               <label class="us-role-opt" :class="{ 'is-active': panel.role === 'manager' }">
@@ -100,6 +102,31 @@
             </div>
             <span v-if="isSelf" class="us-hint">You can't change your own role.</span>
           </div>
+
+          <!-- What a host can open -->
+          <div v-if="panel.role === 'host'" class="adm-field us-access-block">
+            <div class="us-access-head">
+              <span class="adm-label">Access</span>
+              <span class="us-hint">{{ panel.permissions.length }} of {{ ASSIGNABLE_ACCESS.length }} areas</span>
+            </div>
+            <div v-for="group in accessGroups" :key="group.label" class="us-access-group">
+              <div class="us-access-group-head">
+                <span class="us-access-group-label">{{ group.label }}</span>
+                <button v-if="group.options.length > 2" type="button" class="us-link" @click="toggleGroup(group.options)">
+                  {{ group.options.every(o => panel!.permissions.includes(o.key)) ? 'Clear all' : 'Select all' }}
+                </button>
+              </div>
+              <label v-for="option in group.options" :key="option.key" class="us-check us-access-opt">
+                <input v-model="panel.permissions" type="checkbox" :value="option.key">
+                <span>
+                  <strong>{{ option.label }}</strong>
+                  <span>{{ option.description }}</span>
+                </span>
+              </label>
+            </div>
+            <p v-if="!panel.permissions.length" class="us-warn">Nothing is ticked, so this user will only see a "No access yet" page.</p>
+          </div>
+          <p v-else class="us-hint us-manager-note">Managers can open every area and every website page, and manage users.</p>
 
           <!-- Password -->
           <div class="us-pw-block">
@@ -182,6 +209,9 @@
 </template>
 
 <script setup lang="ts">
+import { ASSIGNABLE_ACCESS, DEFAULT_HOST_ACCESS } from '#shared/utils/permissions'
+import type { AccessOption } from '#shared/utils/permissions'
+
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
 useHead({ title: 'Users · YANA admin' })
 
@@ -194,6 +224,7 @@ interface StaffUser {
   role: 'manager' | 'host'
   active: boolean
   mustChangePassword: boolean
+  permissions: string[]
   createdAt: string
   lastLoginAt: string | null
 }
@@ -209,10 +240,11 @@ interface Panel {
   showPassword: boolean
   changePassword: boolean
   mustChangePassword: boolean
+  permissions: string[]
 }
 
-const { data: session } = await useFetch<{ user?: { role: 'manager' | 'host' } }>('/api/admin/session')
-const isManager = computed(() => session.value?.user?.role === 'manager')
+const { ready, isManager } = useAdminAccess()
+await ready
 
 const { data, error: fetchError, refresh } = await useFetch<{ users: StaffUser[], currentUserId: number }>('/api/admin/staff', {
   immediate: isManager.value
@@ -230,13 +262,37 @@ const copied = ref(false)
 const isSelf = computed(() => panel.value?.mode === 'edit' && panel.value.original?.id === currentUserId.value)
 
 const initials = (name: string) => name.split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase()
+// The access checklist, in the same groups as the sidebar.
+const accessGroups = (['Service', 'Insights', 'Setup', 'Website content'] as const).map(label => ({
+  label,
+  options: ASSIGNABLE_ACCESS.filter(a => a.group === label)
+}))
+
+function toggleGroup(options: AccessOption[]) {
+  const p = panel.value
+  if (!p) return
+  const keys = options.map(o => o.key)
+  const allOn = keys.every(k => p.permissions.includes(k))
+  p.permissions = allOn ? p.permissions.filter(k => !keys.includes(k)) : [...new Set([...p.permissions, ...keys])]
+}
+
+// "Reservations, Guests +3" for the users table.
+function accessSummary(u: StaffUser) {
+  if (u.role === 'manager') return 'Everything'
+  const labels = ASSIGNABLE_ACCESS.filter(a => u.permissions.includes(a.key))
+    .map(a => a.group === 'Website content' ? `${a.label} page` : a.label)
+  if (!labels.length) return 'No access'
+  return labels.length > 3 ? `${labels.slice(0, 3).join(', ')} +${labels.length - 3}` : labels.join(', ')
+}
+
 const formatDate = (iso: string) => new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 
 function openCreate() {
   panelError.value = ''
   panel.value = {
     mode: 'create', name: '', email: '', role: 'host', active: true,
-    password: '', showPassword: false, changePassword: true, mustChangePassword: true
+    password: '', showPassword: false, changePassword: true, mustChangePassword: true,
+    permissions: [...DEFAULT_HOST_ACCESS]
   }
 }
 
@@ -245,7 +301,8 @@ function openEdit(u: StaffUser) {
   panelError.value = ''
   panel.value = {
     mode: 'edit', original: u, name: u.name, email: u.email, role: u.role, active: u.active,
-    password: '', showPassword: false, changePassword: false, mustChangePassword: true
+    password: '', showPassword: false, changePassword: false, mustChangePassword: true,
+    permissions: [...u.permissions]
   }
 }
 
@@ -321,11 +378,11 @@ async function submit() {
     if (p.mode === 'create') {
       await $fetch('/api/admin/staff', {
         method: 'POST',
-        body: { name: p.name, email: p.email, role: p.role, password: p.password, mustChangePassword: p.mustChangePassword }
+        body: { name: p.name, email: p.email, role: p.role, permissions: p.permissions, password: p.password, mustChangePassword: p.mustChangePassword }
       })
       flash(`${p.name} can now sign in${p.mustChangePassword ? ' and will be asked to set their own password' : ''}.`)
     } else {
-      const body: Record<string, unknown> = { name: p.name, email: p.email, active: p.active }
+      const body: Record<string, unknown> = { name: p.name, email: p.email, active: p.active, permissions: p.permissions }
       if (!isSelf.value) body.role = p.role
       if (settingPassword) {
         body.password = p.password
@@ -486,6 +543,60 @@ tr.is-inactive .us-avatar {
 .us-hint {
   font-size: 12px;
   color: var(--adm-muted);
+}
+
+.us-access {
+  max-width: 260px;
+  font-size: 12.5px;
+  color: var(--adm-text-3);
+}
+
+.us-access-block {
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+}
+
+.us-access-head,
+.us-access-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.us-access-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.us-access-group + .us-access-group {
+  padding-top: 10px;
+  border-top: 1px solid var(--adm-line);
+}
+
+.us-access-group-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--adm-faint);
+}
+
+.us-access-opt {
+  padding: 6px 0;
+}
+
+.us-warn {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--adm-accent-dk);
+}
+
+.us-manager-note {
+  margin: -4px 0 0;
 }
 
 .us-roles {

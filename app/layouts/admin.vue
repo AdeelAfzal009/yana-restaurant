@@ -16,35 +16,19 @@
         </div>
 
         <nav v-if="!user?.mustChangePassword" class="side-nav">
-          <p class="side-group">Service</p>
-          <NuxtLink v-for="item in serviceNav" :key="item.to" :to="item.to" class="side-link" :title="item.label" @click="mobileOpen = false">
-            <AdminIcon :name="item.icon" />
-            <span class="side-text">{{ item.label }}</span>
-          </NuxtLink>
-
-          <p class="side-group">Insights</p>
-          <NuxtLink v-for="item in insightNav" :key="item.to" :to="item.to" class="side-link" :title="item.label" @click="mobileOpen = false">
-            <AdminIcon :name="item.icon" />
-            <span class="side-text">{{ item.label }}</span>
-          </NuxtLink>
-
-          <template v-if="user?.role === 'manager'">
-            <p class="side-group">Setup</p>
-            <NuxtLink to="/admin/floorplan" class="side-link" title="Floorplan editor" @click="mobileOpen = false">
-              <AdminIcon name="editor" />
-              <span class="side-text">Floorplan editor</span>
-            </NuxtLink>
-            <NuxtLink to="/admin/chatbot" class="side-link" title="Website chatbot" @click="mobileOpen = false">
-              <AdminIcon name="chat" />
-              <span class="side-text">Website chatbot</span>
-            </NuxtLink>
-            <NuxtLink to="/admin/emails" class="side-link" title="Email templates" @click="mobileOpen = false">
-              <AdminIcon name="mail" />
-              <span class="side-text">Email templates</span>
-            </NuxtLink>
-            <NuxtLink to="/admin/users" class="side-link" title="Users" @click="mobileOpen = false">
-              <AdminIcon name="users" />
-              <span class="side-text">Users</span>
+          <template v-for="group in navGroups" :key="group.label">
+            <p class="side-group">{{ group.label }}</p>
+            <NuxtLink
+              v-for="item in group.items"
+              :key="item.to"
+              :to="item.to"
+              class="side-link"
+              :class="{ 'router-link-active': 'prefix' in item && item.prefix && route.path.startsWith(item.to) }"
+              :title="item.label"
+              @click="mobileOpen = false"
+            >
+              <AdminIcon :name="item.icon" />
+              <span class="side-text">{{ item.label }}</span>
             </NuxtLink>
           </template>
         </nav>
@@ -100,31 +84,41 @@ useHead({
   ]
 })
 
-interface SessionUser {
-  name: string
-  email: string
-  role: 'manager' | 'host'
-  mustChangePassword?: boolean
-}
-
 const route = useRoute()
 const { isDark } = useAdminTheme()
 const isLogin = computed(() => route.path === '/admin/login')
 
-const { data: session, refresh } = await useFetch<{ authed: boolean, user?: SessionUser }>('/api/admin/session')
-const user = computed(() => session.value?.user)
+const { ready, user, refresh, can, canContent } = useAdminAccess()
+await ready
 const userInitials = computed(() => (user.value?.name ?? '').split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase())
 
 watch(() => route.path, () => refresh())
 
-const serviceNav = [
-  { to: '/admin/reservations', label: 'Reservations', icon: 'calendar' },
-  { to: '/admin/guests', label: 'Guests', icon: 'guests' }
-] as const
-
-const insightNav = [
-  { to: '/admin/reports', label: 'Reports', icon: 'reports' }
-] as const
+// Only what this user has been given access to; empty groups are dropped.
+// `prefix` keeps a link lit on its sub-pages (e.g. /admin/content/home).
+const navGroups = computed(() => [
+  {
+    label: 'Service',
+    items: [
+      { to: '/admin/reservations', label: 'Reservations', icon: 'calendar' as const, show: can('reservations') },
+      { to: '/admin/guests', label: 'Guests', icon: 'guests' as const, show: can('guests') }
+    ]
+  },
+  {
+    label: 'Insights',
+    items: [{ to: '/admin/reports', label: 'Reports', icon: 'reports' as const, show: can('reports') }]
+  },
+  {
+    label: 'Setup',
+    items: [
+      { to: '/admin/floorplan', label: 'Floorplan editor', icon: 'editor' as const, show: can('floorplan') },
+      { to: '/admin/content', label: 'Website content', icon: 'layout' as const, show: canContent.value, prefix: true },
+      { to: '/admin/chatbot', label: 'Website chatbot', icon: 'chat' as const, show: can('chatbot') },
+      { to: '/admin/emails', label: 'Email templates', icon: 'mail' as const, show: can('emails') },
+      { to: '/admin/users', label: 'Users', icon: 'users' as const, show: can('users') }
+    ]
+  }
+].map(g => ({ ...g, items: g.items.filter(i => i.show) })).filter(g => g.items.length))
 
 const collapsed = ref(false)
 const mobileOpen = ref(false)

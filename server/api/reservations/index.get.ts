@@ -1,13 +1,13 @@
 import { and, asc, eq, gte, ilike, lte, or, sql } from 'drizzle-orm'
 import { guests, reservations, restaurantTables } from '../../database/schema'
-import { requireAuth } from '../../utils/auth'
+import { requirePermission } from '../../utils/auth'
 import { useDb } from '../../utils/db'
 import { formatReservation, reservationColumns } from '../../utils/reservation-query'
 import { badRequest, DATE_RE } from '../../utils/validate'
 
 // ?date=YYYY-MM-DD for one day, ?from&to for a range, or ?q= to search every date.
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reservations')
 
   const query = getQuery(event)
   const q = typeof query.q === 'string' ? query.q.trim() : ''

@@ -1,4 +1,5 @@
 import { and, eq, ne } from 'drizzle-orm'
+import { cleanPermissions } from '#shared/utils/permissions'
 import { staff } from '../../../database/schema'
 import { requireManager } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
@@ -6,7 +7,7 @@ import { hashPassword } from '../../../utils/password'
 import { assertEmailFree, checkPassword, cleanEmail, cleanName, cleanRole, staffPublicColumns } from '../../../utils/staff-input'
 import { badRequest } from '../../../utils/validate'
 
-// Edits a user: details, role, active/deactivated, or a new password.
+// Edits a user: details, role, what they can open, active/deactivated, or a new password.
 // Deactivating signs the user out immediately (sessions re-check `active`).
 export default defineEventHandler(async (event) => {
   const current = await requireManager(event)
@@ -25,6 +26,7 @@ export default defineEventHandler(async (event) => {
     await assertEmailFree(updates.email, id)
   }
   if (body?.role !== undefined) updates.role = cleanRole(body.role)
+  if (body?.permissions !== undefined) updates.permissions = cleanPermissions(body.permissions)
   if (body?.active !== undefined) updates.active = body.active === true
   if (body?.password !== undefined && body.password !== '') {
     updates.passwordHash = await hashPassword(checkPassword(body.password))

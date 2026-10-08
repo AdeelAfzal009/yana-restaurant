@@ -1,6 +1,6 @@
 import { eq, notInArray } from 'drizzle-orm'
 import { decorKindEnum, floorDecor, floorSections, restaurantTables, tableShapeEnum } from '../../../database/schema'
-import { requireManager } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { badRequest } from '../../../utils/validate'
 
@@ -37,7 +37,7 @@ const int = (v: unknown, min: number, max: number) => Math.min(max, Math.max(min
 // Saves the whole floor plan. Tables keep their ids when edited so reservations
 // stay assigned; tables removed here are deleted and their bookings unassigned.
 export default defineEventHandler(async (event) => {
-  await requireManager(event)
+  await requirePermission(event, 'floorplan')
 
   const body = await readBody<{ sections?: SectionInput[] }>(event)
   const sections = body?.sections

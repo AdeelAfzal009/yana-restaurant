@@ -1,5 +1,5 @@
 <template>
-  <div aria-hidden="true" class="marquee">
+  <div v-if="layout.marquee.visible && line" aria-hidden="true" class="marquee">
     <div class="marquee-track yana-marquee-track">
       <span class="marquee-text">{{ line }}</span>
       <span class="marquee-text">{{ line }}</span>
@@ -8,9 +8,13 @@
 </template>
 
 <script setup lang="ts">
+const layout = useContent('layout')
+
 // Duplicated twice in the track so the loop has no visible seam.
-const words = ['Ceviche', 'Nikkei', 'Josper Grill', 'Anticuchos', 'Pisco Lounge', 'Tiradito', 'Wagyu']
-const line = `${words.join(' · ')} · `
+const line = computed(() => {
+  const words = layout.value.marquee.words.map(w => w.word).filter(Boolean)
+  return words.length ? `${words.join(' · ')} · ` : ''
+})
 </script>
 
 <style scoped>

@@ -1,3 +1,4 @@
+import { effectivePermissions, homePathFor } from '#shared/utils/permissions'
 import { eq } from 'drizzle-orm'
 import { staff } from '../../database/schema'
 import { setSessionCookie } from '../../utils/auth'
@@ -57,6 +58,8 @@ export default defineEventHandler(async (event) => {
   return {
     ok: true,
     user: { id: account.id, name: account.name, email: account.email, role: account.role },
-    mustChangePassword: account.mustChangePassword
+    mustChangePassword: account.mustChangePassword,
+    // The first dashboard page this user can open.
+    home: homePathFor(effectivePermissions(account))
   }
 })

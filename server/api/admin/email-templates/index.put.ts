@@ -1,11 +1,11 @@
 import { DEFAULT_EMAIL_CONTENT, normalizeEmailContent } from '#shared/utils/email-content'
-import { requireManager } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { resetContent, saveContent } from '../../../utils/site-content'
 import { badRequest } from '../../../utils/validate'
 
 // Saves the email wording. { reset: true } goes back to the built-in defaults.
 export default defineEventHandler(async (event) => {
-  const current = await requireManager(event)
+  const current = await requirePermission(event, 'emails')
   const body = await readBody<{ content?: unknown, reset?: boolean }>(event)
 
   if (body?.reset) {

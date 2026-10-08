@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <p v-if="!canEdit" class="em-banner">Only managers can change email templates. You can preview them here.</p>
+    <p v-if="!canEdit" class="em-banner">You can preview the email templates but not change them. Ask a manager for access.</p>
     <p v-if="loadError" class="adm-error em-banner">{{ loadError }}</p>
     <p v-if="error" class="adm-error em-banner">{{ error }}</p>
     <p v-if="notice" class="em-banner em-banner--ok">{{ notice }}</p>
@@ -189,9 +189,10 @@ useHead({ title: 'Email templates · YANA admin' })
 interface ContentResponse { config: EmailContent, updatedAt: string | null, isDefault: boolean }
 type FieldKey = keyof EmailTemplateContent | keyof EmailSharedContent
 
-const { data: session } = await useFetch<{ user?: { role: 'manager' | 'host', email: string } }>('/api/admin/session')
-const canEdit = computed(() => session.value?.user?.role === 'manager')
-const myEmail = computed(() => session.value?.user?.email ?? '')
+const { ready, user, can } = useAdminAccess()
+await ready
+const canEdit = computed(() => can('emails'))
+const myEmail = computed(() => user.value?.email ?? '')
 
 const { data, error: fetchError } = await useFetch<ContentResponse>('/api/admin/email-templates')
 const loadError = computed(() => fetchError.value ? 'Could not load the email templates. If you just updated the site, restart the server so the database is up to date.' : '')

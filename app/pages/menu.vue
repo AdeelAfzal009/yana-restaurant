@@ -2,139 +2,87 @@
   <div class="yana-page">
     <!-- BANNER -->
     <header class="menu-banner">
-      <div aria-hidden="true" class="banner-bg banner-bg--wide" />
+      <div aria-hidden="true" class="banner-bg banner-bg--wide" :style="bg(c.banner.image.src)" />
       <div aria-hidden="true" class="banner-scrim banner-scrim--menu" />
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
-        <h1 class="banner-title">Menu</h1>
-        <p class="banner-sub">Pan-Asian Fusion, Peruvian Flair</p>
+        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <h1 class="banner-title">{{ c.banner.title }}</h1>
+        <p v-if="c.banner.subtitle" class="banner-sub">{{ c.banner.subtitle }}</p>
       </div>
     </header>
 
     <!-- MENU TILES -->
-    <section class="tiles">
-      <div v-reveal class="tiles-head">
-        <span class="tiles-eyebrow">Our Menus</span>
+    <section v-if="c.tiles.visible" class="tiles">
+      <div v-if="c.tiles.heading" v-reveal class="tiles-head">
+        <span class="tiles-eyebrow">{{ c.tiles.heading }}</span>
       </div>
       <div class="tiles-grid">
-        <component
-          :is="tile.pdf ? 'a' : 'button'"
-          v-for="tile in menuTiles"
-          :key="tile.label"
+        <a
+          v-for="(tile, i) in c.tiles.items"
+          :key="i"
           v-reveal="{ y: 22 }"
           class="tile"
-          :href="tile.pdf || undefined"
-          :target="tile.pdf ? '_blank' : undefined"
-          :rel="tile.pdf ? 'noopener' : undefined"
-          :type="tile.pdf ? undefined : 'button'"
-          @click="!tile.pdf && openFallback(tile)"
+          :href="tile.url"
+          target="_blank"
+          rel="noopener"
         >
           <span class="tile-art">
-            <svg class="tile-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="tileIcons[tile.icon]" />
+            <svg class="tile-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="tileIcons[tile.icon as TileIcon] ?? tileIcons.plate" />
           </span>
           <span class="tile-label">{{ tile.label }}</span>
           <span class="tile-rule" aria-hidden="true" />
-          <span class="tile-desc">{{ tile.desc }}</span>
-          <span class="tile-note">{{ tile.pdf ? 'Open PDF ↗' : 'View online ↗' }}</span>
-        </component>
+          <span v-if="tile.desc" class="tile-desc">{{ tile.desc }}</span>
+          <span class="tile-note">{{ isPdf(tile.url) ? 'Open PDF ↗' : 'View online ↗' }}</span>
+        </a>
       </div>
     </section>
 
     <!-- FOOD -->
-    <div aria-hidden="true" class="section-divider" />
-    <section id="food" class="feature">
-      <div class="feature-copy">
-        <h2 class="feature-title">Food</h2>
-        <p class="feature-text">YANA welcomes guests with a menu built on fire, citrus and restraint — the citrus-bright kitchens of coastal Peru meeting the quiet precision of Pan-Asian cooking.</p>
-        <p class="feature-text">Ceviches and tiraditos open the evening, the Josper grill carries it, and plates are made to be shared across the table. Signature dishes include the Hotate Tiradito, Miso Black Cod and the Andean Striploin.</p>
-        <a :href="foodTile?.pdf || digitalMenuUrl" target="_blank" rel="noopener" class="feature-link">View the Food Menu <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="feature-media">
-        <img src="/images/web/menu-food.jpg" alt="A spread of YANA dishes and a cocktail on marble" width="1254" height="1600" loading="lazy" decoding="async">
-      </div>
-    </section>
-
-    <!-- DRINKS -->
-    <div aria-hidden="true" class="section-divider" />
-    <section id="drinks" class="feature feature--reverse feature--panel">
-      <div class="feature-copy">
-        <h2 class="feature-title">Signature Drinks</h2>
-        <p class="feature-text">A bar built around Peru&rsquo;s national spirit — pisco sours shaken to order, chilcanos over crushed ice and Nikkei-leaning cocktails poured against deep blue and brass.</p>
-        <p class="feature-text">Alongside them run matchas, mojitos, cold-pressed juices, coolers and a full coffee and tea list, so every table finds its pour.</p>
-        <a :href="drinksTile?.pdf || digitalMenuUrl" target="_blank" rel="noopener" class="feature-link">View the Drinks Menu <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="feature-media">
-        <img src="/images/DSC00730.jpeg" alt="A cocktail splashing into a crystal glass at the YANA bar" width="736" height="920" loading="lazy" decoding="async">
-      </div>
-    </section>
-
-    <!-- FULL ITEM LIST (previous layout — hidden, kept for reference)
-         Flip showFullMenuList to true in the script to bring it back. -->
-    <template v-if="showFullMenuList">
-      <div class="category-rail">
-        <div class="category-rail-inner">
-          <a v-for="sec in group.sections" :key="sec.id" :href="`#${sec.id}`" class="rail-link">{{ sec.label }}</a>
-          <a :href="digitalMenuUrl" target="_blank" rel="noopener" class="rail-link rail-link--digital">Digital Menu →</a>
+    <template v-if="c.food.visible">
+      <div aria-hidden="true" class="section-divider" />
+      <section id="food" class="feature">
+        <div class="feature-copy">
+          <h2 class="feature-title">{{ c.food.title }}</h2>
+          <p v-for="(p, i) in paragraphs(c.food.body)" :key="i" class="feature-text" v-html="richText(p)" />
+          <CmsLink :link="c.food.button" class="feature-link">
+            <span aria-hidden="true"> →</span>
+          </CmsLink>
         </div>
-      </div>
-
-      <section
-        v-for="(sec, i) in group.sections"
-        :id="sec.id"
-        :key="sec.id"
-        class="menu-section"
-        :class="{ 'menu-section--dark': isDark(i) }"
-      >
-        <div v-if="isDark(i)" aria-hidden="true" class="pattern-dark" />
-        <div class="menu-section-inner">
-          <div class="menu-section-head" :class="{ 'menu-section-head--dark': isDark(i) }">
-            <h2 class="menu-h2" :class="{ 'menu-h2--light': isDark(i) }">{{ sec.label }}</h2>
-            <span class="menu-section-label" :class="{ 'menu-section-label--light': isDark(i) }">
-              {{ sec.items.length }} {{ activeGroup === 'drinks' ? (sec.items.length === 1 ? 'drink' : 'drinks') : (sec.items.length === 1 ? 'dish' : 'dishes') }}
-            </span>
-          </div>
-
-          <div class="dish-grid">
-            <article v-for="item in sec.items" :key="item.name" class="dish-card">
-              <div class="dish-photo">
-                <img
-                  v-if="item.image"
-                  :src="item.image"
-                  :alt="item.name"
-                  width="800"
-                  height="800"
-                  loading="lazy"
-                  decoding="async"
-                >
-                <ImagePlaceholder v-else label="Photo coming soon" :on-light="!isDark(i)" />
-                <span aria-hidden="true" class="dish-photo-frame" />
-              </div>
-              <div class="dish-head">
-                <h3 class="dish-name" :class="{ 'dish-name--light': isDark(i) }">{{ displayName(item.name) }}</h3>
-                <span class="dish-leader" :class="{ 'dish-leader--light': isDark(i) }" />
-                <span class="dish-price" :class="{ 'dish-price--light': isDark(i) }">{{ item.price }}</span>
-              </div>
-              <p v-if="item.desc" class="dish-desc" :class="{ 'dish-desc--light': isDark(i) }">{{ item.desc }}</p>
-            </article>
-          </div>
+        <div class="feature-media">
+          <img :src="c.food.image.src" :alt="c.food.image.alt" width="1254" height="1600" loading="lazy" decoding="async">
         </div>
       </section>
+    </template>
 
-      <p class="price-disclaimer">All prices in AED and inclusive of applicable taxes.</p>
+    <!-- DRINKS -->
+    <template v-if="c.drinks.visible">
+      <div aria-hidden="true" class="section-divider" />
+      <section id="drinks" class="feature feature--reverse feature--panel">
+        <div class="feature-copy">
+          <h2 class="feature-title">{{ c.drinks.title }}</h2>
+          <p v-for="(p, i) in paragraphs(c.drinks.body)" :key="i" class="feature-text" v-html="richText(p)" />
+          <CmsLink :link="c.drinks.button" class="feature-link">
+            <span aria-hidden="true"> →</span>
+          </CmsLink>
+        </div>
+        <div class="feature-media">
+          <img :src="c.drinks.image.src" :alt="c.drinks.image.alt" width="736" height="920" loading="lazy" decoding="async">
+        </div>
+      </section>
     </template>
 
     <!-- CTA -->
-    <section class="cta-section">
-      <div aria-hidden="true" class="cta-bg" />
+    <section v-if="c.cta.visible" class="cta-section">
+      <div aria-hidden="true" class="cta-bg" :style="bg(c.cta.image.src)" />
       <div aria-hidden="true" class="cta-scrim" />
       <div class="cta-content">
-        <span class="eyebrow-plain">The Full List</span>
-        <h2 class="cta-title">Browse our digital menu</h2>
-        <p class="cta-copy">Every dish, every pour — kept current by the kitchen.</p>
+        <span v-if="c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
+        <h2 class="cta-title">{{ c.cta.title }}</h2>
+        <p v-for="(p, i) in paragraphs(c.cta.body)" :key="i" class="cta-copy" v-html="richText(p)" />
         <div class="cta-btn-row">
-          <a :href="digitalMenuUrl" target="_blank" rel="noopener" class="btn-gold">Open Digital Menu</a>
-          <NuxtLink to="/reservation" class="btn-outline-light">Reserve a Table</NuxtLink>
+          <CmsLink :link="c.cta.button" class="btn-gold" />
+          <CmsLink :link="c.cta.button2" class="btn-outline-light" />
         </div>
       </div>
     </section>
@@ -145,21 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import { menuGroups } from '~/data/menu'
+const c = await usePageContent('menu')
+useContentSeo(() => c.value.seo)
 
-const digitalMenuUrl = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID=62881'
+const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
-// One tile per printed menu. Drop the client's PDFs into public/menus and set
-// `pdf` to open them; until then each tile falls back to the digital menu.
-interface MenuTile {
-  label: string
-  desc: string
-  icon: keyof typeof tileIcons
-  pdf: string
-  fallback?: string
-}
-
-// One drawn mark per menu, on a 64px grid, so the grid isn't six of the same icon.
+// One drawn mark per menu, on a 64px grid, so the grid isn't six of the same
+// icon. The dashboard offers these by name (MENU_TILE_ICONS).
 const tileIcons = {
   plate: '<circle cx="32" cy="34" r="17"/><circle cx="32" cy="34" r="11"/><path d="M14 18c3-5 7-7 11-7M39 11c4 0 8 2 11 7"/>',
   sunrise: '<path d="M10 42h44"/><path d="M18 42a14 14 0 0 1 28 0"/><path d="M32 12v6M14 20l4 4M50 20l-4 4M6 32h5M53 32h5"/>',
@@ -168,39 +108,9 @@ const tileIcons = {
   highball: '<path d="M22 14h20l-2 36H24Z"/><path d="M27 26h.01M33 32h.01M29 40h.01M35 44h.01"/><path d="M42 14c5-3 9-2 11 1-4 2-7 3-11 2"/>',
   dessert: '<path d="M16 38h32l-4 14H20Z"/><path d="M18 38a14 14 0 0 1 28 0"/><circle cx="32" cy="22" r="3"/><path d="M32 19v-4"/>'
 } as const
+type TileIcon = keyof typeof tileIcons
 
-const QR = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID='
-
-const menuTiles: MenuTile[] = [
-  { label: 'À la Carte', desc: 'Ceviches, tiraditos and the Josper grill', icon: 'plate', pdf: '', fallback: `${QR}62881` },
-  { label: 'Breakfast', desc: 'From 9am, every morning', icon: 'sunrise', pdf: '', fallback: `${QR}60876` },
-  { label: 'Drinks', desc: 'Pisco, signatures and the full bar', icon: 'coupe', pdf: '', fallback: `${QR}56458` },
-  { label: 'Coffee & Tea', desc: 'Espresso, matcha and loose leaf', icon: 'cup', pdf: '', fallback: `${QR}56501` },
-  { label: 'Mocktails & Coolers', desc: 'Juices, mojitos and coolers', icon: 'highball', pdf: '', fallback: `${QR}61626` },
-  { label: 'Desserts', desc: 'Mochi, cheesecake and quinoa textures', icon: 'dessert', pdf: '', fallback: `${QR}62881` }
-]
-
-const foodTile = computed(() => menuTiles.find(t => t.label === 'À la Carte'))
-const drinksTile = computed(() => menuTiles.find(t => t.label === 'Drinks'))
-
-function openFallback(tile: MenuTile) {
-  window.open(tile.fallback || digitalMenuUrl, '_blank', 'noopener')
-}
-
-// The full illustrated item list is kept below but switched off; the tiles above
-// replaced it because the page had grown too crowded.
-const showFullMenuList = false
-const activeGroup = ref(menuGroups[0]!.id)
-const group = computed(() => menuGroups.find(g => g.id === activeGroup.value) ?? menuGroups[0]!)
-const isDark = (i: number) => i % 2 === 1
-
-// A few names arrive shouting from the digital menu (ESPRESSO); even them out.
-function displayName(name: string) {
-  if (name.length < 4 || name !== name.toUpperCase()) return name
-  return name.toLowerCase().replace(/(^|[\s(-])([a-z])/g, (_, pre, ch) => pre + ch.toUpperCase())
-}
-
-useHead({ title: 'Menu · YANA Restaurant' })
+const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
 </script>
 
 <style scoped>

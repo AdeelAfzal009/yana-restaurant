@@ -13,6 +13,7 @@ export const staffPublicColumns = {
   role: staff.role,
   active: staff.active,
   mustChangePassword: staff.mustChangePassword,
+  permissions: staff.permissions,
   createdAt: staff.createdAt,
   lastLoginAt: staff.lastLoginAt
 }

@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm'
 import { guests, reservations, restaurantTables } from '../../database/schema'
 import { diffReservation, logActivity } from '../../utils/activity'
-import { requireAuth } from '../../utils/auth'
+import { requirePermission } from '../../utils/auth'
 import { useDb } from '../../utils/db'
 import { queueEmail, sendReservationEmail, templateForStatus } from '../../utils/notify'
 import { parseReservationFields, stampStatusTimes, type ReservationBody } from '../../utils/reservation-input'
@@ -9,7 +9,7 @@ import { formatReservation, reservationColumns } from '../../utils/reservation-q
 import { badRequest } from '../../utils/validate'
 
 export default defineEventHandler(async (event) => {
-  const me = await requireAuth(event)
+  const me = await requirePermission(event, 'reservations')
 
   const id = Number(getRouterParam(event, 'id'))
   if (!Number.isInteger(id)) badRequest('Invalid reservation id')

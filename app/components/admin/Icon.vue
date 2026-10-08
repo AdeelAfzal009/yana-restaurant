@@ -55,6 +55,11 @@ const paths = {
   history: '<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4.5h4.5M12 7.5V12l3 2"/>',
   save: '<path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/>',
   home: '<path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/>',
-  alert: '<path d="M12 3L2 20h20z"/><path d="M12 10v4M12 17v.5"/>'
+  alert: '<path d="M12 3L2 20h20z"/><path d="M12 10v4M12 17v.5"/>',
+  layout: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
+  upload: '<path d="M12 16V4M7 8.5l5-5 5 5"/><path d="M4 20h16"/>',
+  external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  file: '<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/>'
 }
 </script>

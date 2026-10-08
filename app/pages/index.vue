@@ -3,9 +3,10 @@
     <!-- ===================== HERO ===================== -->
     <header id="home" class="hero">
       <video
-        v-if="heroVideo && !reducedMotion"
+        v-if="c.hero.video && !reducedMotion"
+        :key="c.hero.video"
         class="hero-video"
-        :poster="heroImage"
+        :poster="c.hero.image.src"
         autoplay
         muted
         loop
@@ -13,22 +14,22 @@
         preload="metadata"
         aria-hidden="true"
       >
-        <source :src="heroVideo" type="video/mp4">
+        <source :src="c.hero.video" type="video/mp4">
       </video>
-      <div v-else class="hero-img" :class="{ 'no-zoom': !heroKenBurns }" :style="{ backgroundImage: `url('${heroImage}')` }" />
+      <div v-else class="hero-img" :class="{ 'no-zoom': !c.hero.zoom }" :style="bg(c.hero.image.src)" />
       <div class="hero-scrim" />
       <div aria-hidden="true" class="hero-fade" />
       <div class="hero-content">
-        <div v-reveal="{ y: 24, duration: 1.1 }">
+        <div v-if="c.hero.eyebrow" v-reveal="{ y: 24, duration: 1.1 }">
           <span class="hero-eyebrow">
-            <span class="rule rule-left" />Pan Asian Fusion Peruvian Flair<span class="rule rule-right" />
+            <span class="rule rule-left" />{{ c.hero.eyebrow }}<span class="rule rule-right" />
           </span>
         </div>
-        <h1 v-reveal="{ y: 28, duration: 1.2, delay: 0.12 }" class="hero-title">Fire &amp; Sea</h1>
-        <p v-reveal="{ y: 24, duration: 1.2, delay: 0.2 }" class="hero-locale">Saadiyat Island &middot; Abu Dhabi</p>
-        <p v-reveal="{ y: 24, duration: 1.2, delay: 0.24 }" class="hero-sub">Where the shores of Peru meet the fire of the East.</p>
+        <h1 v-reveal="{ y: 28, duration: 1.2, delay: 0.12 }" class="hero-title">{{ c.hero.title }}</h1>
+        <p v-if="c.hero.location" v-reveal="{ y: 24, duration: 1.2, delay: 0.2 }" class="hero-locale">{{ c.hero.location }}</p>
+        <p v-if="c.hero.subtitle" v-reveal="{ y: 24, duration: 1.2, delay: 0.24 }" class="hero-sub">{{ c.hero.subtitle }}</p>
         <div v-reveal="{ y: 24, duration: 1.2, delay: 0.38 }" class="hero-cta-wrap">
-          <NuxtLink to="/reservation" class="btn-gold-hero">Reserve a Table</NuxtLink>
+          <CmsLink :link="c.hero.button" class="btn-gold-hero" />
         </div>
       </div>
       <div class="yana-scroll-cue scroll-cue">
@@ -37,9 +38,8 @@
       </div>
     </header>
 
-
     <!-- ===================== INTRO ===================== -->
-    <section class="intro">
+    <section v-if="c.intro.visible" class="intro">
       <div v-reveal="{ y: 26 }" class="intro-head">
         <!-- Fire & sea, drawn in one line: a flame over a wave. -->
         <svg class="intro-mark" viewBox="0 0 120 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -47,139 +47,115 @@
           <path d="M26 44c6 0 6-5 12-5s6 5 12 5 6-5 12-5 6 5 12 5 6-5 12-5" />
           <path d="M20 54c7 0 7-5 14-5s7 5 14 5 7-5 14-5 7 5 14 5 7-5 14-5" opacity="0.55" />
         </svg>
-        <h2 class="intro-title">YANA Abu Dhabi: a Pan-Asian kitchen<br>with Peruvian flair on Saadiyat Island</h2>
-        <p class="intro-copy">Set on the beachfront of Saadiyat Island, YANA brings together the freshness and colour of coastal Peru with the precision of Pan-Asian cooking.</p>
-        <p class="intro-copy intro-copy--next">The menu moves from ceviches and tiraditos to sushi and dishes from the Josper grill, made for long lunches, sunset drinks and evenings that unfold at an easy pace.</p>
-        <p class="intro-copy intro-copy--next">Inside, deep blue and brass create a warm, intimate setting, while the terrace opens out to palms and views across the water. At the bar, pisco sits alongside matcha and cold-pressed coolers, bringing another layer to the experience.</p>
-        <NuxtLink to="/reservation" class="intro-btn">Make a Reservation</NuxtLink>
+        <h2 class="intro-title" v-html="richText(c.intro.title)" />
+        <p v-for="(p, i) in paragraphs(c.intro.body)" :key="i" class="intro-copy" :class="{ 'intro-copy--next': i }" v-html="richText(p)" />
+        <CmsLink :link="c.intro.button" class="intro-btn" />
       </div>
     </section>
 
     <!-- ===================== KITCHEN (split feature) ===================== -->
-    <section id="cuisine" class="split">
+    <section v-if="c.kitchen.visible" id="cuisine" class="split">
       <div class="split-media">
-        <div class="split-photo" :style="{ backgroundImage: `url('${kitchenRoomImage}')` }" role="img" aria-label="The YANA dining room" />
+        <div class="split-photo" :style="bg(c.kitchen.roomImage.src)" role="img" :aria-label="c.kitchen.roomImage.alt" />
       </div>
       <div class="split-panel">
         <div aria-hidden="true" class="split-pattern" />
         <div v-reveal="{ y: 28 }" class="split-inner">
-          <div class="split-dish" :style="{ backgroundImage: `url('${signatureDishImage}')` }" role="img" aria-label="A spread of YANA dishes and a cocktail on marble" />
-          <span class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />01 — Food</span>
-          <h2 class="split-title">La Cocina de YANA</h2>
-          <p class="split-copy">YANA is a Pan-Asian kitchen with Peruvian flair, built on fire, citrus and restraint. Plates are made to be shared, and the room is made to be lingered in.</p>
-          <p class="split-copy">Signature dishes like Hotate Tiradito, Miso Black Cod and the Andean Striploin carry the Nikkei thread, while Chocolate &amp; Lucuma Mochi and the Matcha Cheesecake close the evening.</p>
-          <NuxtLink to="/menu" class="split-link">Discover Our Menus <span aria-hidden="true">→</span></NuxtLink>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== FOOD (previous layout — hidden, kept for reference) =====================
-         Flip showLegacyFoodSection to true in the script below to bring it back. -->
-    <section v-if="showLegacyFoodSection" id="cuisine-legacy" class="feature section-light">
-      <span aria-hidden="true" class="ghost-word ghost-center">FOOD</span>
-      <div class="feature-grid">
-        <div v-reveal="{ y: 30 }" class="feature-text">
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />01 — Food</span>
-          <h2 class="h2-dark">Discover the flavours<br>of Peru at YANA</h2>
-          <p class="body-copy">Experience the vibrant flavours of Peru, reimagined on Saadiyat Island.</p>
-          <p class="body-copy">A curated menu of fresh ceviches, silken tiraditos and anticuchos charred over the Josper grill — Nikkei precision met with Peruvian soul.</p>
-          <p class="body-copy">Set in a dining room of deep blue and brass, YANA offers a culinary journey that blends authentic Peruvian tastes with the fire of the East.</p>
-          <NuxtLink to="/menu" class="link-underline">Explore the Menu</NuxtLink>
-        </div>
-        <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-media">
-          <div class="feature-photo" :style="{ backgroundImage: `url('${signatureDishImage}')` }" />
+          <div class="split-dish" :style="bg(c.kitchen.dishImage.src)" role="img" :aria-label="c.kitchen.dishImage.alt" />
+          <span v-if="c.kitchen.eyebrow" class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />{{ c.kitchen.eyebrow }}</span>
+          <h2 class="split-title" v-html="richText(c.kitchen.title)" />
+          <p v-for="(p, i) in paragraphs(c.kitchen.body)" :key="i" class="split-copy" v-html="richText(p)" />
+          <CmsLink :link="c.kitchen.button" class="split-link">
+            <span aria-hidden="true"> →</span>
+          </CmsLink>
         </div>
       </div>
     </section>
 
     <!-- ===================== PULL QUOTE ===================== -->
-    <section class="pull-quote">
-      <blockquote v-reveal="{ y: 24 }" class="pull-quote-text">
-        &lsquo;YANA brings together the vibrancy of Peruvian cuisine with the elegance of Pan-Asian cuisine.&rsquo;
-      </blockquote>
+    <section v-if="c.quote.visible" class="pull-quote">
+      <blockquote v-reveal="{ y: 24 }" class="pull-quote-text" v-html="richText(c.quote.text)" />
     </section>
 
     <!-- ===================== PISCO BAR (dark band) ===================== -->
-    <section id="bar" class="feature feature--dark">
+    <section v-if="c.bar.visible" id="bar" class="feature feature--dark">
       <div aria-hidden="true" class="pattern-dark pattern-dark--tall" />
-      <span aria-hidden="true" class="ghost-word ghost-word--light ghost-center">PISCO BAR</span>
+      <span v-if="c.bar.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-center">{{ c.bar.ghost }}</span>
       <div class="feature-grid feature-grid--reverse">
         <div v-reveal="{ y: 30 }" class="feature-text">
-          <span class="eyebrow eyebrow-light"><span class="rule-short" />02 — Pisco Bar</span>
-          <h2 class="h2-light">Unwind over pisco,<br>late into the night</h2>
-          <p class="body-copy body-copy--light">A bar built around Peru's national spirit — pisco sours shaken to order, chilcanos over crushed ice and Nikkei-leaning cocktails poured against deep blue and brass.</p>
-          <p class="body-copy body-copy--light">Matchas, coolers and cold-pressed juices run alongside, so every table finds its pour.</p>
-          <NuxtLink to="/menu?menu=drinks" class="link-underline link-underline--light">Discover the Drinks</NuxtLink>
+          <span v-if="c.bar.eyebrow" class="eyebrow eyebrow-light"><span class="rule-short" />{{ c.bar.eyebrow }}</span>
+          <h2 class="h2-light" v-html="richText(c.bar.title)" />
+          <p v-for="(p, i) in paragraphs(c.bar.body)" :key="i" class="body-copy body-copy--light" v-html="richText(p)" />
+          <CmsLink :link="c.bar.button" class="link-underline link-underline--light" />
         </div>
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-media">
-          <div class="feature-photo feature-photo--portrait" :style="{ backgroundImage: `url('${barImage}')` }" />
+          <div class="feature-photo feature-photo--portrait" :style="bg(c.bar.image.src)" role="img" :aria-label="c.bar.image.alt" />
         </div>
       </div>
     </section>
 
     <!-- ===================== TERRACE ===================== -->
-    <section id="terrace" class="feature section-light">
-      <span aria-hidden="true" class="ghost-word ghost-left">TERRACE</span>
+    <section v-if="c.terrace.visible" id="terrace" class="feature section-light">
+      <span v-if="c.terrace.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.terrace.ghost }}</span>
       <div class="feature-grid">
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />03 — The Terrace</span>
-          <h2 class="h2-dark">Sea breeze, palms<br>and long lunches</h2>
-          <p class="body-copy">Marble-topped tables under the palms, the Gulf a few steps away. The terrace is made for slow afternoons — ceviche, a cooler in hand and the island quiet around you.</p>
-          <p class="body-copy">As the light drops, lanterns come on and lunch turns, unhurried, into dinner.</p>
-          <NuxtLink to="/gallery" class="link-underline">See the Gallery</NuxtLink>
+          <span v-if="c.terrace.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.terrace.eyebrow }}</span>
+          <h2 class="h2-dark" v-html="richText(c.terrace.title)" />
+          <p v-for="(p, i) in paragraphs(c.terrace.body)" :key="i" class="body-copy" v-html="richText(p)" />
+          <CmsLink :link="c.terrace.button" class="link-underline" />
         </div>
         <div v-reveal="{ y: 30 }" class="feature-media">
-          <div class="feature-photo feature-photo--tall" :style="{ backgroundImage: `url('${terraceImage}')` }" />
+          <div class="feature-photo feature-photo--tall" :style="bg(c.terrace.image.src)" role="img" :aria-label="c.terrace.image.alt" />
         </div>
       </div>
     </section>
 
     <!-- ===================== EVENINGS (full-bleed) ===================== -->
-    <section id="evenings" class="bleed">
-      <div class="bleed-bg" :style="{ backgroundImage: `url('${eveningImage}')` }" />
+    <section v-if="c.evenings.visible" id="evenings" class="bleed">
+      <div class="bleed-bg" :style="bg(c.evenings.image.src)" />
       <div aria-hidden="true" class="bleed-scrim" />
-      <span aria-hidden="true" class="ghost-word ghost-word--light ghost-bottom-left">EVENINGS</span>
+      <span v-if="c.evenings.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-bottom-left">{{ c.evenings.ghost }}</span>
       <div class="bleed-inner">
         <div v-reveal="{ y: 30 }" class="bleed-text">
-          <span class="eyebrow eyebrow-light"><span class="rule-short" />04 — Evenings</span>
-          <h2 class="h2-light">When the lights<br>come on</h2>
-          <p class="body-copy body-copy--light">Brass glows, the grill settles into rhythm and the room fills. Evenings at YANA are long and warm — a dining room wrapped in deep blue, a bar that keeps pouring, and a table worth lingering at.</p>
-          <NuxtLink to="/reservation" class="link-underline link-underline--light">Plan Your Evening</NuxtLink>
+          <span v-if="c.evenings.eyebrow" class="eyebrow eyebrow-light"><span class="rule-short" />{{ c.evenings.eyebrow }}</span>
+          <h2 class="h2-light" v-html="richText(c.evenings.title)" />
+          <p v-for="(p, i) in paragraphs(c.evenings.body)" :key="i" class="body-copy body-copy--light" v-html="richText(p)" />
+          <CmsLink :link="c.evenings.button" class="link-underline link-underline--light" />
         </div>
       </div>
     </section>
 
     <!-- ===================== OUR STORY ===================== -->
-    <section id="story" class="feature section-light">
-      <span aria-hidden="true" class="ghost-word ghost-left">PERU</span>
+    <section v-if="c.story.visible" id="story" class="feature section-light">
+      <span v-if="c.story.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.story.ghost }}</span>
       <div class="feature-grid feature-grid--reverse">
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />05 — Our Story</span>
-          <h2 class="h2-dark">Two coastlines,<br>one table.</h2>
-          <p class="body-copy">YANA is a meeting of distant shores — the citrus-bright kitchens of coastal Peru and the quiet mastery of Pan-Asian cuisine. Set against the hush of Saadiyat Island, each plate is an invitation to linger over fire, sea and spice long into the Abu Dhabi night.</p>
-          <p class="body-copy">We cook over open flame, pour with intention, and treat every evening as a slow, deliberate occasion.</p>
-          <p class="story-signoff">— The House of YANA</p>
+          <span v-if="c.story.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.story.eyebrow }}</span>
+          <h2 class="h2-dark" v-html="richText(c.story.title)" />
+          <p v-for="(p, i) in paragraphs(c.story.body)" :key="i" class="body-copy" v-html="richText(p)" />
+          <p v-if="c.story.signoff" class="story-signoff">{{ c.story.signoff }}</p>
         </div>
         <div v-reveal="{ y: 30 }" class="feature-media">
-          <div class="feature-photo feature-photo--tall" :style="{ backgroundImage: `url('${storyImage}')` }" />
+          <div class="feature-photo feature-photo--tall" :style="bg(c.story.image.src)" role="img" :aria-label="c.story.image.alt" />
         </div>
       </div>
     </section>
 
-    <div aria-hidden="true" class="section-divider" />
+    <div v-if="c.moments.visible" aria-hidden="true" class="section-divider" />
 
     <!-- ===================== BEST SHOTS (carousel) ===================== -->
-    <section class="shots-section">
+    <section v-if="c.moments.visible && shots.length" class="shots-section">
       <div class="shots" @mouseenter="pauseShots = true" @mouseleave="pauseShots = false" @focusin="pauseShots = true" @focusout="pauseShots = false">
         <div v-reveal="{ y: 26 }" class="shots-head">
           <div class="shots-intro">
-            <span class="eyebrow eyebrow-dark"><span class="rule-short" />06 — Moments</span>
-            <h2 class="h2-dark">A glimpse of<br>life at YANA.</h2>
-            <p class="body-copy shots-copy">The dining room, the terrace and the plates in between, as our guests see them.</p>
-            <a href="https://www.instagram.com/yanarestaurants/" target="_blank" rel="noopener" class="shots-insta">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg>
-              More moments on @yanarestaurants
-            </a>
+            <span v-if="c.moments.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.moments.eyebrow }}</span>
+            <h2 class="h2-dark" v-html="richText(c.moments.title)" />
+            <p v-for="(p, i) in paragraphs(c.moments.body)" :key="i" class="body-copy shots-copy" v-html="richText(p)" />
+            <CmsLink :link="c.moments.instagram" class="shots-insta">
+              <template #before>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg>
+              </template>
+            </CmsLink>
           </div>
           <div class="shots-controls">
             <span class="shots-count" aria-hidden="true">{{ String(shotIndex + 1).padStart(2, '0') }} <span class="shots-count-total">/ {{ String(shots.length).padStart(2, '0') }}</span></span>
@@ -194,9 +170,9 @@
           </div>
         </div>
         <div v-reveal="{ y: 26, delay: 0.1 }" ref="shotsTrack" class="shots-track" role="region" aria-label="Photos of YANA" tabindex="0" @scroll.passive="onShotsScroll" @touchstart.passive="pauseShots = true">
-          <figure v-for="shot in shots" :key="shot.src" class="shot">
-            <img :src="shot.src" :alt="shot.alt" width="750" height="1000" loading="lazy" decoding="async">
-            <figcaption class="shot-caption">{{ shot.label }}</figcaption>
+          <figure v-for="(shot, i) in shots" :key="i" class="shot">
+            <img :src="shot.image.src" :alt="shot.image.alt" width="750" height="1000" loading="lazy" decoding="async">
+            <figcaption v-if="shot.label" class="shot-caption">{{ shot.label }}</figcaption>
           </figure>
         </div>
         <div class="shots-progress" aria-hidden="true">
@@ -206,107 +182,67 @@
     </section>
 
     <!-- ===================== RESERVATION CTA ===================== -->
-    <section id="reserve" class="cta-section">
-      <div class="cta-bg" :style="{ backgroundImage: `url('${ctaImage}')` }" />
+    <section v-if="c.reserve.visible" id="reserve" class="cta-section">
+      <div class="cta-bg" :style="bg(c.reserve.image.src)" />
       <div class="cta-scrim" />
       <div v-reveal class="cta-content">
-        <span class="eyebrow-plain">Reservations</span>
-        <h2 class="cta-title">Reserve your evening<br>at YANA</h2>
-        <p class="cta-copy">We recommend booking in advance to secure your table. Our team is happy to help with larger parties and special occasions.</p>
-        <NuxtLink to="/reservation" class="btn-gold-hero btn-gold-hero--cta">Reserve a Table</NuxtLink>
-        <p class="cta-phone">or call +971 2 447 6998</p>
+        <span v-if="c.reserve.eyebrow" class="eyebrow-plain">{{ c.reserve.eyebrow }}</span>
+        <h2 class="cta-title" v-html="richText(c.reserve.title)" />
+        <p v-for="(p, i) in paragraphs(c.reserve.body)" :key="i" class="cta-copy" v-html="richText(p)" />
+        <CmsLink :link="c.reserve.button" class="btn-gold-hero btn-gold-hero--cta" />
+        <p v-if="c.reserve.phoneLine" class="cta-phone">{{ c.reserve.phoneLine }} {{ site.contact.phone }}</p>
       </div>
     </section>
 
     <!-- ===================== VISIT (map + details) ===================== -->
-    <section id="location" class="visit">
+    <section v-if="c.visit.visible" id="location" class="visit">
       <a
         class="visit-map"
-        :href="mapsProfileUrl"
+        :href="site.contact.mapsUrl"
         target="_blank"
         rel="noopener"
         aria-label="Open YANA on Google Maps"
       >
-        <img src="/images/yana-map.webp" alt="Map showing YANA on Al Saadiyat Island, Abu Dhabi" width="1200" height="1200" loading="lazy" decoding="async">
-        <span class="visit-map-cta">View on Google Maps <span aria-hidden="true">↗</span></span>
+        <img :src="c.visit.mapImage.src" :alt="c.visit.mapImage.alt" width="1200" height="1200" loading="lazy" decoding="async">
+        <span v-if="c.visit.mapButton" class="visit-map-cta">{{ c.visit.mapButton }} <span aria-hidden="true">↗</span></span>
       </a>
       <div class="visit-panel">
         <div aria-hidden="true" class="split-pattern" />
         <div v-reveal="{ y: 26 }" class="visit-inner">
-          <h2 class="visit-title">YANA Abu Dhabi</h2>
-          <p class="visit-copy">On Al Saadiyat Island, minutes from the museums and the beach — a Pan-Asian kitchen with Peruvian flair, open from morning coffee to late dinner.</p>
+          <h2 class="visit-title">{{ c.visit.title }}</h2>
+          <p v-for="(p, i) in paragraphs(c.visit.body)" :key="i" class="visit-copy" v-html="richText(p)" />
           <dl class="visit-rows">
             <div class="visit-row">
               <dt>Address</dt>
-              <dd><a href="https://maps.google.com/?q=YANA+Restaurant+Al+Saadiyat+Island+Abu+Dhabi" target="_blank" rel="noopener">Al Saadiyat Island &ndash; Abu Dhabi</a></dd>
+              <dd><a :href="site.contact.mapsUrl" target="_blank" rel="noopener">{{ addressLines(site.contact.address).join(' ') }}</a></dd>
             </div>
             <div class="visit-row">
               <dt>Phone</dt>
-              <dd><a href="tel:+97124476998">+971 2 447 6998</a></dd>
+              <dd><a :href="telHref(site.contact.phone)">{{ site.contact.phone }}</a></dd>
             </div>
             <div class="visit-row">
               <dt>Contact</dt>
-              <dd><a href="mailto:info@yanarestaurants.com">info@yanarestaurants.com</a></dd>
+              <dd><a :href="`mailto:${site.contact.email}`">{{ site.contact.email }}</a></dd>
             </div>
             <div class="visit-row">
               <dt>WhatsApp</dt>
-              <dd><a href="https://wa.me/971501906122" target="_blank" rel="noopener">+971 50 190 6122</a></dd>
+              <dd><a :href="whatsappHref(site.contact.whatsapp)" target="_blank" rel="noopener">{{ site.contact.whatsapp }}</a></dd>
             </div>
-            <div class="visit-row">
+            <div v-if="site.social.instagramUrl" class="visit-row">
               <dt>Instagram</dt>
-              <dd><a href="https://www.instagram.com/yanarestaurants/" target="_blank" rel="noopener">@yanarestaurants</a></dd>
+              <dd><a :href="site.social.instagramUrl" target="_blank" rel="noopener">{{ site.social.instagramHandle || 'Instagram' }}</a></dd>
             </div>
             <div class="visit-row">
               <dt>Opening hours</dt>
-              <dd>Sunday &ndash; Thursday | 9am &ndash; 10pm<br>Friday &amp; Saturday | 9am &ndash; midnight</dd>
+              <dd>
+                <template v-for="(row, i) in site.hours.rows" :key="i"><br v-if="i">{{ row.days }} | {{ row.hours }}</template>
+              </dd>
             </div>
-            <div class="visit-row">
+            <div v-if="c.visit.bookingLabel" class="visit-row">
               <dt>Reservations</dt>
-              <dd><NuxtLink to="/reservation">Book a table online</NuxtLink></dd>
+              <dd><NuxtLink to="/reservation">{{ c.visit.bookingLabel }}</NuxtLink></dd>
             </div>
           </dl>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== LOCATION & HOURS (previous layout — hidden, kept for reference)
-         Flip showLegacyLocationSection to true in the script to bring it back. -->
-    <section v-if="showLegacyLocationSection" id="location-legacy" class="section-pad-tight section-light">
-      <div class="location-grid">
-        <div v-reveal>
-          <span class="eyebrow eyebrow-dark"><span class="rule-short" />06 — Visit</span>
-          <h2 class="h2-dark h2-dark--tight">Find us on<br>Saadiyat Island</h2>
-          <div class="location-details">
-            <div>
-              <span class="micro-label micro-label--dark">Address</span>
-              <p class="location-address">Al Saadiyat Island<br>Abu Dhabi, United Arab Emirates</p>
-            </div>
-            <div class="location-rule" />
-            <div>
-              <span class="micro-label micro-label--dark">Opening Hours</span>
-              <div class="hours-list">
-                <div class="hours-row">
-                  <span>Sunday — Thursday</span><span class="hours-time">9:00 AM — 10:00 PM</span>
-                </div>
-                <div class="hours-row">
-                  <span>Friday</span><span class="hours-time">9:00 AM — 12:00 AM</span>
-                </div>
-                <div class="hours-row hours-row--last">
-                  <span>Saturday</span><span class="hours-time">9:00 AM — 12:00 AM</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div v-reveal="{ delay: 0.15 }" class="map-placeholder">
-          <div class="map-grid" />
-          <div class="frame-border" />
-          <div class="map-pin">
-            <span class="map-pin-dot" />
-            <span class="map-pin-dot map-pin-pulse" />
-          </div>
-          <span class="map-pin-label">YANA · Saadiyat</span>
-          <span class="map-caption">Map placeholder</span>
         </div>
       </div>
     </section>
@@ -317,42 +253,16 @@
 </template>
 
 <script setup lang="ts">
-// TEMPORARY placeholder for staging review only: this file belongs to COYA and is
-// hotlinked from their server. Replace it with YANA's own footage before launch —
-// drop an .mp4 into public/videos and point heroVideo at it, e.g. '/videos/hero.mp4'.
-const heroVideo = 'https://coyarestaurant.com/uploads/content/pages/1698918469_44fefc7e-15ae-4f40-b8a4-dac51b658d78.mp4'
-const heroImage = '/images/yana-image-2-mruiybvd-26zk.webp'
-const ctaImage = '/images/yana-image-2-mrt9pbly-db2c.webp'
-const signatureDishImage = '/images/web/menu-food.jpg'
-const kitchenRoomImage = '/images/yana-image-2-mruiybvd-26zk.webp'
-// The previous "01 — Food" band is kept in the template but switched off.
-const showLegacyFoodSection = false
-// The previous "06 — Visit" block is kept in the template but switched off.
-const showLegacyLocationSection = false
-// YANA's Google listing — swap for the exact share link from the business profile.
-const mapsProfileUrl = 'https://www.google.com/maps/search/?api=1&query=Yana+Restaurant+Al+Saadiyat+Island+Abu+Dhabi'
-const barImage = '/images/DSC00730.jpeg'
-const terraceImage = '/images/web/gallery-seafront.jpg'
-const storyImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
-const eveningImage = '/images/yana-image-4-mrt9n45r-v3w7.webp'
-const heroKenBurns = true
+import { addressLines, telHref, whatsappHref } from '#shared/content/site'
 
-// "Best shots" carousel under the intro. Web-sized copies of the DSC originals.
-const shots = [
-  { src: '/images/carousel/yana-01.jpg', alt: 'The YANA dining room under its gold-lit ceiling', label: 'The Dining Room' },
-  { src: '/images/carousel/web/signature-rolls.jpg', alt: 'Signature rolls finished with micro herbs', label: 'Signature Rolls' },
-  { src: '/images/carousel/web/live-violin.jpg', alt: 'A violinist playing in the dining room', label: 'Live Evenings' },
-  { src: '/images/carousel/web/prawn-croquettes.jpg', alt: 'Prawn croquettes on a hand-glazed plate', label: 'Small Plates' },
-  { src: '/images/carousel/web/bar-cocktail.jpg', alt: 'A violet cocktail with a flower garnish', label: 'The Bar' },
-  { src: '/images/carousel/web/shared-table.jpg', alt: 'Friends sharing dishes at a YANA table', label: 'Shared Tables' },
-  { src: '/images/carousel/web/sliders.jpg', alt: 'Sliders and a blue cooler on deep blue velvet', label: 'Bites & Pours' },
-  { src: '/images/carousel/web/terrace-saxophone.jpg', alt: 'A saxophonist on the terrace at night', label: 'Terrace Nights' },
-  { src: '/images/carousel/yana-02.jpg', alt: 'A signature bowl served on marble', label: 'From the Kitchen' },
-  { src: '/images/carousel/web/scallop.jpg', alt: 'A single scallop plated on marble', label: 'Plated with Care' },
-  { src: '/images/carousel/yana-03.jpg', alt: 'Coolers and cocktails at the bar', label: 'Coolers & Cocktails' },
-  { src: '/images/carousel/web/evening-music.jpg', alt: 'Live music among the tables in the evening', label: 'Evenings at YANA' },
-  { src: '/images/carousel/yana-04.jpg', alt: 'The palm-lined terrace entrance', label: 'The Terrace' }
-]
+const c = await usePageContent('home')
+const site = useContent('site')
+useContentSeo(() => c.value.seo)
+
+const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
+
+// "Best shots" carousel under the intro.
+const shots = computed(() => c.value.moments.shots.filter(s => s.image.src))
 const shotsTrack = ref<HTMLElement | null>(null)
 const pauseShots = ref(false)
 const shotIndex = ref(0)
@@ -367,7 +277,7 @@ function onShotsScroll() {
   const step = first.offsetWidth + parseFloat(getComputedStyle(track).columnGap || '0')
   shotsProgress.value = max > 0 ? Math.max(0.08, track.scrollLeft / max) : 1
   const atEnd = track.scrollLeft >= max - 4
-  shotIndex.value = atEnd ? shots.length - 1 : Math.min(shots.length - 1, Math.round(track.scrollLeft / step))
+  shotIndex.value = atEnd ? shots.value.length - 1 : Math.min(shots.value.length - 1, Math.round(track.scrollLeft / step))
 }
 
 // Moves one photo along; wraps around at either end.

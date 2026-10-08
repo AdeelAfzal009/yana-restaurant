@@ -1,18 +1,18 @@
 <template>
   <div class="yana-page">
     <header class="reservation-banner">
-      <div aria-hidden="true" class="banner-bg" />
+      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
       <div aria-hidden="true" class="banner-scrim" />
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span class="eyebrow-plain"><span class="rule-short" />Al Saadiyat Island · Abu Dhabi</span>
-        <h1 class="banner-title">Reserve a Table</h1>
+        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <h1 class="banner-title">{{ c.banner.title }}</h1>
       </div>
     </header>
 
     <section class="booking-section">
       <div class="booking-card">
-        <div class="booking-card-head">YANA Restaurant</div>
+        <div class="booking-card-head">{{ c.booking.cardTitle }}</div>
 
         <!-- STEP 1: DATE, TIME, PARTY SIZE -->
         <div v-if="step === 1" class="booking-body">
@@ -113,7 +113,7 @@
             </div>
           </div>
 
-          <p class="booking-label" style="margin-top: 30px;">Please confirm your details so we can contact you regarding your booking</p>
+          <p v-if="c.booking.detailsPrompt" class="booking-label" style="margin-top: 30px;">{{ c.booking.detailsPrompt }}</p>
           <form class="reservation-form" @submit.prevent="submitReservation">
             <div class="form-fields">
               <input v-model.trim="guest.firstName" class="yana-input" type="text" placeholder="First name*" required>
@@ -127,7 +127,7 @@
 
             <label class="check-row">
               <input v-model="guest.acceptedTerms" type="checkbox" required>
-              <span>By placing your reservation, you agree that your information will be subject to our Terms &amp; Conditions and Privacy Policy.</span>
+              <span>{{ c.booking.terms }}</span>
             </label>
 
             <p v-if="submitError" class="form-error">{{ submitError }}</p>
@@ -141,7 +141,7 @@
 
         <!-- STEP 3: CONFIRMATION -->
         <div v-else class="booking-body booking-body--confirm">
-          <p class="confirm-message">Dear {{ guest.firstName }}, your reservation is confirmed. Thank you for booking with us.</p>
+          <p class="confirm-message">{{ fillTemplate(c.booking.confirmation, { name: guest.firstName }) }}</p>
 
           <div class="confirm-actions">
             <button type="button" class="chip-btn chip-btn--gold" @click="resetForm">Make Another Reservation</button>
@@ -185,6 +185,11 @@
 </template>
 
 <script setup lang="ts">
+const c = await usePageContent('reservation')
+useContentSeo(() => c.value.seo)
+
+const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
+
 const maxPartySize = 10
 
 const step = ref(1)

@@ -70,7 +70,8 @@ async function onSubmit() {
       body: { currentPassword: currentPassword.value, newPassword: newPassword.value }
     })
     if (mustChange.value) {
-      await navigateTo('/admin/reservations')
+      // /admin forwards to the first area this user can open.
+      await navigateTo('/admin')
       return
     }
     success.value = 'Password updated. Use it next time you sign in.'

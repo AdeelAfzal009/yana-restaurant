@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { reservations, restaurantTables } from '../../../../database/schema'
-import { requireAuth } from '../../../../utils/auth'
+import { requirePermission } from '../../../../utils/auth'
 import { useDb } from '../../../../utils/db'
 import { sendReservationEmail, templateForStatus } from '../../../../utils/notify'
 import { badRequest } from '../../../../utils/validate'
@@ -12,7 +12,7 @@ const ALLOWED: EmailTemplate[] = ['booking_received', 'booking_confirmed', 'book
 // per-booking notification switch and the already-sent check, because a host
 // only presses it when the guest says the email never arrived.
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reservations')
 
   const id = Number(getRouterParam(event, 'id'))
   if (!Number.isInteger(id)) badRequest('Invalid reservation id')

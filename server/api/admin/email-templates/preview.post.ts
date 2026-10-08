@@ -1,13 +1,13 @@
 import { EMAIL_TEMPLATE_KEYS, normalizeEmailContent } from '#shared/utils/email-content'
 import type { EmailTemplateKey } from '#shared/utils/email-content'
-import { requireAuth } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { buildEmail, sampleEmailData } from '../../../utils/email-templates'
 import { badRequest } from '../../../utils/validate'
 
 // Renders the (possibly unsaved) wording with a sample booking, so the
 // dashboard preview is exactly what guests will receive.
 export default defineEventHandler(async (event) => {
-  const current = await requireAuth(event)
+  const current = await requirePermission(event, 'emails')
   const body = await readBody<{ template?: string, content?: unknown }>(event)
 
   const template = body?.template as EmailTemplateKey

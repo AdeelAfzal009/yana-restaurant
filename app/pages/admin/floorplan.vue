@@ -8,13 +8,13 @@
       <div class="head-actions">
         <span v-if="dirty" class="dirty-note">Unsaved changes</span>
         <button type="button" class="adm-btn" :disabled="!dirty || saving" @click="load">Discard</button>
-        <button type="button" class="adm-btn adm-btn-primary" :disabled="!dirty || saving || !isManager" @click="save">
+        <button type="button" class="adm-btn adm-btn-primary" :disabled="!dirty || saving || !canEdit" @click="save">
           <AdminIcon name="save" :size="15" /> {{ saving ? 'Saving…' : 'Save floorplan' }}
         </button>
       </div>
     </div>
 
-    <p v-if="!isManager" class="adm-error">Only managers can change the floorplan. You can look, but saving is disabled.</p>
+    <p v-if="!canEdit" class="adm-error">You can look at the floorplan but not save changes. Ask a manager for access.</p>
     <p v-if="error" class="adm-error">{{ error }}</p>
     <p v-if="saved" class="saved-note"><AdminIcon name="check" :size="15" /> Floorplan saved.</p>
 
@@ -176,8 +176,9 @@
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
 useHead({ title: 'Floorplan editor · YANA Admin' })
 
-const { data: session } = await useFetch<{ user?: { role: string } }>('/api/admin/session')
-const isManager = computed(() => session.value?.user?.role === 'manager')
+const { ready, can } = useAdminAccess()
+await ready
+const canEdit = computed(() => can('floorplan'))
 
 const sections = ref<FloorSection[]>([])
 const original = ref('')

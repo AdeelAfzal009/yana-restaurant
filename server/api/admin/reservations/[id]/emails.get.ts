@@ -1,11 +1,11 @@
 import { desc, eq } from 'drizzle-orm'
 import { emailLog } from '../../../../database/schema'
-import { requireAuth } from '../../../../utils/auth'
+import { requirePermission } from '../../../../utils/auth'
 import { useDb } from '../../../../utils/db'
 import { badRequest } from '../../../../utils/validate'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reservations')
 
   const id = Number(getRouterParam(event, 'id'))
   if (!Number.isInteger(id)) badRequest('Invalid reservation id')

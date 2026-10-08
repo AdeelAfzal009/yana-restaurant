@@ -1,3 +1,4 @@
+import { cleanPermissions, DEFAULT_HOST_ACCESS } from '#shared/utils/permissions'
 import { staff } from '../../../database/schema'
 import { requireManager } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
@@ -14,6 +15,8 @@ export default defineEventHandler(async (event) => {
   const email = cleanEmail(body?.email)
   const role = cleanRole(body?.role)
   const password = checkPassword(body?.password)
+  // Which areas a non-manager can open; managers can open everything anyway.
+  const permissions = body?.permissions === undefined ? DEFAULT_HOST_ACCESS : cleanPermissions(body.permissions)
   await assertEmailFree(email)
 
   const [user] = await useDb()
@@ -22,6 +25,7 @@ export default defineEventHandler(async (event) => {
       name,
       email,
       role,
+      permissions,
       passwordHash: await hashPassword(password),
       mustChangePassword: body?.mustChangePassword !== false
     })

@@ -1,7 +1,7 @@
-import { requireAuth } from '../../utils/auth'
+import { requirePermission } from '../../utils/auth'
 import { getConciergeConfig } from '../../utils/site-content'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'chatbot')
   return getConciergeConfig()
 })

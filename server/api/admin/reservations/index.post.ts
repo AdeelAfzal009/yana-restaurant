@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { guests, reservations } from '../../../database/schema'
 import { logActivity } from '../../../utils/activity'
 import { queueEmail, sendReservationEmail, templateForStatus } from '../../../utils/notify'
-import { requireAuth } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { generateReference, useDb } from '../../../utils/db'
 import { findOrCreateGuest } from '../../../utils/guests'
 import { parseReservationFields, stampStatusTimes, type ReservationBody } from '../../../utils/reservation-input'
@@ -12,7 +12,7 @@ import { badRequest } from '../../../utils/validate'
 // Unlike the public endpoint these may be in the past (a walk-in seated now)
 // and may skip contact details.
 export default defineEventHandler(async (event) => {
-  const me = await requireAuth(event)
+  const me = await requirePermission(event, 'reservations')
 
   const body = await readBody<ReservationBody & { guestId?: number }>(event)
   const fields = parseReservationFields(body)

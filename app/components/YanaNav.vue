@@ -20,9 +20,9 @@
           <path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z" />
           <circle cx="12" cy="10" r="2.5" />
         </svg>
-        <span><span class="yana-locale-area">Saadiyat Island, </span>Abu Dhabi</span>
+        <span><span v-if="layout.header.locationArea" class="yana-locale-area">{{ layout.header.locationArea }}{{ layout.header.locationCity ? ', ' : '' }}</span>{{ layout.header.locationCity }}</span>
       </NuxtLink>
-      <NuxtLink to="/reservation" class="yana-nav-book nav-book-btn">Book A Table</NuxtLink>
+      <NuxtLink to="/reservation" class="yana-nav-book nav-book-btn">{{ layout.header.bookLabel }}</NuxtLink>
     </div>
   </nav>
 
@@ -52,12 +52,12 @@
         </NuxtLink>
       </nav>
       <div class="yana-menu-foot">
-        <NuxtLink to="/reservation" class="yana-mobile-reserve" @click="isMenuOpen = false">Reserve a Table</NuxtLink>
+        <NuxtLink to="/reservation" class="yana-mobile-reserve" @click="isMenuOpen = false">{{ layout.menu.reserveLabel }}</NuxtLink>
         <div class="yana-menu-social">
-          <a href="https://www.instagram.com/yanarestaurants/" target="_blank" rel="noopener" aria-label="Instagram">
+          <a v-if="site.social.instagramUrl" :href="site.social.instagramUrl" target="_blank" rel="noopener" aria-label="Instagram">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg>
           </a>
-          <a href="https://wa.me/971501906122" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <a :href="whatsappHref(site.contact.whatsapp)" target="_blank" rel="noopener" aria-label="WhatsApp">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z" /><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 1c-1.2-.5-2.3-1.6-2.8-2.8l1-1-1-2z" /></svg>
           </a>
         </div>
@@ -67,6 +67,8 @@
 </template>
 
 <script setup lang="ts">
+import { whatsappHref } from '#shared/content/site'
+
 const props = defineProps<{
   active?: 'home' | 'menu' | 'about' | 'gallery' | 'contact' | 'reservation'
 }>()
@@ -79,6 +81,9 @@ const navItems = [
   { key: 'gallery', label: 'Gallery', to: '/gallery' },
   { key: 'contact', label: 'Reach Us', to: '/contact' }
 ]
+
+const site = useContent('site')
+const layout = useContent('layout')
 
 const isScrolled = ref(false)
 const isMenuOpen = ref(false)

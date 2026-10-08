@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { guests } from '../../../database/schema'
-import { requireAuth } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { badRequest, cleanTags, EMAIL_RE, optionalText } from '../../../utils/validate'
 
@@ -18,7 +18,7 @@ const DATE_PARTS = [
 ] as const
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reservations', 'guests')
 
   const id = Number(getRouterParam(event, 'id'))
   if (!Number.isInteger(id)) badRequest('Invalid guest id')

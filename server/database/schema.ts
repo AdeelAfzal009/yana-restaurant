@@ -1,5 +1,7 @@
 import { sql } from 'drizzle-orm'
-import { pgTable, pgEnum, serial, integer, text, boolean, date, time, timestamp, varchar, index, uniqueIndex, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, pgEnum, serial, integer, text, boolean, date, time, timestamp, varchar, index, uniqueIndex, jsonb, customType } from 'drizzle-orm/pg-core'
+
+const bytea = customType<{ data: Buffer, driverData: Buffer }>({ dataType: () => 'bytea' })
 
 // pending = booked online, awaiting confirmation. The service lifecycle is
 // confirmed → arrived → seated → finished; cancelled / no_show end a booking early.
@@ -158,6 +160,9 @@ export const staff = pgTable('staff', {
   // change on first login"; the dashboard stays locked until the user picks
   // their own password.
   mustChangePassword: boolean('must_change_password').notNull().default(false),
+  // Areas a non-manager may open, e.g. 'reservations' or 'content:home'.
+  // Managers ignore this: they can open everything. See shared/utils/permissions.ts.
+  permissions: text('permissions').array().notNull().default(sql`'{}'::text[]`),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   lastLoginAt: timestamp('last_login_at', { withTimezone: true })
 })
@@ -194,6 +199,24 @@ export const siteContent = pgTable('site_content', {
   value: jsonb('value').notNull(),
   updatedBy: integer('updated_by').references(() => staff.id, { onDelete: 'set null' }),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+})
+
+// Images and PDFs uploaded in the dashboard. The file itself lives in `data` so
+// it's kept in the same database (and backups) as everything else; it's served
+// from /media/<id>-<hash>.<ext> with a long browser cache.
+export const media = pgTable('media', {
+  id: serial('id').primaryKey(),
+  kind: text('kind').$type<'image' | 'pdf'>().notNull(),
+  filename: text('filename').notNull(),
+  mime: text('mime').notNull(),
+  ext: text('ext').notNull(),
+  hash: varchar('hash', { length: 16 }).notNull(),
+  size: integer('size').notNull(),
+  width: integer('width'),
+  height: integer('height'),
+  data: bytea('data').notNull(),
+  uploadedBy: integer('uploaded_by').references(() => staff.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 })
 
 export type Reservation = typeof reservations.$inferSelect

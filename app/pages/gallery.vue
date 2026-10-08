@@ -1,23 +1,23 @@
 <template>
   <div class="yana-page">
     <header class="gallery-banner">
-      <div aria-hidden="true" class="banner-bg" />
+      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
       <div aria-hidden="true" class="banner-scrim" />
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span class="eyebrow-plain"><span class="rule-short" />Inside Yana</span>
-        <h1 class="banner-title">Gallery</h1>
-        <p class="banner-sub">The room, the plates, the evenings.</p>
+        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <h1 class="banner-title">{{ c.banner.title }}</h1>
+        <p v-if="c.banner.subtitle" class="banner-sub">{{ c.banner.subtitle }}</p>
       </div>
     </header>
 
     <!-- MOSAIC -->
-    <section class="mosaic-section">
+    <section v-if="c.photos.visible && photos.length" class="mosaic-section">
       <div class="mosaic-inner">
         <div class="mosaic-grid">
           <button
             v-for="(photo, i) in photos"
-            :key="photo.src"
+            :key="i"
             type="button"
             class="mosaic-tile"
             :class="photo.landscape ? 'mosaic-tile--landscape' : 'mosaic-tile--portrait'"
@@ -34,29 +34,30 @@
     </section>
 
     <!-- DARK BAND: THE ROOM -->
-    <section class="room-section">
+    <section v-if="c.room.visible" class="room-section">
       <div aria-hidden="true" class="pattern-dark" />
       <div class="room-inner">
         <div class="room-intro">
-          <span class="eyebrow-plain"><span class="rule-short" />The Room</span>
-          <h2 class="h2-light">Blue, brass and candlelight</h2>
-          <p class="body-copy-sm">A dining room wrapped in deep blue and brass, and a bar where the evening runs late.</p>
+          <span v-if="c.room.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.room.eyebrow }}</span>
+          <h2 class="h2-light">{{ c.room.title }}</h2>
+          <p v-for="(p, i) in paragraphs(c.room.body)" :key="i" class="body-copy-sm" v-html="richText(p)" />
         </div>
-        <div class="room-grid">
-          <div v-for="room in rooms" :key="room.label" class="room-tile" :style="{ background: room.gradient }">
-            <ImagePlaceholder :label="room.label" />
+        <div v-if="c.room.tiles.length" class="room-grid">
+          <div v-for="(room, i) in c.room.tiles" :key="i" class="room-tile" :style="{ background: ROOM_GRADIENTS[i % ROOM_GRADIENTS.length] }">
+            <img v-if="room.image.src" :src="room.image.src" :alt="room.image.alt || room.label" class="room-img" loading="lazy" decoding="async">
+            <ImagePlaceholder v-else :label="room.label" />
           </div>
         </div>
       </div>
     </section>
 
     <!-- SOCIAL -->
-    <section class="social-section">
+    <section v-if="c.social.visible" class="social-section">
       <div class="social-inner">
-        <span class="handle">@yanarestaurants</span>
-        <h2 class="h2-dark">More on Instagram</h2>
-        <p class="body-copy-sm body-copy-sm--dark">New plates, new evenings — posted as they happen.</p>
-        <a href="https://www.instagram.com/yanarestaurants/" target="_blank" rel="noopener" class="btn-outline">Follow Yana</a>
+        <span v-if="c.social.handle" class="handle">{{ c.social.handle }}</span>
+        <h2 class="h2-dark">{{ c.social.title }}</h2>
+        <p v-for="(p, i) in paragraphs(c.social.body)" :key="i" class="body-copy-sm body-copy-sm--dark" v-html="richText(p)" />
+        <CmsLink :link="c.social.button" class="btn-outline" />
       </div>
     </section>
     <!-- LIGHTBOX -->
@@ -78,13 +79,13 @@
           <button type="button" class="lightbox-arrow lightbox-arrow--prev" aria-label="Previous photo" @click="stepPhoto(-1)">
             <svg width="26" height="14" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 6H1M6 1 1 6l5 5" /></svg>
           </button>
-          <figure class="lightbox-figure">
+          <figure v-if="openedPhoto" class="lightbox-figure">
             <Transition name="lightbox-img" mode="out-in">
-              <img :key="photos[activePhoto].src" :src="photos[activePhoto].src" :alt="photos[activePhoto].alt" class="lightbox-img">
+              <img :key="openedPhoto.src" :src="openedPhoto.src" :alt="openedPhoto.alt" class="lightbox-img">
             </Transition>
             <figcaption class="lightbox-caption">
               <span class="lightbox-count">{{ String(activePhoto + 1).padStart(2, '0') }} / {{ String(photos.length).padStart(2, '0') }}</span>
-              <span>{{ photos[activePhoto].alt }}</span>
+              <span>{{ openedPhoto.alt }}</span>
             </figcaption>
           </figure>
           <button type="button" class="lightbox-arrow lightbox-arrow--next" aria-label="Next photo" @click="stepPhoto(1)">
@@ -97,21 +98,19 @@
 </template>
 
 <script setup lang="ts">
-// Gallery photos in display order, with their real pixel size. Landscape
-// photos get a wide tile; portrait and square photos get a portrait tile.
-const photos = [
-  { src: '/images/web/gallery-seafront.jpg', alt: 'Palms along the Saadiyat seafront at dusk', w: 1600, h: 1200 },
-  { src: '/images/yana-side-image-mrt8vz5a-90ny.webp', alt: 'The YANA dining room', w: 816, h: 1020 },
-  { src: '/images/yana-image-3-mrt9rmoi-9m3z.webp', alt: 'The terrace by the water', w: 765, h: 1020 },
-  { src: '/images/yana-image-4-mrt9n45r-v3w7.webp', alt: 'The entrance to YANA', w: 765, h: 1020 },
-  { src: '/images/yana-image-2-mruiybvd-26zk.webp', alt: 'Deep blue banquettes and brass lights', w: 816, h: 1020 },
-  { src: '/images/web/gallery-banquette.jpg', alt: 'Blue velvet banquettes', w: 1120, h: 1400 },
-  { src: '/images/web/gallery-dining-room.jpg', alt: 'The dining room and its blue carpet', w: 787, h: 1400 },
-  { src: '/images/web/gallery-evening.jpg', alt: 'An evening of live music', w: 1120, h: 1400 },
-  { src: '/images/web/gallery-marina.jpg', alt: 'The marina view from the terrace', w: 1050, h: 1400 }
-].map(photo => ({ ...photo, landscape: photo.w > photo.h }))
+const c = await usePageContent('gallery')
+useContentSeo(() => c.value.seo)
+
+const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
+
+// Photos in display order. "Wide" photos get a landscape tile.
+const photos = computed(() => c.value.photos.items
+  .filter(p => p.image.src)
+  .map(p => ({ src: p.image.src, alt: p.image.alt, landscape: p.shape === 'landscape' })))
 
 const activePhoto = ref<number | null>(null)
+
+const openedPhoto = computed(() => activePhoto.value === null ? null : photos.value[activePhoto.value] ?? null)
 
 function openPhoto(i: number) {
   activePhoto.value = i
@@ -124,7 +123,7 @@ function closePhoto() {
 // Moves through the photos, wrapping at either end.
 function stepPhoto(dir: 1 | -1) {
   if (activePhoto.value === null) return
-  activePhoto.value = (activePhoto.value + dir + photos.length) % photos.length
+  activePhoto.value = (activePhoto.value + dir + photos.value.length) % photos.value.length
 }
 
 function onKeydown(e: KeyboardEvent) {
@@ -154,11 +153,12 @@ onUnmounted(() => {
   document.body.style.overflow = ''
 })
 
-const rooms = [
-  { label: 'Dining room, wide', gradient: 'linear-gradient(160deg, #12426d, #0f1e2e 74%)' },
-  { label: 'The bar', gradient: 'linear-gradient(150deg, #12426d, #0f1e2e 74%)' },
-  { label: 'Terrace at dusk', gradient: 'linear-gradient(165deg, #12426d, #0f1e2e 74%)' },
-  { label: 'Private dining', gradient: 'linear-gradient(155deg, #12426d, #0f1e2e 74%)' }
+// Blue washes behind The Room tiles that have no photo yet.
+const ROOM_GRADIENTS = [
+  'linear-gradient(160deg, #12426d, #0f1e2e 74%)',
+  'linear-gradient(150deg, #12426d, #0f1e2e 74%)',
+  'linear-gradient(165deg, #12426d, #0f1e2e 74%)',
+  'linear-gradient(155deg, #12426d, #0f1e2e 74%)'
 ]
 </script>
 
@@ -556,6 +556,14 @@ const rooms = [
   aspect-ratio: 3 / 4;
   overflow: hidden;
   border: 1px solid rgba(217, 182, 144, 0.28);
+}
+
+.room-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .social-section {

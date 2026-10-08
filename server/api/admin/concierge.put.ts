@@ -1,11 +1,11 @@
 import { DEFAULT_CONCIERGE, normalizeConcierge, CONCIERGE_LIMITS } from '#shared/utils/concierge'
-import { requireManager } from '../../utils/auth'
+import { requirePermission } from '../../utils/auth'
 import { resetConciergeConfig, saveConciergeConfig } from '../../utils/site-content'
 import { badRequest } from '../../utils/validate'
 
 // Saves the website chatbot. { reset: true } goes back to the built-in defaults.
 export default defineEventHandler(async (event) => {
-  const current = await requireManager(event)
+  const current = await requirePermission(event, 'chatbot')
   const body = await readBody<{ config?: unknown, reset?: boolean }>(event)
 
   if (body?.reset) {

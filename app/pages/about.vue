@@ -1,26 +1,25 @@
 <template>
   <div class="yana-page">
     <header class="about-banner">
-      <div aria-hidden="true" class="banner-bg" />
+      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
       <div aria-hidden="true" class="banner-scrim" />
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span class="eyebrow-plain"><span class="rule-short" />About Yana</span>
-        <h1 class="banner-title">About us</h1>
+        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <h1 class="banner-title">{{ c.banner.title }}</h1>
       </div>
     </header>
 
     <!-- A NEW STANDARD -->
-    <section class="standard-section">
+    <section v-if="c.standard.visible" class="standard-section">
       <div class="standard-grid">
         <div class="standard-text">
-          <span class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />About Yana</span>
-          <h2 class="h2-dark">A New Standard of Dining in Saadiyat</h2>
-          <p class="body-copy">YANA is a contemporary dining destination inspired by the vibrant fusion of <strong class="strong-ink">Asian and Latin flavors</strong>, crafted for those who appreciate refined taste and warm hospitality. Located on Saadiyat Island, YANA blends modern elegance with a welcoming atmosphere, offering dishes that are bold in flavor, beautifully presented, and made to be remembered.</p>
-          <p class="body-copy" style="margin-top: 20px;">From the kitchen to the table, every detail at YANA reflects our passion for creativity, quality, and exceptional service. Whether you're joining us for a casual meal or a special gathering, our goal is to make every visit feel unique, effortless, and unforgettable.</p>
+          <span v-if="c.standard.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.standard.eyebrow }}</span>
+          <h2 class="h2-dark" v-html="richText(c.standard.title)" />
+          <p v-for="(p, i) in paragraphs(c.standard.body)" :key="i" class="body-copy" :style="i ? 'margin-top: 20px;' : undefined" v-html="richText(p)" />
         </div>
         <div class="standard-image-wrap">
-          <div class="standard-image" :style="{ backgroundImage: `url('${sideImage}')` }">
+          <div class="standard-image" :style="bg(c.standard.image.src)" role="img" :aria-label="c.standard.image.alt">
             <div class="frame-border" />
           </div>
         </div>
@@ -28,26 +27,28 @@
     </section>
 
     <!-- FOUNDER -->
-    <section class="founder-section">
+    <section v-if="c.founder.visible" class="founder-section">
       <div aria-hidden="true" class="pattern-dark" />
       <div class="founder-inner">
         <div class="founder-intro">
-          <span class="eyebrow-plain"><span class="rule-short" />Our Founder</span>
-          <h2 class="h2-light">Message from the Founder</h2>
+          <span v-if="c.founder.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.founder.eyebrow }}</span>
+          <h2 class="h2-light" v-html="richText(c.founder.title)" />
         </div>
         <div class="founder-grid">
           <div class="founder-portrait founder-portrait--a">
-            <ImagePlaceholder label="Founder portrait (DSC00908)" />
+            <img v-if="c.founder.portraitA.src" :src="c.founder.portraitA.src" :alt="c.founder.portraitA.alt" class="cms-fill" loading="lazy" decoding="async">
+            <ImagePlaceholder v-else label="Founder portrait" />
           </div>
           <div class="founder-portrait founder-portrait--b">
-            <ImagePlaceholder label="Founder portrait (DSC01258)" />
+            <img v-if="c.founder.portraitB.src" :src="c.founder.portraitB.src" :alt="c.founder.portraitB.alt" class="cms-fill" loading="lazy" decoding="async">
+            <ImagePlaceholder v-else label="Founder portrait" />
           </div>
           <div class="founder-quote-cell">
             <span class="quote-glyph">&ldquo;</span>
-            <p class="quote-text">Every plate that leaves our kitchen should feel like an occasion — that is the standard we hold ourselves to.</p>
-            <div class="quote-attr">
+            <p class="quote-text" v-html="richText(c.founder.quote)" />
+            <div v-if="c.founder.attribution" class="quote-attr">
               <span class="rule-short rule-short--center" />
-              <span class="eyebrow-plain">Founder, YANA Restaurant</span>
+              <span class="eyebrow-plain">{{ c.founder.attribution }}</span>
             </div>
           </div>
         </div>
@@ -55,36 +56,32 @@
     </section>
 
     <!-- MISSION / VISION / CORE -->
-    <section class="pillars-section">
+    <section v-if="c.pillars.visible" class="pillars-section">
       <div class="pillars-grid">
-        <div v-for="pillar in pillars" :key="pillar.title" class="pillar">
+        <div v-for="(pillar, i) in c.pillars.items" :key="i" class="pillar">
           <span class="pillar-label">{{ pillar.title }}</span>
-          <p class="pillar-copy">{{ pillar.copy }}</p>
+          <p class="pillar-copy" v-html="richText(pillar.copy)" />
         </div>
       </div>
     </section>
 
     <!-- EXPERIENCE -->
-    <section class="about-experience-section">
+    <section v-if="c.experience.visible" class="about-experience-section">
       <div class="about-experience-grid">
         <div class="about-experience-image-wrap">
           <div class="about-experience-image">
-            <ImagePlaceholder label="Dining room photograph (DSC00837)" />
+            <img v-if="c.experience.image.src" :src="c.experience.image.src" :alt="c.experience.image.alt" class="cms-fill" loading="lazy" decoding="async">
+            <ImagePlaceholder v-else label="Dining room photograph" />
           </div>
         </div>
         <div class="about-experience-text">
-          <span class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />Experience</span>
-          <h2 class="h2-dark">Refined Dining, Elevated Atmosphere</h2>
-          <p class="body-copy">At YANA, we've created a dining experience where flavor, design, and comfort come together seamlessly. From our curated menu to the ambiance and service, everything is designed to celebrate good food and good moments.</p>
-          <p class="body-copy" style="margin-top: 20px;">Our chefs merge culinary craftsmanship with global inspiration, while our service team ensures every guest feels welcomed and valued. Whether it's a relaxed lunch or an elegant dinner, YANA offers the perfect setting for every occasion.</p>
-          <div class="stats-row">
-            <div class="stat">
-              <span class="stat-number">40+</span>
-              <p class="stat-label">Signature Dishes</p>
-            </div>
-            <div class="stat">
-              <span class="stat-number">120+</span>
-              <p class="stat-label">Seating Capacity</p>
+          <span v-if="c.experience.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.experience.eyebrow }}</span>
+          <h2 class="h2-dark" v-html="richText(c.experience.title)" />
+          <p v-for="(p, i) in paragraphs(c.experience.body)" :key="i" class="body-copy" :style="i ? 'margin-top: 20px;' : undefined" v-html="richText(p)" />
+          <div v-if="c.experience.stats.length" class="stats-row">
+            <div v-for="(stat, i) in c.experience.stats" :key="i" class="stat">
+              <span class="stat-number">{{ stat.number }}</span>
+              <p class="stat-label">{{ stat.label }}</p>
             </div>
           </div>
         </div>
@@ -92,29 +89,41 @@
     </section>
 
     <!-- CTA -->
-    <section class="cta-section">
-      <div aria-hidden="true" class="cta-bg" />
+    <section v-if="c.cta.visible" class="cta-section">
+      <div aria-hidden="true" class="cta-bg" :style="bg(c.cta.image.src)" />
       <div aria-hidden="true" class="cta-scrim" />
       <div class="cta-content">
-        <span class="eyebrow-plain">Reservations</span>
-        <h2 class="cta-title">Visit Yana Restaurant</h2>
-        <NuxtLink to="/reservation" class="btn-gold">Reserve Now</NuxtLink>
+        <span v-if="c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
+        <h2 class="cta-title">{{ c.cta.title }}</h2>
+        <CmsLink :link="c.cta.button" class="btn-gold" />
       </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-const sideImage = '/images/yana-side-image-mrt8vz5a-90ny.webp'
+const c = await usePageContent('about')
+useContentSeo(() => c.value.seo)
 
-const pillars = [
-  { title: 'Mission', copy: 'At YANA, our mission is to create refined dining experiences that blend bold flavors, thoughtful craftsmanship, and warm hospitality—bringing together Pan-Asian precision with Peruvian.' },
-  { title: 'Vision', copy: 'To become a leading destination for contemporary fusion dining in Abu Dhabi, where cuisine, atmosphere, and culture meet to create memorable moments beyond the table.' },
-  { title: 'Core', copy: 'We believe in quality without compromise, creativity with purpose, and consistency in experience. Every dish, interaction, and space is guided by authenticity, and elegance.' }
-]
+const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 </script>
 
 <style scoped>
+/* Words set in **bold** in the dashboard. */
+.body-copy :deep(strong) {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Photos added in the dashboard fill the frame the placeholder used. */
+.cms-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .about-banner {
   position: relative;
   overflow: hidden;
@@ -244,11 +253,6 @@ const pillars = [
   color: var(--ink-dim);
   margin: 28px 0 0;
   max-width: 54ch;
-}
-
-.strong-ink {
-  font-weight: 500;
-  color: var(--ink);
 }
 
 .standard-image-wrap {

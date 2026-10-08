@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
+import { effectivePermissions, hasAny, hasContentAccess } from '#shared/utils/permissions'
 import { eq } from 'drizzle-orm'
 import type { H3Event } from 'h3'
 import { staff, type Staff } from '../database/schema'
@@ -88,6 +89,24 @@ export async function requireManager(event: H3Event) {
   const current = await requireAuth(event)
   if (current.role !== 'manager') {
     throw createError({ statusCode: 403, statusMessage: 'Manager access required' })
+  }
+  return current
+}
+
+// Passes if the user has any one of the given permissions (managers always do).
+export async function requirePermission(event: H3Event, ...keys: string[]) {
+  const current = await requireAuth(event)
+  if (!hasAny(effectivePermissions(current), keys)) {
+    throw createError({ statusCode: 403, statusMessage: 'You don\'t have access to this. Ask a manager to give you access.' })
+  }
+  return current
+}
+
+// For things every website-content editor needs, like the media library.
+export async function requireContentAccess(event: H3Event) {
+  const current = await requireAuth(event)
+  if (!hasContentAccess(effectivePermissions(current))) {
+    throw createError({ statusCode: 403, statusMessage: 'You don\'t have access to website content.' })
   }
   return current
 }

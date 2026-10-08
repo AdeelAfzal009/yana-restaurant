@@ -615,3 +615,59 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- On/off switch ---- */
+.adm-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--adm-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.adm-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.adm-switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--adm-line-strong);
+  transition: background 0.2s;
+}
+
+.adm-switch-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.adm-switch input:checked + .adm-switch-track {
+  background: var(--adm-success);
+}
+
+.adm-switch input:checked + .adm-switch-track::after {
+  transform: translateX(16px);
+}
+
+.adm-switch input:focus-visible + .adm-switch-track {
+  box-shadow: 0 0 0 3px rgba(18, 66, 109, 0.2);
+}
+
+.adm-switch input:disabled + .adm-switch-track {
+  opacity: 0.6;
+}

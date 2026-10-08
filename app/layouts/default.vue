@@ -10,8 +10,10 @@
 <script setup lang="ts">
 const route = useRoute()
 
-const active = computed(() => {
-  const map: Record<string, string> = {
+type NavKey = 'home' | 'menu' | 'reservation' | 'about' | 'gallery' | 'contact'
+
+const active = computed<NavKey>(() => {
+  const map: Record<string, NavKey> = {
     '/': 'home',
     '/menu': 'menu',
     '/reservation': 'reservation',

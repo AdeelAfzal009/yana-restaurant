@@ -1,10 +1,10 @@
 import { desc, ilike, or, sql } from 'drizzle-orm'
 import { guests } from '../../../database/schema'
-import { requireAuth } from '../../../utils/auth'
+import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePermission(event, 'reservations', 'guests')
 
   const query = getQuery(event)
   const q = typeof query.q === 'string' ? query.q.trim() : ''

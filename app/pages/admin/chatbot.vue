@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <p v-if="!canEdit" class="bot-banner">Only managers can change the chatbot. You can preview it here.</p>
+    <p v-if="!canEdit" class="bot-banner">You can preview the chatbot but not change it. Ask a manager for access.</p>
     <p v-if="error" class="adm-error bot-banner">{{ error }}</p>
     <p v-if="loadError" class="adm-error bot-banner">{{ loadError }}</p>
 
@@ -206,8 +206,9 @@ useHead({ title: 'Website chatbot · YANA admin' })
 
 interface ConciergeResponse { config: ConciergeConfig, updatedAt: string | null, isDefault: boolean }
 
-const { data: session } = await useFetch<{ user?: { role: 'manager' | 'host' } }>('/api/admin/session')
-const canEdit = computed(() => session.value?.user?.role === 'manager')
+const { ready, can } = useAdminAccess()
+await ready
+const canEdit = computed(() => can('chatbot'))
 
 const { data, error: fetchError } = await useFetch<ConciergeResponse>('/api/admin/concierge')
 const loadError = computed(() => fetchError.value ? 'Could not load the chatbot settings. If you just updated the site, restart the server so the database is up to date.' : '')
