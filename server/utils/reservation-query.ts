@@ -30,17 +30,19 @@ export const reservationColumns = {
   guestTags: guests.tags,
   guestVip: guests.vip,
   guestNotes: guests.notes,
+  // Includes visits imported from the previous booking system.
   guestVisits: sql<number>`(
     select count(*)::int from ${reservations} r2
     where r2.guest_id = ${reservations.guestId} and r2.id <> ${reservations.id}
       and r2.status in ('seated', 'finished')
-  )`,
+  ) + coalesce(${guests.priorVisits}, 0)`,
   arrivedAt: reservations.arrivedAt,
   seatedAt: reservations.seatedAt,
   finishedAt: reservations.finishedAt,
   createdAt: reservations.createdAt,
   updatedAt: reservations.updatedAt,
   createdByName: sql<string | null>`(select name from staff s where s.id = ${reservations.createdBy})`,
+  bookedBy: reservations.bookedBy,
   updatedByName: sql<string | null>`(select name from staff s where s.id = ${reservations.updatedBy})`
 }
 

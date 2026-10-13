@@ -43,12 +43,14 @@
               </td>
               <td class="name-cell">
                 <span class="guest-name">
-                  {{ guestName(r) }}
+                  {{ [r.guestSalutation, guestName(r)].filter(Boolean).join(' ') }}
                   <AdminIcon v-if="r.guestVip" name="star" :size="13" class="vip-star" />
                 </span>
-                <span v-if="r.guestSalutation" class="guest-line">({{ r.guestSalutation }} {{ guestName(r) }})</span>
                 <span v-if="r.phone" class="guest-line">{{ r.phone }}</span>
-                <span class="guest-ref">{{ staffInitials(r.createdByName) }} - #{{ r.reference }}</span>
+                <span class="guest-ref">
+                  {{ bookingOrigin(r) }} - #{{ r.reference }}
+                  <AdminIcon v-if="r.source === 'walk_in'" name="walkin" :size="13" class="walkin-icon" title="Walk-in" />
+                </span>
               </td>
               <td class="center">
                 <AdminStatusSelect kind="pre" compact :status="r.status" @change="s => emit('status', r, s)" />
@@ -69,7 +71,10 @@
               </td>
               <td>
                 <div class="chips">
-                  <span v-if="!r.guestVisits && r.guestId" class="adm-chip chip-new">New Guest</span>
+                  <template v-if="r.guestId">
+                    <span v-if="!r.guestVisits" class="adm-chip chip-new">New Guest</span>
+                    <span v-else class="adm-chip chip-returning" :title="`${r.guestVisits} earlier ${r.guestVisits === 1 ? 'visit' : 'visits'}`">Returning Guest</span>
+                  </template>
                   <span v-for="t in r.guestTags" :key="t" class="adm-chip adm-chip-guest">{{ t }}</span>
                 </div>
               </td>
@@ -284,11 +289,22 @@ tr.is-done td {
   gap: 4px;
 }
 
-.chip-new {
+.chip-new,
+.chip-returning {
   background: #3F8F6B;
   color: #fff;
   border-radius: 999px;
   padding: 4px 11px;
+}
+
+.chip-returning {
+  background: #5E8C7A;
+}
+
+.walkin-icon {
+  vertical-align: -2px;
+  margin-left: 3px;
+  opacity: 0.8;
 }
 
 .notes-cell {

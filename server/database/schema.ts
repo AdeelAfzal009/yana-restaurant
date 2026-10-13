@@ -43,6 +43,13 @@ export const guests = pgTable('guests', {
   city: text('city'),
   state: text('state'),
   socialLinks: jsonb('social_links').$type<{ platform: string, url: string }[]>().notNull().default([]),
+  // Visit history carried over from the previous booking system when guests
+  // are imported; added to the counts worked out from bookings made here.
+  priorVisits: integer('prior_visits').notNull().default(0),
+  priorNoShows: integer('prior_no_shows').notNull().default(0),
+  priorCancellations: integer('prior_cancellations').notNull().default(0),
+  priorLastVisit: timestamp('prior_last_visit', { withTimezone: true }),
+  importedFrom: text('imported_from'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 }, table => [
@@ -107,6 +114,12 @@ export const reservations = pgTable('reservations', {
   source: reservationSourceEnum('source').notNull().default('online'),
   status: reservationStatusEnum('status').notNull().default('pending'),
   notifyGuest: boolean('notify_guest').notNull().default(true),
+  // Set on bookings brought over from another system: where from, and that
+  // system's own id for the booking, so importing the same file twice skips it.
+  importedFrom: text('imported_from'),
+  externalId: text('external_id'),
+  // Who took an imported booking in the old system (e.g. "Dora Mrakovic").
+  bookedBy: text('booked_by'),
   createdBy: integer('created_by').references(() => staff.id, { onDelete: 'set null' }),
   updatedBy: integer('updated_by').references(() => staff.id, { onDelete: 'set null' }),
   arrivedAt: timestamp('arrived_at', { withTimezone: true }),
@@ -117,7 +130,8 @@ export const reservations = pgTable('reservations', {
 }, table => [
   index('reservations_date_idx').on(table.date),
   index('reservations_status_idx').on(table.status),
-  index('reservations_guest_idx').on(table.guestId)
+  index('reservations_guest_idx').on(table.guestId),
+  uniqueIndex('reservations_external_id_unique').on(table.externalId).where(sql`${table.externalId} is not null`)
 ])
 
 // Audit trail shown in the reservation's "Activity logs" tab.

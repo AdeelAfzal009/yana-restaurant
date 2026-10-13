@@ -1,5 +1,7 @@
 <template>
   <div>
+    <AdminBookingImport :open="importOpen" @close="importOpen = false" @imported="load()" />
+
     <!-- Toolbar -->
     <div class="toolbar">
       <div class="adm-seg" role="tablist" aria-label="View">
@@ -37,6 +39,9 @@
         <button type="button" class="adm-btn adm-btn-icon" title="Export CSV" aria-label="Export CSV" @click="exportCsv">
           <AdminIcon name="download" :size="16" />
         </button>
+        <button type="button" class="adm-btn adm-btn-icon" title="Import bookings" aria-label="Import bookings" @click="importOpen = true">
+          <AdminIcon name="upload" :size="16" />
+        </button>
         <button type="button" class="adm-btn" @click="openForm({ mode: 'walk_in' })">
           <AdminIcon name="walkin" :size="16" /> Walk-in
         </button>
@@ -59,7 +64,10 @@
         @click="tab = g.key"
       >
         <span class="tab-label">{{ g.label }} <strong class="adm-num">{{ g.count }}</strong></span>
-        <span class="tab-covers adm-num"><AdminIcon name="users" :size="13" /> {{ g.covers }} covers</span>
+        <span class="tab-covers adm-num">
+          <AdminIcon name="users" :size="13" /> {{ g.covers }} covers
+          <template v-if="g.walkInCovers"><span class="tab-walkin" title="Walk-in covers"><AdminIcon name="walkin" :size="13" /> {{ g.walkInCovers }}</span></template>
+        </span>
       </button>
     </div>
     <div v-else class="search-banner">
@@ -153,6 +161,8 @@ const loading = ref(true)
 const error = ref('')
 const selected = ref<AdminReservation | null>(null)
 
+const importOpen = ref(false)
+
 async function load(silent = false) {
   if (!date.value) return
   if (!silent) loading.value = true
@@ -202,7 +212,9 @@ const shiftReservations = computed(() => {
 
 const groupStats = computed(() => STATUS_GROUPS.map((g) => {
   const items = shiftReservations.value.filter(r => (g.statuses as readonly string[]).includes(r.status))
-  return { key: g.key, label: g.label, count: items.length, covers: items.reduce((n, r) => n + r.partySize, 0), items }
+  const covers = items.reduce((n, r) => n + r.partySize, 0)
+  const walkInCovers = items.filter(r => r.source === 'walk_in').reduce((n, r) => n + r.partySize, 0)
+  return { key: g.key, label: g.label, count: items.length, covers, walkInCovers, items }
 }))
 
 const tabReservations = computed(() => groupStats.value.find(g => g.key === tab.value)?.items ?? [])
@@ -302,6 +314,10 @@ function showToast(message: string) {
 </script>
 
 <style scoped>
+.tab-walkin {
+  margin-left: 8px;
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;

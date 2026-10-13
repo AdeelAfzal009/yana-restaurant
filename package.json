@@ -13,12 +13,14 @@
     "db:studio": "drizzle-kit studio",
     "db:seed-admin": "tsx scripts/seed-admin.ts",
     "db:seed-demo": "tsx scripts/seed-demo.ts",
+    "db:pull-content": "tsx --env-file=.env scripts/pull-content.ts",
     "start": "PORT=${PORT:-3100} node .output/server/index.mjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.5.2",
     "pg": "^8.23.0",
+    "read-excel-file": "^5.8.8",
     "sharp": "^0.34.5",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1"

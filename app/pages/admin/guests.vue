@@ -18,10 +18,65 @@
         <button type="button" class="adm-btn adm-btn-icon" title="Export CSV" aria-label="Export CSV" @click="exportCsv">
           <AdminIcon name="download" :size="16" />
         </button>
+        <button v-if="can('guests')" type="button" class="adm-btn" @click="importOpen = true">
+          <AdminIcon name="upload" :size="16" /> Import
+        </button>
       </div>
     </div>
 
+    <AdminGuestImport :open="importOpen" @close="importOpen = false" @imported="load" />
+
+    <!-- Delete ticked guests -->
+    <Transition name="adm-fade">
+      <div v-if="confirmOpen" class="adm-backdrop" @click="!deleting && (confirmOpen = false)" />
+    </Transition>
+    <Transition name="adm-fade">
+      <div v-if="confirmOpen" class="adm-modal del-modal" role="alertdialog" aria-modal="true" aria-labelledby="del-title">
+        <header class="adm-panel-head">
+          <h2 id="del-title" class="del-title">Delete {{ selected.size.toLocaleString() }} {{ selected.size === 1 ? 'guest' : 'guests' }}?</h2>
+        </header>
+        <div class="adm-panel-body del-body">
+          <p>
+            {{ selectedRows.slice(0, 5).map(guestName).join(', ') }}<template v-if="selected.size > 5"> and {{ (selected.size - 5).toLocaleString() }} more</template>.
+            Their profiles, tags, notes and imported visit history are removed. This can't be undone.
+          </p>
+          <label v-if="selectedBookings" class="del-check">
+            <input v-model="deleteBookings" type="checkbox">
+            <span>
+              <strong>Also delete their {{ selectedBookings.toLocaleString() }} {{ selectedBookings === 1 ? 'booking' : 'bookings' }}</strong>
+              <span>Leave this off to keep the bookings in Reservations and Reports; they just won't be linked to a guest profile any more.</span>
+            </span>
+          </label>
+          <p v-if="deleteError" class="adm-error">{{ deleteError }}</p>
+        </div>
+        <footer class="adm-panel-foot">
+          <button type="button" class="adm-btn" :disabled="deleting" @click="confirmOpen = false">Cancel</button>
+          <button type="button" class="adm-btn adm-btn-danger" :disabled="deleting" @click="deleteSelected">
+            {{ deleting ? 'Deleting…' : `Delete ${selected.size === 1 ? 'guest' : 'guests'}${deleteBookings && selectedBookings ? ' and bookings' : ''}` }}
+          </button>
+        </footer>
+      </div>
+    </Transition>
+
     <p v-if="error" class="adm-error">{{ error }}</p>
+
+    <p v-if="notice" class="notice">{{ notice }}</p>
+
+    <!-- Actions for the ticked guests -->
+    <div v-if="selected.size" class="bulk-bar">
+      <span class="bulk-count">{{ selected.size.toLocaleString() }} selected</span>
+      <button v-if="!allChecked && filtered.length > selected.size" type="button" class="bulk-link" @click="selectAll">
+        Select all {{ filtered.length.toLocaleString() }}
+      </button>
+      <span class="bulk-spacer" />
+      <button type="button" class="adm-btn adm-btn-sm" @click="exportCsv">
+        <AdminIcon name="download" :size="15" /> Export
+      </button>
+      <button v-if="can('guests')" type="button" class="adm-btn adm-btn-sm bulk-delete" @click="confirmOpen = true">
+        <AdminIcon name="trash" :size="15" /> Delete
+      </button>
+      <button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" @click="selected = new Set()">Clear</button>
+    </div>
 
     <div class="adm-card list-card">
       <div v-if="loading && !guests.length" class="adm-empty">Loading guests…</div>
@@ -30,6 +85,15 @@
         <table class="adm-table">
           <thead>
             <tr>
+              <th class="pick">
+                <input
+                  type="checkbox"
+                  :checked="allChecked"
+                  :indeterminate="someChecked && !allChecked"
+                  :aria-label="allChecked ? 'Unselect all guests' : 'Select all guests'"
+                  @change="toggleAll"
+                >
+              </th>
               <th>Guest</th>
               <th>Contact</th>
               <th class="num">Visits</th>
@@ -37,11 +101,15 @@
               <th class="num">No-shows</th>
               <th>Last visit</th>
               <th>Next booking</th>
+              <th>Guest since</th>
               <th>Tags</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="g in filtered" :key="g.id" :class="{ 'is-selected': g.id === openId }" tabindex="0" @click="openGuest(g.id)" @keydown.enter="openGuest(g.id)">
+            <tr v-for="g in filtered" :key="g.id" :class="{ 'is-selected': g.id === openId, 'is-checked': selected.has(g.id) }" tabindex="0" @click="openGuest(g.id)" @keydown.enter="openGuest(g.id)">
+              <td class="pick" @click.stop="toggle(g.id)">
+                <input type="checkbox" :checked="selected.has(g.id)" :aria-label="`Select ${guestName(g)}`" @click.stop @change="toggle(g.id)">
+              </td>
               <td>
                 <div class="guest-cell">
                   <span class="avatar" :class="{ vip: g.vip }">{{ initials(g) }}</span>
@@ -60,8 +128,10 @@
               <td class="num adm-num" :class="{ warn: (g.stats?.no_shows ?? 0) > 0 }">{{ g.stats?.no_shows ?? 0 }}</td>
               <td class="adm-num">{{ g.stats?.last_visit ? formatDateShort(g.stats.last_visit) : '—' }}</td>
               <td class="adm-num">{{ g.stats?.next_booking ? formatDateShort(g.stats.next_booking) : '—' }}</td>
+              <td class="adm-num since">{{ sinceLabel(g.createdAt) }}</td>
               <td>
                 <div class="chips">
+                  <span class="status-chip" :class="{ returning: (g.stats?.visits ?? 0) >= 2 }">{{ guestStatus(g.stats?.visits ?? 0) }}</span>
                   <span v-for="t in g.tags" :key="t" class="adm-chip adm-chip-guest">{{ t }}</span>
                 </div>
               </td>
@@ -83,6 +153,7 @@
             <div>
               <h2 class="head-name">{{ [profile.salutation, guestName(profile)].filter(Boolean).join(' ') }}</h2>
               <p class="adm-page-sub">{{ [profile.phone, profile.email].filter(Boolean).join(' · ') || 'No contact details' }} · Guest since {{ new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) }}</p>
+              <span class="status-chip head-status" :class="{ returning: profileVisits >= 2 }">{{ guestStatus(profileVisits) }}</span>
             </div>
           </div>
           <span v-else class="adm-muted">Loading…</span>
@@ -100,7 +171,12 @@
         <div v-if="profile" class="adm-panel-body">
           <AdminGuestProfileForm v-if="gTab === 'profile'" :profile="profile" :sections="sections" @saved="onSaved" />
           <template v-else>
-            <p v-if="!profile.history.length" class="adm-muted">No bookings yet.</p>
+            <p v-if="profile.priorVisits || profile.priorNoShows || profile.priorCancellations" class="prior-note">
+              Plus {{ profile.priorVisits + profile.priorNoShows + profile.priorCancellations }} earlier bookings from {{ profile.importedFrom || 'the previous system' }}
+              ({{ profile.priorVisits }} seated, {{ profile.priorNoShows }} no-shows, {{ profile.priorCancellations }} cancelled).
+              Only these totals came over in the export, so they aren't listed one by one here.
+            </p>
+            <p v-if="!profile.history.length" class="adm-muted">No bookings in this dashboard yet.</p>
             <div class="history">
               <AdminBookingCard v-for="h in profile.history" :key="h.id" :item="h" />
             </div>
@@ -139,6 +215,10 @@ interface GuestRow {
 const route = useRoute()
 const router = useRouter()
 
+// Importing a guest list needs the Guests area, not just Reservations.
+const { can } = useAdminAccess()
+const importOpen = ref(false)
+
 const guests = ref<GuestRow[]>([])
 const loading = ref(true)
 const error = ref('')
@@ -169,6 +249,81 @@ const filtered = computed(() => guests.value.filter((g) => {
   if (filter.value === 'regular') return (g.stats?.visits ?? 0) >= 3
   return true
 }))
+
+// Completed visits for the open profile, bookings here plus imported ones.
+const profileVisits = computed(() => {
+  const p = profile.value
+  if (!p) return 0
+  return (p.priorVisits ?? 0) + p.history.filter(h => h.status === 'seated' || h.status === 'finished').length
+})
+
+const sinceLabel = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+
+// ---- Ticked guests (export / delete) ----
+const selected = ref(new Set<number>())
+const allChecked = computed(() => filtered.value.length > 0 && filtered.value.every(g => selected.value.has(g.id)))
+const someChecked = computed(() => filtered.value.some(g => selected.value.has(g.id)))
+const selectedRows = computed(() => guests.value.filter(g => selected.value.has(g.id)))
+const selectedBookings = computed(() => selectedRows.value.reduce((n, g) => n + (g.stats?.bookings ?? 0), 0))
+
+function toggle(id: number) {
+  const next = new Set(selected.value)
+  if (!next.delete(id)) next.add(id)
+  selected.value = next
+}
+
+// The header box ticks or unticks every guest currently shown.
+function toggleAll() {
+  const next = new Set(selected.value)
+  if (allChecked.value) filtered.value.forEach(g => next.delete(g.id))
+  else filtered.value.forEach(g => next.add(g.id))
+  selected.value = next
+}
+
+function selectAll() {
+  selected.value = new Set([...selected.value, ...filtered.value.map(g => g.id)])
+}
+
+// Guests that disappear (deleted, or no longer in the list) drop out of the selection.
+watch(guests, (list) => {
+  const present = new Set(list.map(g => g.id))
+  if ([...selected.value].some(id => !present.has(id))) selected.value = new Set([...selected.value].filter(id => present.has(id)))
+})
+
+const confirmOpen = ref(false)
+const deleteBookings = ref(false)
+const deleting = ref(false)
+const deleteError = ref('')
+const notice = ref('')
+
+watch(confirmOpen, (open) => {
+  if (open) {
+    deleteBookings.value = false
+    deleteError.value = ''
+  }
+})
+
+async function deleteSelected() {
+  deleting.value = true
+  deleteError.value = ''
+  try {
+    const ids = [...selected.value]
+    const res = await $fetch<{ deleted: number, bookingsDeleted: number }>('/api/admin/guests/delete', {
+      method: 'POST',
+      body: { ids, deleteBookings: deleteBookings.value }
+    })
+    if (openId.value && ids.includes(openId.value)) closeGuest()
+    selected.value = new Set()
+    confirmOpen.value = false
+    notice.value = `Deleted ${res.deleted.toLocaleString()} ${res.deleted === 1 ? 'guest' : 'guests'}${res.bookingsDeleted ? ` and ${res.bookingsDeleted.toLocaleString()} bookings` : ''}.`
+    setTimeout(() => { notice.value = '' }, 6000)
+    await load()
+  } catch (err) {
+    deleteError.value = errorMessage(err, 'Could not delete these guests.')
+  } finally {
+    deleting.value = false
+  }
+}
 
 // ---- Profile ----
 const openId = ref<number | null>(null)
@@ -212,10 +367,12 @@ function onSaved(updated: GuestProfile) {
   if (row) Object.assign(row, { firstName: updated.firstName, lastName: updated.lastName, email: updated.email, phone: updated.phone, tags: updated.tags, vip: updated.vip, notes: updated.notes })
 }
 
+// Exports the ticked guests, or everyone shown when nothing is ticked.
 function exportCsv() {
-  downloadCsv('yana-guests.csv', [
+  const rows = selected.value.size ? selectedRows.value : filtered.value
+  downloadCsv(selected.value.size ? `yana-guests-selected-${rows.length}.csv` : 'yana-guests.csv', [
     ['First name', 'Last name', 'Phone', 'Email', 'VIP', 'Visits', 'Covers', 'No-shows', 'Last visit', 'Tags', 'Notes'],
-    ...filtered.value.map(g => [
+    ...rows.map(g => [
       g.firstName, g.lastName, g.phone, g.email, g.vip ? 'Yes' : '', g.stats?.visits ?? 0, g.stats?.covers ?? 0,
       g.stats?.no_shows ?? 0, g.stats?.last_visit, g.tags.join('; '), g.notes
     ])
@@ -250,6 +407,162 @@ function exportCsv() {
 
 .adm-error {
   margin-bottom: 14px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--adm-success-bg);
+  color: var(--adm-success-strong);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-chip.returning {
+  background: var(--adm-primary-50);
+  color: var(--adm-primary);
+}
+
+.head-status {
+  margin-top: 6px;
+}
+
+.since {
+  white-space: nowrap;
+}
+
+.prior-note {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  background: var(--adm-surface-2);
+  font-size: 12.5px;
+  color: var(--adm-text-3);
+}
+
+.notice {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--adm-success-line);
+  border-radius: var(--adm-radius);
+  background: var(--adm-success-bg);
+  color: var(--adm-success-strong);
+  font-size: 13px;
+}
+
+.bulk-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--adm-primary-100);
+  border-radius: var(--adm-radius);
+  background: var(--adm-primary-50);
+}
+
+.bulk-count {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--adm-primary);
+}
+
+.bulk-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--adm-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.bulk-spacer {
+  flex: 1;
+}
+
+.bulk-delete {
+  color: var(--adm-danger);
+}
+
+th.pick,
+td.pick {
+  width: 40px;
+  padding-right: 0;
+  cursor: pointer;
+}
+
+.pick input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--adm-primary);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+tr.is-checked td {
+  background: var(--adm-primary-50);
+}
+
+.del-modal {
+  width: min(480px, calc(100vw - 32px));
+}
+
+.del-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--adm-heading);
+}
+
+.del-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 4px;
+  font-size: 13.5px;
+  color: var(--adm-text-2);
+}
+
+.del-body p {
+  margin: 0;
+}
+
+.del-check {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  cursor: pointer;
+}
+
+.del-check input {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--adm-danger);
+}
+
+.del-check strong {
+  display: block;
+  color: var(--adm-text);
+}
+
+.del-check span span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--adm-muted);
 }
 
 .list-card {

@@ -177,7 +177,7 @@
               </div>
               <div>
                 <dt>Created by</dt>
-                <dd>{{ reservation.createdByName ?? 'Online booking' }}</dd>
+                <dd>{{ reservation.createdByName ?? (reservation.bookedBy ? `${reservation.bookedBy} (ServMe)` : 'Online booking') }}</dd>
               </div>
               <div>
                 <dt>Edited on</dt>

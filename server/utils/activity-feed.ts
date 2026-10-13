@@ -47,7 +47,10 @@ const AUDIT_ACTIONS: Record<string, { category: LogCategory, title: string, tone
   'emails.templates_reset': { category: 'setup', title: 'Reset the email templates', tone: 'warning' },
   'floorplan.saved': { category: 'setup', title: 'Saved the floorplan' },
   'emails.test_sent': { category: 'emails', title: 'Sent a test email' },
-  'guests.updated': { category: 'guests', title: 'Edited a guest profile' }
+  'guests.updated': { category: 'guests', title: 'Edited a guest profile' },
+  'guests.imported': { category: 'guests', title: 'Imported guests' },
+  'guests.deleted': { category: 'guests', title: 'Deleted guests', tone: 'warning' },
+  'reservations.imported': { category: 'reservations', title: 'Imported bookings' }
 }
 
 // Entries that point to something going wrong.
@@ -140,6 +143,10 @@ async function auditEntries(f: FeedFilters) {
     if (typeof d.size === 'number') details.push(`${d.kind === 'pdf' ? 'PDF' : 'Image'}, ${Math.max(1, Math.round(d.size / 1024))} KB after resizing`)
     if (typeof d.tables === 'number') details.push(`${d.sections} sections, ${d.tables} tables`)
     if (Array.isArray(d.fields) && d.fields.length) details.push(`Changed: ${d.fields.join(', ')}`)
+    if (typeof d.deleted === 'number' && d.deleted > 1) details.push(`${d.deleted} guests${d.bookings ? ` and ${d.bookings} of their bookings` : ''}${Array.isArray(d.names) ? `: ${d.names.slice(0, 8).join(', ')}${d.deleted > 8 ? '…' : ''}` : ''}`)
+    else if (typeof d.bookings === 'number' && d.bookings) details.push(`Also deleted ${d.bookings} of their bookings`)
+    if (typeof d.created === 'number' && typeof d.newGuests === 'number') details.push(`${d.created} bookings, ${d.newGuests} new guest profiles, ${d.skipped} skipped · from ${d.source}`)
+    else if (typeof d.created === 'number') details.push(`${d.created} new, ${d.updated} updated, ${d.skipped} skipped${d.source ? ` · from ${d.source}` : ''}`)
     return {
       source: 'audit',
       id: r.id,

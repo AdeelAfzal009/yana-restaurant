@@ -971,8 +971,7 @@ onUnmounted(() => clearInterval(shotsTimer))
 .pull-quote-text {
   max-width: 1120px;
   margin: 0 auto;
-  /* Display italic, loaded only for this line; swap to var(--serif) to drop it. */
-  font-family: 'Playfair Display', Georgia, var(--serif);
+  font-family: 'Montserrat', sans-serif;
   font-style: italic;
   font-weight: 400;
   font-size: clamp(24px, 3.4vw, 46px);

@@ -11,6 +11,7 @@
         <li><span class="adm-dot" :style="{ background: STATUS_META.no_show.color }" /> No-show <strong class="adm-num">{{ stats.noShow }}</strong> <span class="adm-muted">({{ pct(stats.noShow) }})</span></li>
         <li><span class="adm-dot" :style="{ background: STATUS_META.cancelled.color }" /> Cancelled <strong class="adm-num">{{ stats.cancelled }}</strong> <span class="adm-muted">({{ pct(stats.cancelled) }})</span></li>
       </ul>
+      <p v-if="stats.prior" class="gp-prior">Includes {{ stats.prior }} {{ stats.prior === 1 ? 'booking' : 'bookings' }} from {{ stats.importedFrom || 'the previous system' }}.</p>
       <dl class="gp-last">
         <dt>Covers</dt><dd class="adm-num">{{ stats.covers }}</dd>
         <dt>Last seat</dt><dd>{{ stats.lastSeat ?? '—' }}</dd>
@@ -248,18 +249,29 @@ function addTag() {
   customTag.value = ''
 }
 
+// Bookings made here plus the history imported from the previous system.
 const stats = computed(() => {
-  const h = props.profile.history
+  const p = props.profile
+  const h = p.history
   const seated = h.filter(x => x.status === 'seated' || x.status === 'finished')
   const last = seated[0]
+  const prior = (p.priorVisits ?? 0) + (p.priorNoShows ?? 0) + (p.priorCancellations ?? 0)
+  // The imported last visit wins only if it's newer than any visit here.
+  const lastHere = last ? new Date(`${last.date}T${last.time}:00+04:00`) : null
+  const priorLast = p.priorLastVisit ? new Date(p.priorLastVisit) : null
+  const usePrior = priorLast && (!lastHere || priorLast > lastHere)
   return {
-    total: h.length,
-    seated: seated.length,
-    noShow: h.filter(x => x.status === 'no_show').length,
-    cancelled: h.filter(x => x.status === 'cancelled').length,
+    total: h.length + prior,
+    seated: seated.length + (p.priorVisits ?? 0),
+    noShow: h.filter(x => x.status === 'no_show').length + (p.priorNoShows ?? 0),
+    cancelled: h.filter(x => x.status === 'cancelled').length + (p.priorCancellations ?? 0),
     covers: seated.reduce((n, x) => n + (x.seatedGuests ?? x.partySize), 0),
     lastSeat: last?.tableName ? `${last.tableName}${last.sectionName ? ` · ${last.sectionName}` : ''}` : null,
-    lastVisit: last ? `${formatDateShort(last.date)} ${last.date.slice(0, 4)}, ${formatTime(last.time)}` : null
+    lastVisit: usePrior
+      ? priorLast!.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Dubai' }).replace(/ (am|pm)$/, '$1')
+      : last ? `${formatDateShort(last.date)} ${last.date.slice(0, 4)}, ${formatTime(last.time)}` : null,
+    prior,
+    importedFrom: p.importedFrom
   }
 })
 
@@ -324,6 +336,15 @@ async function save() {
 .gp-total strong {
   font-size: 24px;
   font-weight: 500;
+}
+
+/* "Includes N bookings from ServMe": full width, under the numbers. */
+.gp-prior {
+  grid-column: 1 / -1;
+  order: 99;
+  margin: -6px 0 0;
+  font-size: 12px;
+  color: var(--adm-muted);
 }
 
 .gp-breakdown {

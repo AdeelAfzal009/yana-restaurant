@@ -29,3 +29,7 @@ node_modules
 
 # Full-size source photos (optimised copies live in public/images)
 /design-source
+
+# Guest/booking exports contain personal data: never commit them
+*.xlsx
+*.xls

@@ -1,0 +1,1 @@
+ALTER TABLE "reservations" ADD COLUMN "booked_by" text;

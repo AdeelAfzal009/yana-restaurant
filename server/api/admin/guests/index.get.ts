@@ -11,14 +11,19 @@ export default defineEventHandler(async (event) => {
   const like = `%${q.replace(/[%_\\]/g, '\\$&')}%`
 
   const db = useDb()
+  // Visit history imported from the previous booking system (prior_*) is added
+  // to what bookings made here show.
   const stats = sql`(
     select
-      count(*) filter (where r.status in ('seated', 'finished'))::int as visits,
+      (count(*) filter (where r.status in ('seated', 'finished')) + ${guests.priorVisits})::int as visits,
       coalesce(sum(r.party_size) filter (where r.status in ('seated', 'finished')), 0)::int as covers,
-      count(*) filter (where r.status = 'no_show')::int as no_shows,
-      count(*) filter (where r.status = 'cancelled')::int as cancellations,
+      (count(*) filter (where r.status = 'no_show') + ${guests.priorNoShows})::int as no_shows,
+      (count(*) filter (where r.status = 'cancelled') + ${guests.priorCancellations})::int as cancellations,
       count(*)::int as bookings,
-      max(r.date) filter (where r.status in ('seated', 'finished'))::text as last_visit,
+      greatest(
+        max(r.date) filter (where r.status in ('seated', 'finished')),
+        (${guests.priorLastVisit} at time zone 'Asia/Dubai')::date
+      )::text as last_visit,
       min(r.date) filter (where r.date >= current_date and r.status in ('pending', 'confirmed'))::text as next_booking
     from reservations r where r.guest_id = ${guests.id}
   )`
@@ -54,7 +59,7 @@ export default defineEventHandler(async (event) => {
         )
       : undefined)
     .orderBy(desc(guests.vip), desc(guests.updatedAt))
-    .limit(500)
+    .limit(5000)
 
   return rows
 })

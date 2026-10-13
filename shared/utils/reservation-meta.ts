@@ -46,7 +46,8 @@ export const SOCIAL_PLATFORMS = ['Instagram', 'TikTok', 'Facebook', 'LinkedIn', 
 
 // Status groups drive the tabs on the reservations screen.
 export const STATUS_GROUPS = [
-  { key: 'all', label: 'All Reservations', statuses: ['pending', 'confirmed', 'arrived', 'seated', 'finished'] },
+  // Like ServMe: every booking of the day, cancelled and no-shows included.
+  { key: 'all', label: 'All Reservations', statuses: ['pending', 'confirmed', 'arrived', 'seated', 'finished', 'cancelled', 'no_show'] },
   { key: 'upcoming', label: 'Upcoming', statuses: ['pending', 'confirmed'] },
   { key: 'in_service', label: 'Arrived / Seated', statuses: ['arrived', 'seated'] },
   { key: 'finished', label: 'Finished', statuses: ['finished'] },

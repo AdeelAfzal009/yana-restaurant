@@ -33,6 +33,8 @@ export interface AdminReservation {
   updatedAt: string
   createdByName: string | null
   updatedByName: string | null
+  // Who took it in the previous booking system, for imported bookings.
+  bookedBy: string | null
 }
 
 export interface GuestHistoryItem {
@@ -81,6 +83,12 @@ export interface GuestProfile {
   city: string | null
   state: string | null
   socialLinks: { platform: string, url: string }[]
+  // Visit history imported from the previous booking system.
+  priorVisits: number
+  priorNoShows: number
+  priorCancellations: number
+  priorLastVisit: string | null
+  importedFrom: string | null
   createdAt: string
   history: GuestHistoryItem[]
 }
@@ -104,6 +112,14 @@ export function clockTime(iso: string) {
 export function staffInitials(name: string | null) {
   if (!name) return 'Online'
   return name.split(/\s+/).map(p => `${p[0]}.`).join('').toUpperCase()
+}
+
+// Who took a booking, as shown before its reference: the staff member's
+// initials ("D.M."), or where it came from when nobody on the team entered it.
+export function bookingOrigin(r: { createdByName: string | null, bookedBy?: string | null, source: ReservationSource }) {
+  const name = r.createdByName ?? r.bookedBy
+  if (name) return staffInitials(name)
+  return { online: 'Online', walk_in: 'Walk-in', phone: 'Phone', staff: 'Staff' }[r.source] ?? 'Online'
 }
 
 // Minutes actually spent at the table, once the party has been seated.
@@ -243,4 +259,10 @@ export function downloadCsv(filename: string, rows: (string | number | null | un
   a.download = filename
   a.click()
   URL.revokeObjectURL(url)
+}
+
+// ServMe-style label from completed visits (including imported ones):
+// one visit or none is a new guest, two or more a returning one.
+export function guestStatus(visits: number) {
+  return visits >= 2 ? 'Returning Guest' : 'New Guest'
 }
