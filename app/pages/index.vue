@@ -95,7 +95,7 @@
     </section>
 
     <!-- ===================== TERRACE ===================== -->
-    <section v-if="c.terrace.visible" id="terrace" class="feature section-light">
+    <section v-if="c.terrace.visible" id="terrace" class="feature section-light" :class="{ 'feature--joined-below': terraceMeetsStory }">
       <span v-if="c.terrace.showGhost && c.terrace.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.terrace.ghost }}</span>
       <div class="feature-grid">
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
@@ -125,11 +125,11 @@
       </div>
     </section>
 
-    <!-- Two cream sections meet when Evenings is switched off, so a fine line separates them. -->
-    <div v-if="c.terrace.visible && c.story.visible && !c.evenings.visible" aria-hidden="true" class="section-divider" />
+    <!-- Two cream sections meet when Evenings is switched off: a fine line separates them and the gap closes up. -->
+    <div v-if="terraceMeetsStory" aria-hidden="true" class="section-divider" />
 
     <!-- ===================== OUR STORY ===================== -->
-    <section v-if="c.story.visible" id="story" class="feature section-light">
+    <section v-if="c.story.visible" id="story" class="feature section-light" :class="{ 'feature--joined-above': terraceMeetsStory }">
       <span v-if="c.story.showGhost && c.story.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.story.ghost }}</span>
       <div class="feature-grid feature-grid--reverse">
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
@@ -350,6 +350,9 @@ const site = useContent('site')
 useContentSeo(() => c.value.seo)
 
 const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
+
+// The Terrace and Our Story sit next to each other when Evenings is off.
+const terraceMeetsStory = computed(() => c.value.terrace.visible && c.value.story.visible && !c.value.evenings.visible)
 
 // Photo strip: only photos that have an image.
 const stripPhotos = computed(() => c.value.strip.photos.map(p => p.image).filter(img => img.src))
@@ -1486,6 +1489,15 @@ onUnmounted(() => clearInterval(quotesTimer))
   position: relative;
   overflow: hidden;
   padding: clamp(64px, 9vw, 130px) clamp(20px, 5vw, 64px);
+}
+
+/* Two light feature sections back to back share one tighter gap. */
+.feature--joined-below {
+  padding-bottom: clamp(36px, 4.5vw, 64px);
+}
+
+.feature--joined-above {
+  padding-top: clamp(36px, 4.5vw, 64px);
 }
 
 /* Deep midnight sapphire with a soft pool of light behind the photo
