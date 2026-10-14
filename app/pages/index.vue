@@ -125,6 +125,9 @@
       </div>
     </section>
 
+    <!-- Two cream sections meet when Evenings is switched off, so a fine line separates them. -->
+    <div v-if="c.terrace.visible && c.story.visible && !c.evenings.visible" aria-hidden="true" class="section-divider" />
+
     <!-- ===================== OUR STORY ===================== -->
     <section v-if="c.story.visible" id="story" class="feature section-light">
       <span v-if="c.story.showGhost && c.story.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.story.ghost }}</span>
