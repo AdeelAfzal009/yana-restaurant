@@ -1,6 +1,6 @@
 <template>
-  <footer class="yana-footer">
-    <div aria-hidden="true" class="yana-footer-pattern" />
+  <footer class="yana-footer" :style="sectionBackground(layout.footer.bgColor)">
+    <div v-if="layout.footer.showBgImage" aria-hidden="true" class="yana-footer-pattern" />
     <div class="yana-footer-inner">
       <div class="yana-footer-cols">
         <div class="yana-footer-brand">

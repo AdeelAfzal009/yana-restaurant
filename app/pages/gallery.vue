@@ -1,11 +1,13 @@
 <template>
   <div class="yana-page">
-    <header class="gallery-banner">
-      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
-      <div aria-hidden="true" class="banner-scrim" />
+    <header class="gallery-banner" :style="sectionBackground(c.banner.bgColor)">
+      <template v-if="c.banner.showBgImage">
+        <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
+        <div aria-hidden="true" class="banner-scrim" />
+      </template>
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <span v-if="c.banner.showEyebrow && c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
         <h1 class="banner-title">{{ c.banner.title }}</h1>
         <p v-if="c.banner.subtitle" class="banner-sub">{{ c.banner.subtitle }}</p>
       </div>
@@ -34,11 +36,11 @@
     </section>
 
     <!-- DARK BAND: THE ROOM -->
-    <section v-if="c.room.visible" class="room-section">
-      <div aria-hidden="true" class="pattern-dark" />
+    <section v-if="c.room.visible" class="room-section" :style="sectionBackground(c.room.bgColor)">
+      <div v-if="c.room.showBgImage" aria-hidden="true" class="pattern-dark" />
       <div class="room-inner">
         <div class="room-intro">
-          <span v-if="c.room.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.room.eyebrow }}</span>
+          <span v-if="c.room.showEyebrow && c.room.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.room.eyebrow }}</span>
           <h2 class="h2-light">{{ c.room.title }}</h2>
           <p v-for="(p, i) in paragraphs(c.room.body)" :key="i" class="body-copy-sm" v-html="richText(p)" />
         </div>
@@ -592,7 +594,7 @@ const ROOM_GRADIENTS = [
   font-size: clamp(30px, 4.6vw, 52px);
   line-height: 1.08;
   margin: 20px 0 0;
-  color: var(--ink);
+  color: var(--heading-on-light, #12426D);
 }
 
 .btn-outline {

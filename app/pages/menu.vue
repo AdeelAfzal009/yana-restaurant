@@ -1,12 +1,14 @@
 <template>
   <div class="yana-page">
     <!-- BANNER -->
-    <header class="menu-banner">
-      <div aria-hidden="true" class="banner-bg banner-bg--wide" :style="bg(c.banner.image.src)" />
-      <div aria-hidden="true" class="banner-scrim banner-scrim--menu" />
+    <header class="menu-banner" :style="sectionBackground(c.banner.bgColor)">
+      <template v-if="c.banner.showBgImage">
+        <div aria-hidden="true" class="banner-bg banner-bg--wide" :style="bg(c.banner.image.src)" />
+        <div aria-hidden="true" class="banner-scrim banner-scrim--menu" />
+      </template>
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <span v-if="c.banner.showEyebrow && c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
         <h1 class="banner-title">{{ c.banner.title }}</h1>
         <p v-if="c.banner.subtitle" class="banner-sub">{{ c.banner.subtitle }}</p>
       </div>
@@ -77,7 +79,7 @@
       <div aria-hidden="true" class="cta-bg" :style="bg(c.cta.image.src)" />
       <div aria-hidden="true" class="cta-scrim" />
       <div class="cta-content">
-        <span v-if="c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
+        <span v-if="c.cta.showEyebrow && c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
         <h2 class="cta-title">{{ c.cta.title }}</h2>
         <p v-for="(p, i) in paragraphs(c.cta.body)" :key="i" class="cta-copy" v-html="richText(p)" />
         <div class="cta-btn-row">
@@ -406,7 +408,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   font-weight: 300;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold-dk);
+  color: var(--heading-on-light, #12426D);
 }
 
 .feature-text {

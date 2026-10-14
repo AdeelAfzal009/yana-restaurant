@@ -1,14 +1,18 @@
-import { background, body, button, eyebrow, image, img, link, seoFields, title } from './fields'
+import { background, body, button, eyebrow, image, img, link, seoFields, title, backdropFields } from './fields'
 import type { ContentPage } from './schema'
 
 const defaults = {
   banner: {
+    showBgImage: true,
+    bgColor: 'default',
     image: img('/images/yana-image-4-mrt9n45r-v3w7.webp'),
+    showEyebrow: true,
     eyebrow: 'About Yana',
     title: 'About us'
   },
   standard: {
     visible: true,
+    showEyebrow: true,
     eyebrow: 'About Yana',
     title: 'A New Standard of Dining in Saadiyat',
     body: [
@@ -18,7 +22,10 @@ const defaults = {
     image: img('/images/yana-side-image-mrt8vz5a-90ny.webp', 'The YANA dining room')
   },
   founder: {
+    showBgImage: true,
+    bgColor: 'default',
     visible: true,
+    showEyebrow: true,
     eyebrow: 'Our Founder',
     title: 'Message from the Founder',
     portraitA: img(''),
@@ -37,6 +44,7 @@ const defaults = {
   experience: {
     visible: true,
     image: img(''),
+    showEyebrow: true,
     eyebrow: 'Experience',
     title: 'Refined Dining, Elevated Atmosphere',
     body: [
@@ -51,6 +59,7 @@ const defaults = {
   cta: {
     visible: true,
     image: img('/images/yana-image-2-mrt9pbly-db2c.webp'),
+    showEyebrow: true,
     eyebrow: 'Reservations',
     title: 'Visit Yana Restaurant',
     button: link('Reserve Now', '/reservation')
@@ -72,21 +81,21 @@ export const ABOUT_PAGE: ContentPage = {
     {
       id: 'banner',
       label: 'Banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }],
+      fields: [background(), ...backdropFields('background image'), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }],
       defaults: defaults.banner
     },
     {
       id: 'standard',
       label: 'A New Standard',
-      fields: [eyebrow(), title(), body(), image()],
+      fields: [...eyebrow(), title(), body(), image()],
       defaults: defaults.standard
     },
     {
       id: 'founder',
       label: 'Founder',
       description: 'Until portraits are added, grey placeholders are shown.',
-      fields: [
-        eyebrow(), title(),
+      fields: [...backdropFields(), 
+        ...eyebrow(), title(),
         image('portraitA', 'Portrait (large)', false),
         image('portraitB', 'Portrait (small)', false),
         { key: 'quote', type: 'textarea', label: 'Quote', required: true, rows: 3, max: 400 },
@@ -117,7 +126,7 @@ export const ABOUT_PAGE: ContentPage = {
       label: 'Experience',
       fields: [
         { ...image('image', 'Photo', false), hint: 'Until a photo is added, a grey placeholder is shown.' },
-        eyebrow(), title(), body(),
+        ...eyebrow(), title(), body(),
         {
           key: 'stats',
           type: 'list',
@@ -136,7 +145,7 @@ export const ABOUT_PAGE: ContentPage = {
     {
       id: 'cta',
       label: 'Reservation banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, button()],
+      fields: [background(), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, button()],
       defaults: defaults.cta
     },
     {

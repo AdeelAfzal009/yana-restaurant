@@ -1,11 +1,13 @@
 <template>
   <div class="yana-page">
-    <header class="reservation-banner">
-      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
-      <div aria-hidden="true" class="banner-scrim" />
+    <header class="reservation-banner" :style="sectionBackground(c.banner.bgColor)">
+      <template v-if="c.banner.showBgImage">
+        <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
+        <div aria-hidden="true" class="banner-scrim" />
+      </template>
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <span v-if="c.banner.showEyebrow && c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
         <h1 class="banner-title">{{ c.banner.title }}</h1>
       </div>
     </header>

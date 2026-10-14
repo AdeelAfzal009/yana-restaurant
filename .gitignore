@@ -33,3 +33,6 @@ node_modules
 # Guest/booking exports contain personal data: never commit them
 *.xlsx
 *.xls
+
+# Content backups made by db:push-content (may contain personal data)
+/backups

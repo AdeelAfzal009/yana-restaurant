@@ -21,3 +21,11 @@ export function paragraphs(text: string | null | undefined) {
 export function fillTemplate(text: string, values: Record<string, string | number>) {
   return text.replace(/\{(\w+)\}/g, (match, key: string) => key in values ? String(values[key]) : match)
 }
+
+// Background colour chosen in the dashboard for a dark section or banner;
+// "default" keeps the colours set in the page's CSS.
+const BRAND_BACKGROUNDS: Record<string, string> = { blue: '#12426D', dark: '#0F1E2E' }
+
+export function sectionBackground(colour?: string | null) {
+  return colour && BRAND_BACKGROUNDS[colour] ? { background: BRAND_BACKGROUNDS[colour] } : undefined
+}

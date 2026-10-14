@@ -1,4 +1,4 @@
-import { background, body, button, eyebrow, image, img, link, seoFields, subtitle } from './fields'
+import { background, body, button, eyebrow, image, img, link, seoFields, subtitle, backdropFields } from './fields'
 import type { ContentPage } from './schema'
 
 const DIGITAL_MENU = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID='
@@ -15,7 +15,10 @@ export const MENU_TILE_ICONS = [
 
 const defaults = {
   banner: {
+    showBgImage: true,
+    bgColor: 'default',
     image: img('/images/yana-pattern-wide.jpeg'),
+    showEyebrow: true,
     eyebrow: 'Al Saadiyat Island · Abu Dhabi',
     title: 'Menu',
     subtitle: 'Pan-Asian Fusion, Peruvian Flair'
@@ -55,6 +58,7 @@ const defaults = {
   cta: {
     visible: true,
     image: img('/images/yana-image-3-mrt9rmoi-9m3z.webp'),
+    showEyebrow: true,
     eyebrow: 'The Full List',
     title: 'Browse our digital menu',
     body: 'Every dish, every pour — kept current by the kitchen.',
@@ -78,7 +82,7 @@ export const MENU_PAGE: ContentPage = {
     {
       id: 'banner',
       label: 'Banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, subtitle()],
+      fields: [background(), ...backdropFields('background image'), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, subtitle()],
       defaults: defaults.banner
     },
     {
@@ -121,7 +125,7 @@ export const MENU_PAGE: ContentPage = {
       id: 'cta',
       label: 'Digital menu banner',
       fields: [
-        background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, body('Text', 2),
+        background(), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, body('Text', 2),
         button('button', 'Main button', true), button('button2', 'Second button')
       ],
       defaults: defaults.cta

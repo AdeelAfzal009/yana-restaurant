@@ -5,8 +5,12 @@ import type { ContentField } from './schema'
 
 export const TEXT_HINT = 'Leave an empty line between paragraphs. Put **double stars** around words to make them bold.'
 
-export const eyebrow = (label = 'Small heading'): ContentField =>
-  ({ key: 'eyebrow', type: 'text', label, max: 80, hint: 'The short line above the title. Leave empty to hide it.' })
+// The short line above a title ("02 — Pisco Bar"): a switch to show or hide
+// it, and its text.
+export const eyebrow = (label = 'Small heading'): ContentField[] => [
+  { key: 'showEyebrow', type: 'toggle', label: `Show ${label.toLowerCase()}`, hint: 'The short line above the title.' },
+  { key: 'eyebrow', type: 'text', label, max: 80 }
+]
 
 export const title = (label = 'Title'): ContentField =>
   ({ key: 'title', type: 'textarea', label, required: true, rows: 2, max: 160, hint: 'Press Enter to start a new line.' })
@@ -26,8 +30,33 @@ export const image = (key = 'image', label = 'Photo', required = true): ContentF
 export const background = (key = 'image', label = 'Background image'): ContentField =>
   ({ key, type: 'image', label, decorative: true, required: true, hint: 'Sits behind the text, so pick a calm photo or pattern.' })
 
-export const ghostWord = (): ContentField =>
-  ({ key: 'ghost', type: 'text', label: 'Large background word', max: 20, hint: 'The faint oversized word behind the section. Leave empty to hide it.' })
+// The faint oversized word behind a section ("PISCO BAR"): a switch to show
+// or hide it, and its text.
+export const ghostFields = (): ContentField[] => [
+  { key: 'showGhost', type: 'toggle', label: 'Show large background word', hint: 'The faint oversized word behind the section.' },
+  { key: 'ghost', type: 'text', label: 'Large background word', max: 20 }
+]
+
+// Background of dark sections and page banners: the pattern/photo on or off,
+// and the colour behind it.
+export const BACKGROUND_COLOURS = [
+  { value: 'default', label: 'Original (blue to navy)' },
+  { value: 'blue', label: 'YANA blue' },
+  { value: 'dark', label: 'Dark navy' }
+]
+
+// For navy sections without a pattern: just the colour.
+export const navyColourField = (): ContentField => ({
+  key: 'bgColor',
+  type: 'select',
+  label: 'Background colour',
+  options: [{ value: 'dark', label: 'Dark navy' }, { value: 'blue', label: 'YANA blue' }]
+})
+
+export const backdropFields = (what = 'background pattern'): ContentField[] => [
+  { key: 'showBgImage', type: 'toggle', label: `Show ${what}` },
+  { key: 'bgColor', type: 'select', label: 'Background colour', options: BACKGROUND_COLOURS, hint: 'The colour behind the section. Original keeps the designed blend.' }
+]
 
 export const seoFields = (): ContentField[] => [
   { key: 'title', type: 'text', label: 'Page title', required: true, max: 70, hint: 'Shown in the browser tab and as the headline in Google results. Around 50–60 characters works best.' },

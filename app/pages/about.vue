@@ -1,11 +1,13 @@
 <template>
   <div class="yana-page">
-    <header class="about-banner">
-      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
-      <div aria-hidden="true" class="banner-scrim" />
+    <header class="about-banner" :style="sectionBackground(c.banner.bgColor)">
+      <template v-if="c.banner.showBgImage">
+        <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
+        <div aria-hidden="true" class="banner-scrim" />
+      </template>
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <span v-if="c.banner.showEyebrow && c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
         <h1 class="banner-title">{{ c.banner.title }}</h1>
       </div>
     </header>
@@ -14,7 +16,7 @@
     <section v-if="c.standard.visible" class="standard-section">
       <div class="standard-grid">
         <div class="standard-text">
-          <span v-if="c.standard.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.standard.eyebrow }}</span>
+          <span v-if="c.standard.showEyebrow && c.standard.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.standard.eyebrow }}</span>
           <h2 class="h2-dark" v-html="richText(c.standard.title)" />
           <p v-for="(p, i) in paragraphs(c.standard.body)" :key="i" class="body-copy" :style="i ? 'margin-top: 20px;' : undefined" v-html="richText(p)" />
         </div>
@@ -27,11 +29,11 @@
     </section>
 
     <!-- FOUNDER -->
-    <section v-if="c.founder.visible" class="founder-section">
-      <div aria-hidden="true" class="pattern-dark" />
+    <section v-if="c.founder.visible" class="founder-section" :style="sectionBackground(c.founder.bgColor)">
+      <div v-if="c.founder.showBgImage" aria-hidden="true" class="pattern-dark" />
       <div class="founder-inner">
         <div class="founder-intro">
-          <span v-if="c.founder.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.founder.eyebrow }}</span>
+          <span v-if="c.founder.showEyebrow && c.founder.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.founder.eyebrow }}</span>
           <h2 class="h2-light" v-html="richText(c.founder.title)" />
         </div>
         <div class="founder-grid">
@@ -75,7 +77,7 @@
           </div>
         </div>
         <div class="about-experience-text">
-          <span v-if="c.experience.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.experience.eyebrow }}</span>
+          <span v-if="c.experience.showEyebrow && c.experience.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.experience.eyebrow }}</span>
           <h2 class="h2-dark" v-html="richText(c.experience.title)" />
           <p v-for="(p, i) in paragraphs(c.experience.body)" :key="i" class="body-copy" :style="i ? 'margin-top: 20px;' : undefined" v-html="richText(p)" />
           <div v-if="c.experience.stats.length" class="stats-row">
@@ -93,7 +95,7 @@
       <div aria-hidden="true" class="cta-bg" :style="bg(c.cta.image.src)" />
       <div aria-hidden="true" class="cta-scrim" />
       <div class="cta-content">
-        <span v-if="c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
+        <span v-if="c.cta.showEyebrow && c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
         <h2 class="cta-title">{{ c.cta.title }}</h2>
         <CmsLink :link="c.cta.button" class="btn-gold" />
       </div>
@@ -235,7 +237,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
   font-size: clamp(32px, 5vw, 58px);
   line-height: 1.06;
   margin: 24px 0 0;
-  color: var(--ink);
+  color: var(--heading-on-light, #12426D);
 }
 
 .h2-light {

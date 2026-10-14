@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :style="{ '--heading-on-light': headingColour }">
     <YanaNav :active="active" />
     <slot />
     <YanaFooter />
@@ -8,7 +8,13 @@
 </template>
 
 <script setup lang="ts">
+import { HEADING_COLOUR_VALUES } from '#shared/content/layout'
+
 const route = useRoute()
+
+// Site-wide colour for headings on light backgrounds (Header & footer › Style).
+const layout = useContent('layout')
+const headingColour = computed(() => HEADING_COLOUR_VALUES[layout.value.style.headingColor] ?? HEADING_COLOUR_VALUES.blue)
 
 type NavKey = 'home' | 'menu' | 'reservation' | 'about' | 'gallery' | 'contact'
 

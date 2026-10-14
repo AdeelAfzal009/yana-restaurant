@@ -1,4 +1,4 @@
-import { background, body, button, eyebrow, ghostWord, image, img, link, seoFields, subtitle, title } from './fields'
+import { background, body, button, eyebrow, ghostFields, image, navyColourField, img, link, seoFields, subtitle, title, backdropFields } from './fields'
 import type { ContentPage } from './schema'
 
 const defaults = {
@@ -6,6 +6,7 @@ const defaults = {
     video: 'https://coyarestaurant.com/uploads/content/pages/1698918469_44fefc7e-15ae-4f40-b8a4-dac51b658d78.mp4',
     image: img('/images/yana-image-2-mruiybvd-26zk.webp'),
     zoom: true,
+    showEyebrow: true,
     eyebrow: 'Pan Asian Fusion Peruvian Flair',
     title: 'Fire & Sea',
     location: 'Saadiyat Island · Abu Dhabi',
@@ -26,6 +27,7 @@ const defaults = {
     visible: true,
     roomImage: img('/images/yana-image-2-mruiybvd-26zk.webp', 'The YANA dining room'),
     dishImage: img('/images/web/menu-food.jpg', 'A spread of YANA dishes and a cocktail on marble'),
+    showEyebrow: true,
     eyebrow: '01 — Food',
     title: 'La Cocina de YANA',
     body: [
@@ -39,8 +41,12 @@ const defaults = {
     text: '‘YANA brings together the vibrancy of Peruvian cuisine with the elegance of Pan-Asian cuisine.’'
   },
   bar: {
+    showBgImage: true,
+    bgColor: 'default',
     visible: true,
+    showGhost: true,
     ghost: 'PISCO BAR',
+    showEyebrow: true,
     eyebrow: '02 — Pisco Bar',
     title: 'Unwind over pisco,\nlate into the night',
     body: [
@@ -52,7 +58,9 @@ const defaults = {
   },
   terrace: {
     visible: true,
+    showGhost: true,
     ghost: 'TERRACE',
+    showEyebrow: true,
     eyebrow: '03 — The Terrace',
     title: 'Sea breeze, palms\nand long lunches',
     body: [
@@ -65,7 +73,9 @@ const defaults = {
   evenings: {
     visible: true,
     image: img('/images/yana-image-4-mrt9n45r-v3w7.webp'),
+    showGhost: true,
     ghost: 'EVENINGS',
+    showEyebrow: true,
     eyebrow: '04 — Evenings',
     title: 'When the lights\ncome on',
     body: 'Brass glows, the grill settles into rhythm and the room fills. Evenings at YANA are long and warm — a dining room wrapped in deep blue, a bar that keeps pouring, and a table worth lingering at.',
@@ -73,7 +83,9 @@ const defaults = {
   },
   story: {
     visible: true,
+    showGhost: true,
     ghost: 'PERU',
+    showEyebrow: true,
     eyebrow: '05 — Our Story',
     title: 'Two coastlines,\none table.',
     body: [
@@ -83,8 +95,38 @@ const defaults = {
     signoff: '— The House of YANA',
     image: img('/images/yana-side-image-mrt8vz5a-90ny.webp', 'The YANA dining room')
   },
+  strip: {
+    visible: true,
+    bgColor: 'dark',
+    showEyebrow: true,
+    eyebrow: 'Saadiyat Island',
+    title: 'A table by the water',
+    body: 'Long lunches on the terrace, sunset drinks at the bar and dinners that run late — YANA brings the coastal kitchens of Peru and the precision of Pan-Asian cooking to the shore of Saadiyat Island.',
+    photos: [
+      { image: img('/images/carousel/web/signature-rolls.jpg', 'Signature rolls finished with micro herbs') },
+      { image: img('/images/carousel/web/bar-cocktail.jpg', 'A violet cocktail with a flower garnish') },
+      { image: img('/images/carousel/web/prawn-croquettes.jpg', 'Prawn croquettes on a hand-glazed plate') },
+      { image: img('/images/carousel/web/shared-table.jpg', 'Friends sharing dishes at a YANA table') },
+      { image: img('/images/carousel/web/scallop.jpg', 'A single scallop plated on marble') },
+      { image: img('/images/carousel/web/sliders.jpg', 'Sliders and a blue cooler on deep blue velvet') },
+      { image: img('/images/carousel/web/live-violin.jpg', 'A violinist playing in the dining room') },
+      { image: img('/images/web/menu-food.jpg', 'A spread of YANA dishes and a cocktail on marble') }
+    ]
+  },
+  // Placeholders until real guest reviews are added in the dashboard.
+  testimonials: {
+    visible: true,
+    bgColor: 'dark',
+    quotes: [
+      { quote: 'Add a guest review here. Website content › Home › Guest reviews lets you add, reorder and remove quotes.', name: 'Guest name', detail: 'Where the review is from, e.g. Google review' },
+      { quote: 'Use real words from real guests (with their permission), such as a Google or TripAdvisor review.', name: 'Guest name', detail: 'Google review' }
+    ]
+  },
   moments: {
     visible: true,
+    // Just the carousel by default; the heading block can be switched back on.
+    showIntro: false,
+    showEyebrow: true,
     eyebrow: '06 — Moments',
     title: 'A glimpse of\nlife at YANA.',
     body: 'The dining room, the terrace and the plates in between, as our guests see them.',
@@ -107,6 +149,7 @@ const defaults = {
   reserve: {
     visible: true,
     image: img('/images/yana-image-2-mrt9pbly-db2c.webp'),
+    showEyebrow: true,
     eyebrow: 'Reservations',
     title: 'Reserve your evening\nat YANA',
     body: 'We recommend booking in advance to secure your table. Our team is happy to help with larger parties and special occasions.',
@@ -115,7 +158,9 @@ const defaults = {
   },
   visit: {
     visible: true,
-    mapImage: img('/images/yana-map.webp', 'Map showing YANA on Al Saadiyat Island, Abu Dhabi'),
+    mapImage: img('/images/yana-map-2026.webp', 'Map showing YANA on Al Saadiyat Island, Abu Dhabi'),
+    // The map image has YANA's pin drawn in, so the extra marker is off.
+    showPin: false,
     mapButton: 'View on Google Maps',
     title: 'YANA Abu Dhabi',
     body: 'On Al Saadiyat Island, minutes from the museums and the beach — a Pan-Asian kitchen with Peruvian flair, open from morning coffee to late dinner.',
@@ -143,7 +188,7 @@ export const HOME_PAGE: ContentPage = {
         { key: 'video', type: 'url', label: 'Video link (MP4)', placeholder: 'https://… .mp4 or /videos/hero.mp4', hint: 'Plays silently on a loop. Leave empty to show the photo instead. Keep it short and under ~15 MB so it starts quickly.' },
         { ...background('image', 'Photo'), hint: 'Shown while the video loads, on phones set to reduce motion, and whenever there is no video.' },
         { key: 'zoom', type: 'toggle', label: 'Slow zoom on the photo' },
-        eyebrow(),
+        ...eyebrow(),
         { key: 'title', type: 'text', label: 'Title', required: true, max: 60 },
         { key: 'location', type: 'text', label: 'Location line', max: 80 },
         subtitle(),
@@ -163,8 +208,8 @@ export const HOME_PAGE: ContentPage = {
       label: 'Food (La Cocina de YANA)',
       fields: [
         image('roomImage', 'Large photo (left)'),
-        image('dishImage', 'Small photo (above the title)'),
-        eyebrow(), title(), body(), button()
+        { ...image('dishImage', 'Photo above the title'), hint: 'Shown across the full width of the text, at the photo\'s own shape, so nothing is cropped. Landscape photos work best.' },
+        ...eyebrow(), title(), body(), button()
       ],
       defaults: defaults.kitchen
     },
@@ -177,33 +222,76 @@ export const HOME_PAGE: ContentPage = {
     {
       id: 'bar',
       label: 'Pisco Bar',
-      fields: [eyebrow(), title(), body(), button(), image(), ghostWord()],
+      fields: [...backdropFields(), ...eyebrow(), title(), body(), button(), image(), ...ghostFields()],
       defaults: defaults.bar
     },
     {
       id: 'terrace',
       label: 'The Terrace',
-      fields: [eyebrow(), title(), body(), button(), image(), ghostWord()],
+      fields: [...eyebrow(), title(), body(), button(), image(), ...ghostFields()],
       defaults: defaults.terrace
     },
     {
       id: 'evenings',
       label: 'Evenings',
       description: 'The full-width photo band.',
-      fields: [background('image', 'Photo'), eyebrow(), title(), body(), button(), ghostWord()],
+      fields: [background('image', 'Photo'), ...eyebrow(), title(), body(), button(), ...ghostFields()],
       defaults: defaults.evenings
     },
     {
       id: 'story',
       label: 'Our Story',
-      fields: [eyebrow(), title(), body(), { key: 'signoff', type: 'text', label: 'Sign-off', max: 80 }, image(), ghostWord()],
+      fields: [...eyebrow(), title(), body(), { key: 'signoff', type: 'text', label: 'Sign-off', max: 80 }, image(), ...ghostFields()],
       defaults: defaults.story
+    },
+    {
+      id: 'strip',
+      label: 'Photo strip',
+      description: 'The dark band with a heading and an endlessly scrolling row of photos. It pauses when a visitor hovers over it.',
+      fields: [
+        navyColourField(),
+        ...eyebrow(),
+        { key: 'title', type: 'textarea', label: 'Title', rows: 2, max: 160, hint: 'Leave the title and text empty to show only the photos.' },
+        body('Text', 3),
+        {
+          key: 'photos',
+          type: 'list',
+          label: 'Photos',
+          itemLabel: 'Photo',
+          max: 20,
+          required: true,
+          hint: 'Portrait photos (3:4) look best. At least 5 keeps the strip full on wide screens.',
+          fields: [image()]
+        }
+      ],
+      defaults: defaults.strip
+    },
+    {
+      id: 'testimonials',
+      label: 'Guest reviews',
+      description: 'Quotes from guests that slide one at a time, with arrows and dots to move between them.',
+      fields: [navyColourField(), {
+        key: 'quotes',
+        type: 'list',
+        label: 'Quotes',
+        itemLabel: 'Quote',
+        titleKey: 'name',
+        max: 12,
+        required: true,
+        fields: [
+          { key: 'quote', type: 'textarea', label: 'Quote', required: true, rows: 4, max: 600 },
+          { key: 'name', type: 'text', label: 'Name', required: true, max: 60 },
+          { key: 'detail', type: 'text', label: 'Second line', max: 80, hint: 'e.g. their company, or "Google review".' }
+        ]
+      }],
+      defaults: defaults.testimonials
     },
     {
       id: 'moments',
       label: 'Moments (photo carousel)',
       fields: [
-        eyebrow(), title(), body('Text', 3),
+        { key: 'showIntro', type: 'toggle', label: 'Show heading and text', hint: 'The small heading, title, text and Instagram link above the photos. Off shows the photos only.' },
+        ...eyebrow(), title(), body('Text', 3),
         button('instagram', 'Instagram link'),
         {
           key: 'shots',
@@ -223,7 +311,7 @@ export const HOME_PAGE: ContentPage = {
       id: 'reserve',
       label: 'Reservation banner',
       fields: [
-        background('image', 'Background photo'), eyebrow(), title(), body('Text', 3), button(),
+        background('image', 'Background photo'), ...eyebrow(), title(), body('Text', 3), button(),
         { key: 'phoneLine', type: 'text', label: 'Phone line', max: 40, hint: 'Shown before the phone number from Site info, e.g. "or call". Leave empty to hide the number.' }
       ],
       defaults: defaults.reserve
@@ -234,6 +322,7 @@ export const HOME_PAGE: ContentPage = {
       description: 'The address, phone, email, WhatsApp, Instagram and hours here come from Site info.',
       fields: [
         image('mapImage', 'Map image'),
+        { key: 'showPin', type: 'toggle', label: 'Show the YANA pin on the map', hint: 'Adds a YANA marker on top of the map. Leave it off when the map image already shows the restaurant (the current one does).' },
         { key: 'mapButton', type: 'text', label: 'Text on the map', max: 40 },
         { key: 'title', type: 'text', label: 'Title', required: true, max: 60 },
         body('Text', 3),

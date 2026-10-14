@@ -1,11 +1,14 @@
-import { background, body, button, eyebrow, image, img, link, seoFields, subtitle } from './fields'
+import { background, body, button, eyebrow, image, img, link, seoFields, subtitle, backdropFields } from './fields'
 import type { ContentPage } from './schema'
 
 const photo = (src: string, alt: string, shape: 'portrait' | 'landscape' = 'portrait') => ({ image: img(src, alt), shape })
 
 const defaults = {
   banner: {
+    showBgImage: true,
+    bgColor: 'default',
     image: img('/images/yana-pattern-wide.jpeg'),
+    showEyebrow: true,
     eyebrow: 'Inside Yana',
     title: 'Gallery',
     subtitle: 'The room, the plates, the evenings.'
@@ -26,7 +29,10 @@ const defaults = {
     ]
   },
   room: {
+    showBgImage: true,
+    bgColor: 'default',
     visible: true,
+    showEyebrow: true,
     eyebrow: 'The Room',
     title: 'Blue, brass and candlelight',
     body: 'A dining room wrapped in deep blue and brass, and a bar where the evening runs late.',
@@ -61,7 +67,7 @@ export const GALLERY_PAGE: ContentPage = {
     {
       id: 'banner',
       label: 'Banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, subtitle()],
+      fields: [background(), ...backdropFields('background image'), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, subtitle()],
       defaults: defaults.banner
     },
     {
@@ -86,8 +92,8 @@ export const GALLERY_PAGE: ContentPage = {
       id: 'room',
       label: 'The Room',
       description: 'Tiles without a photo show a blue placeholder.',
-      fields: [
-        eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, body('Text', 3),
+      fields: [...backdropFields(), 
+        ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, body('Text', 3),
         {
           key: 'tiles',
           type: 'list',

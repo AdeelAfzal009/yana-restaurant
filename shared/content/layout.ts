@@ -1,4 +1,12 @@
+import { backdropFields } from './fields'
 import type { ContentPage } from './schema'
+
+// Colours for headings on light backgrounds, chosen site-wide.
+export const HEADING_COLOURS = [
+  { value: 'blue', label: 'YANA blue' },
+  { value: 'gold', label: 'Dark gold' }
+]
+export const HEADING_COLOUR_VALUES: Record<string, string> = { blue: '#12426D', gold: '#8A6B45' }
 
 // Wording in the parts every page shares: the top bar, the slide-out menu,
 // the footer and the scrolling words band.
@@ -13,9 +21,14 @@ const defaults = {
     reserveLabel: 'Reserve a Table'
   },
   footer: {
+    showBgImage: true,
+    bgColor: 'default',
     tagline: 'Pan-Asian Fusion, Peruvian Flair — on Al Saadiyat Island.',
     copyright: 'Copyright © {year} Yana Restaurant',
     bottomLine: 'Al Saadiyat Island · Abu Dhabi'
+  },
+  style: {
+    headingColor: 'blue'
   },
   marquee: {
     visible: true,
@@ -51,11 +64,25 @@ export const LAYOUT_PAGE: ContentPage = {
       label: 'Footer',
       description: 'Phone, email, address and social icons come from Site info.',
       fields: [
+        ...backdropFields(),
         { key: 'tagline', type: 'text', label: 'Tagline under the logo', max: 120 },
         { key: 'copyright', type: 'text', label: 'Copyright line', max: 80, hint: '{year} is replaced with the current year.' },
         { key: 'bottomLine', type: 'text', label: 'Bottom right line', max: 80 }
       ],
       defaults: defaults.footer
+    },
+    {
+      id: 'style',
+      label: 'Style',
+      description: 'Colours used across every page.',
+      fields: [{
+        key: 'headingColor',
+        type: 'select',
+        label: 'Headings on light backgrounds',
+        options: HEADING_COLOURS,
+        hint: 'Titles on the cream and white sections, e.g. "La Cocina de YANA" and "Sea breeze, palms and long lunches". Headings on dark sections stay light.'
+      }],
+      defaults: defaults.style
     },
     {
       id: 'marquee',

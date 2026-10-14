@@ -1,9 +1,12 @@
-import { background, eyebrow, img, seoFields } from './fields'
+import { background, eyebrow, img, seoFields, backdropFields } from './fields'
 import type { ContentPage } from './schema'
 
 const defaults = {
   banner: {
+    showBgImage: true,
+    bgColor: 'default',
     image: img('/images/yana-pattern-tall.png'),
+    showEyebrow: true,
     eyebrow: 'Al Saadiyat Island · Abu Dhabi',
     title: 'Reserve a Table'
   },
@@ -30,7 +33,7 @@ export const RESERVATION_PAGE: ContentPage = {
     {
       id: 'banner',
       label: 'Banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }],
+      fields: [background(), ...backdropFields('background image'), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }],
       defaults: defaults.banner
     },
     {

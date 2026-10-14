@@ -1,11 +1,13 @@
 <template>
   <div class="yana-page">
-    <header class="contact-banner">
-      <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
-      <div aria-hidden="true" class="banner-scrim" />
+    <header class="contact-banner" :style="sectionBackground(c.banner.bgColor)">
+      <template v-if="c.banner.showBgImage">
+        <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
+        <div aria-hidden="true" class="banner-scrim" />
+      </template>
       <div aria-hidden="true" class="banner-fade" />
       <div class="banner-content">
-        <span v-if="c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
+        <span v-if="c.banner.showEyebrow && c.banner.eyebrow" class="eyebrow-plain"><span class="rule-short" />{{ c.banner.eyebrow }}</span>
         <h1 class="banner-title">{{ c.banner.title }}</h1>
       </div>
     </header>
@@ -14,7 +16,7 @@
     <section class="form-section">
       <div class="form-grid">
         <div>
-          <span v-if="c.form.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.form.eyebrow }}</span>
+          <span v-if="c.form.showEyebrow && c.form.eyebrow" class="eyebrow-plain eyebrow-plain--dark"><span class="rule-short" />{{ c.form.eyebrow }}</span>
           <h2 class="h2-dark">{{ c.form.title }}</h2>
           <p v-for="(p, i) in paragraphs(c.form.body)" :key="i" class="form-helper" v-html="richText(p)" />
           <form class="contact-form" @submit.prevent="onSubmit">
@@ -97,7 +99,7 @@
       <div aria-hidden="true" class="cta-bg" :style="bg(c.cta.image.src)" />
       <div aria-hidden="true" class="cta-scrim" />
       <div class="cta-content">
-        <span v-if="c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
+        <span v-if="c.cta.showEyebrow && c.cta.eyebrow" class="eyebrow-plain">{{ c.cta.eyebrow }}</span>
         <h2 class="cta-title">{{ c.cta.title }}</h2>
         <CmsLink :link="c.cta.button" class="btn-gold" />
       </div>
@@ -226,7 +228,7 @@ function onSubmit(e: Event) {
   font-size: clamp(32px, 5vw, 58px);
   line-height: 1.06;
   margin: 22px 0 0;
-  color: var(--ink);
+  color: var(--heading-on-light, #12426D);
 }
 
 .form-helper {

@@ -20,7 +20,7 @@
       <div class="hero-scrim" />
       <div aria-hidden="true" class="hero-fade" />
       <div class="hero-content">
-        <div v-if="c.hero.eyebrow" v-reveal="{ y: 24, duration: 1.1 }">
+        <div v-if="c.hero.showEyebrow && c.hero.eyebrow" v-reveal="{ y: 24, duration: 1.1 }">
           <span class="hero-eyebrow">
             <span class="rule rule-left" />{{ c.hero.eyebrow }}<span class="rule rule-right" />
           </span>
@@ -61,8 +61,8 @@
       <div class="split-panel">
         <div aria-hidden="true" class="split-pattern" />
         <div v-reveal="{ y: 28 }" class="split-inner">
-          <div class="split-dish" :style="bg(c.kitchen.dishImage.src)" role="img" :aria-label="c.kitchen.dishImage.alt" />
-          <span v-if="c.kitchen.eyebrow" class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />{{ c.kitchen.eyebrow }}</span>
+          <img v-if="c.kitchen.dishImage.src" :src="c.kitchen.dishImage.src" :alt="c.kitchen.dishImage.alt" class="split-dish" loading="lazy" decoding="async">
+          <span v-if="c.kitchen.showEyebrow && c.kitchen.eyebrow" class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />{{ c.kitchen.eyebrow }}</span>
           <h2 class="split-title" v-html="richText(c.kitchen.title)" />
           <p v-for="(p, i) in paragraphs(c.kitchen.body)" :key="i" class="split-copy" v-html="richText(p)" />
           <CmsLink :link="c.kitchen.button" class="split-link">
@@ -78,12 +78,12 @@
     </section>
 
     <!-- ===================== PISCO BAR (dark band) ===================== -->
-    <section v-if="c.bar.visible" id="bar" class="feature feature--dark">
-      <div aria-hidden="true" class="pattern-dark pattern-dark--tall" />
-      <span v-if="c.bar.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-center">{{ c.bar.ghost }}</span>
+    <section v-if="c.bar.visible" id="bar" class="feature feature--dark" :style="sectionBackground(c.bar.bgColor)">
+      <div v-if="c.bar.showBgImage" aria-hidden="true" class="pattern-dark pattern-dark--tall" />
+      <span v-if="c.bar.showGhost && c.bar.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-center">{{ c.bar.ghost }}</span>
       <div class="feature-grid feature-grid--reverse">
         <div v-reveal="{ y: 30 }" class="feature-text">
-          <span v-if="c.bar.eyebrow" class="eyebrow eyebrow-light"><span class="rule-short" />{{ c.bar.eyebrow }}</span>
+          <span v-if="c.bar.showEyebrow && c.bar.eyebrow" class="eyebrow eyebrow-light"><span class="rule-short" />{{ c.bar.eyebrow }}</span>
           <h2 class="h2-light" v-html="richText(c.bar.title)" />
           <p v-for="(p, i) in paragraphs(c.bar.body)" :key="i" class="body-copy body-copy--light" v-html="richText(p)" />
           <CmsLink :link="c.bar.button" class="link-underline link-underline--light" />
@@ -96,10 +96,10 @@
 
     <!-- ===================== TERRACE ===================== -->
     <section v-if="c.terrace.visible" id="terrace" class="feature section-light">
-      <span v-if="c.terrace.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.terrace.ghost }}</span>
+      <span v-if="c.terrace.showGhost && c.terrace.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.terrace.ghost }}</span>
       <div class="feature-grid">
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
-          <span v-if="c.terrace.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.terrace.eyebrow }}</span>
+          <span v-if="c.terrace.showEyebrow && c.terrace.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.terrace.eyebrow }}</span>
           <h2 class="h2-dark" v-html="richText(c.terrace.title)" />
           <p v-for="(p, i) in paragraphs(c.terrace.body)" :key="i" class="body-copy" v-html="richText(p)" />
           <CmsLink :link="c.terrace.button" class="link-underline" />
@@ -114,10 +114,10 @@
     <section v-if="c.evenings.visible" id="evenings" class="bleed">
       <div class="bleed-bg" :style="bg(c.evenings.image.src)" />
       <div aria-hidden="true" class="bleed-scrim" />
-      <span v-if="c.evenings.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-bottom-left">{{ c.evenings.ghost }}</span>
+      <span v-if="c.evenings.showGhost && c.evenings.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-bottom-left">{{ c.evenings.ghost }}</span>
       <div class="bleed-inner">
         <div v-reveal="{ y: 30 }" class="bleed-text">
-          <span v-if="c.evenings.eyebrow" class="eyebrow eyebrow-light"><span class="rule-short" />{{ c.evenings.eyebrow }}</span>
+          <span v-if="c.evenings.showEyebrow && c.evenings.eyebrow" class="eyebrow eyebrow-light"><span class="rule-short" />{{ c.evenings.eyebrow }}</span>
           <h2 class="h2-light" v-html="richText(c.evenings.title)" />
           <p v-for="(p, i) in paragraphs(c.evenings.body)" :key="i" class="body-copy body-copy--light" v-html="richText(p)" />
           <CmsLink :link="c.evenings.button" class="link-underline link-underline--light" />
@@ -127,10 +127,10 @@
 
     <!-- ===================== OUR STORY ===================== -->
     <section v-if="c.story.visible" id="story" class="feature section-light">
-      <span v-if="c.story.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.story.ghost }}</span>
+      <span v-if="c.story.showGhost && c.story.ghost" aria-hidden="true" class="ghost-word ghost-left">{{ c.story.ghost }}</span>
       <div class="feature-grid feature-grid--reverse">
         <div v-reveal="{ y: 30, delay: 0.15 }" class="feature-text">
-          <span v-if="c.story.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.story.eyebrow }}</span>
+          <span v-if="c.story.showEyebrow && c.story.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.story.eyebrow }}</span>
           <h2 class="h2-dark" v-html="richText(c.story.title)" />
           <p v-for="(p, i) in paragraphs(c.story.body)" :key="i" class="body-copy" v-html="richText(p)" />
           <p v-if="c.story.signoff" class="story-signoff">{{ c.story.signoff }}</p>
@@ -141,42 +141,110 @@
       </div>
     </section>
 
+    <!-- ===================== PHOTO STRIP (endless scroll) ===================== -->
+    <section v-if="c.strip.visible && stripPhotos.length" class="strip-section" :style="sectionBackground(c.strip.bgColor)">
+      <div v-if="c.strip.title || c.strip.body || (c.strip.showEyebrow && c.strip.eyebrow)" v-reveal="{ y: 24 }" class="strip-intro">
+        <span v-if="c.strip.showEyebrow && c.strip.eyebrow" class="eyebrow eyebrow-light strip-eyebrow"><span class="rule-short" />{{ c.strip.eyebrow }}</span>
+        <h2 v-if="c.strip.title" class="strip-title" v-html="richText(c.strip.title)" />
+        <p v-for="(p, i) in paragraphs(c.strip.body)" :key="i" class="strip-copy" v-html="richText(p)" />
+      </div>
+      <!-- Two copies side by side, so sliding by half loops without a seam. Pauses on hover. -->
+      <div class="strip">
+        <div class="strip-track">
+          <ul v-for="copy in 2" :key="copy" class="strip-row" :aria-hidden="copy === 2 ? 'true' : undefined">
+            <li v-for="(photo, i) in stripPhotos" :key="i" class="strip-item">
+              <img :src="photo.src" :alt="copy === 1 ? photo.alt : ''" loading="lazy" decoding="async">
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GUEST REVIEWS (carousel) ===================== -->
+    <section
+      v-if="c.testimonials.visible && quotes.length"
+      class="reviews"
+      :style="sectionBackground(c.testimonials.bgColor)"
+      aria-roledescription="carousel"
+      aria-label="What our guests say"
+      @mouseenter="pauseQuotes = true"
+      @mouseleave="pauseQuotes = false"
+      @focusin="pauseQuotes = true"
+      @focusout="pauseQuotes = false"
+    >
+      <div class="reviews-viewport">
+        <div class="reviews-track" :style="{ transform: `translate3d(-${quoteIndex * 100}%, 0, 0)` }">
+          <figure v-for="(q, i) in quotes" :key="i" class="review" :aria-hidden="i !== quoteIndex" :inert="i !== quoteIndex">
+            <span aria-hidden="true" class="review-mark">&ldquo;</span>
+            <blockquote class="review-quote">
+              <p v-html="richText(q.quote)" />
+            </blockquote>
+            <span aria-hidden="true" class="review-mark review-mark--close">&ldquo;</span>
+            <figcaption class="review-by">
+              <span class="review-name">{{ q.name }}</span>
+              <template v-if="q.detail"><br>{{ q.detail }}</template>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+      <div v-if="quotes.length > 1" class="reviews-nav">
+        <button type="button" class="reviews-btn" aria-label="Show the previous quote" @click="stepQuote(-1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <ul class="reviews-dots">
+          <li v-for="(q, i) in quotes" :key="i">
+            <button
+              type="button"
+              class="reviews-dot"
+              :class="{ 'is-active': i === quoteIndex }"
+              :aria-label="`Show the quote from ${q.name}`"
+              :aria-current="i === quoteIndex"
+              @click="quoteIndex = i"
+            />
+          </li>
+        </ul>
+        <button type="button" class="reviews-btn" aria-label="Show the next quote" @click="stepQuote(1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      </div>
+    </section>
+
     <div v-if="c.moments.visible" aria-hidden="true" class="section-divider" />
 
     <!-- ===================== BEST SHOTS (carousel) ===================== -->
     <section v-if="c.moments.visible && shots.length" class="shots-section">
       <div class="shots" @mouseenter="pauseShots = true" @mouseleave="pauseShots = false" @focusin="pauseShots = true" @focusout="pauseShots = false">
-        <div v-reveal="{ y: 26 }" class="shots-head">
-          <div class="shots-intro">
-            <span v-if="c.moments.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.moments.eyebrow }}</span>
-            <h2 class="h2-dark" v-html="richText(c.moments.title)" />
-            <p v-for="(p, i) in paragraphs(c.moments.body)" :key="i" class="body-copy shots-copy" v-html="richText(p)" />
-            <CmsLink :link="c.moments.instagram" class="shots-insta">
-              <template #before>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg>
-              </template>
-            </CmsLink>
-          </div>
-          <div class="shots-controls">
-            <span class="shots-count" aria-hidden="true">{{ String(shotIndex + 1).padStart(2, '0') }} <span class="shots-count-total">/ {{ String(shots.length).padStart(2, '0') }}</span></span>
-            <div class="shots-nav">
-              <button type="button" class="shots-btn" aria-label="Previous photos" @click="scrollShots(-1)">
-                <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M21 6H1M6 1 1 6l5 5" /></svg>
-              </button>
-              <button type="button" class="shots-btn" aria-label="Next photos" @click="scrollShots(1)">
-                <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 6h20M16 1l5 5-5 5" /></svg>
-              </button>
-            </div>
-          </div>
+        <div v-if="c.moments.showIntro" v-reveal="{ y: 26 }" class="shots-head">
+          <span v-if="c.moments.showEyebrow && c.moments.eyebrow" class="eyebrow eyebrow-dark"><span class="rule-short" />{{ c.moments.eyebrow }}</span>
+          <h2 class="h2-dark" v-html="richText(c.moments.title)" />
+          <p v-for="(p, i) in paragraphs(c.moments.body)" :key="i" class="body-copy shots-copy" v-html="richText(p)" />
+          <CmsLink :link="c.moments.instagram" class="shots-insta">
+            <template #before>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg>
+            </template>
+          </CmsLink>
         </div>
-        <div v-reveal="{ y: 26, delay: 0.1 }" ref="shotsTrack" class="shots-track" role="region" aria-label="Photos of YANA" tabindex="0" @scroll.passive="onShotsScroll" @touchstart.passive="pauseShots = true">
-          <figure v-for="(shot, i) in shots" :key="i" class="shot">
-            <img :src="shot.image.src" :alt="shot.image.alt" width="750" height="1000" loading="lazy" decoding="async">
-            <figcaption v-if="shot.label" class="shot-caption">{{ shot.label }}</figcaption>
-          </figure>
+        <!-- Photos with the arrows over their left and right edges. -->
+        <div v-reveal="{ y: 26, delay: 0.1 }" class="shots-stage">
+          <div ref="shotsTrack" class="shots-track" role="region" aria-label="Photos of YANA" tabindex="0" @scroll.passive="onShotsScroll" @touchstart.passive="pauseShots = true">
+            <figure v-for="(shot, i) in shots" :key="i" class="shot">
+              <img :src="shot.image.src" :alt="shot.image.alt" width="750" height="1000" loading="lazy" decoding="async">
+              <figcaption v-if="shot.label" class="shot-caption">{{ shot.label }}</figcaption>
+            </figure>
+          </div>
+          <button type="button" class="shots-btn shots-btn--prev" aria-label="Previous photos" @click="scrollShots(-1)">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M21 6H1M6 1 1 6l5 5" /></svg>
+          </button>
+          <button type="button" class="shots-btn shots-btn--next" aria-label="Next photos" @click="scrollShots(1)">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 6h20M16 1l5 5-5 5" /></svg>
+          </button>
         </div>
-        <div class="shots-progress" aria-hidden="true">
-          <span class="shots-progress-bar" :style="{ transform: `scaleX(${shotsProgress})` }" />
+        <!-- Counter and progress line under the photos. -->
+        <div class="shots-foot" aria-hidden="true">
+          <span class="shots-count">{{ String(shotIndex + 1).padStart(2, '0') }} <span class="shots-count-total">/ {{ String(shots.length).padStart(2, '0') }}</span></span>
+          <div class="shots-progress">
+            <span class="shots-progress-bar" :style="{ transform: `scaleX(${shotsProgress})` }" />
+          </div>
         </div>
       </div>
     </section>
@@ -186,7 +254,7 @@
       <div class="cta-bg" :style="bg(c.reserve.image.src)" />
       <div class="cta-scrim" />
       <div v-reveal class="cta-content">
-        <span v-if="c.reserve.eyebrow" class="eyebrow-plain">{{ c.reserve.eyebrow }}</span>
+        <span v-if="c.reserve.showEyebrow && c.reserve.eyebrow" class="eyebrow-plain">{{ c.reserve.eyebrow }}</span>
         <h2 class="cta-title" v-html="richText(c.reserve.title)" />
         <p v-for="(p, i) in paragraphs(c.reserve.body)" :key="i" class="cta-copy" v-html="richText(p)" />
         <CmsLink :link="c.reserve.button" class="btn-gold-hero btn-gold-hero--cta" />
@@ -203,7 +271,26 @@
         rel="noopener"
         aria-label="Open YANA on Google Maps"
       >
-        <img :src="c.visit.mapImage.src" :alt="c.visit.mapImage.alt" width="1200" height="1200" loading="lazy" decoding="async">
+        <!-- Map and pin share one square canvas, so the pin stays on the spot however the map is cropped. -->
+        <span class="visit-map-canvas">
+          <img :src="c.visit.mapImage.src" :alt="c.visit.mapImage.alt" width="1046" height="1024" loading="lazy" decoding="async">
+          <span v-if="c.visit.showPin" class="map-marker" aria-hidden="true">
+            <span class="map-ripple" />
+            <span class="map-ripple map-ripple--2" />
+            <span class="map-ripple map-ripple--3" />
+            <span class="map-tile">
+              <!-- Hand-drawn line art: a flame rising from the sea, under a low sun. -->
+              <svg class="map-art" viewBox="0 0 120 84" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path class="map-art-sun" d="M93.5 13.2c4.1-.3 7.6 2.9 7.8 7 .2 4.3-3.2 7.7-7.4 7.8-4.1.1-7.5-3.1-7.7-7.2-.2-4 3-7.4 7.3-7.6Z" />
+                <path class="map-art-flame" d="M59.6 12.4c4.9 7.1 8.4 11.3 8.1 17-.3 5-4.2 8.6-8.9 8.3-4.6-.3-7.8-3.9-7.6-8.4.1-3.2 1.8-5.6 3.4-8 .8 3.1 2.3 4.8 4.1 5.6-.8-5.4.1-9.6.9-14.5Z" />
+                <path class="map-art-wave" d="M13 47.5c5.6-.4 6.3-4.8 11.9-5 5.8-.2 6.2 4.6 12.1 4.6 5.7 0 6.4-4.9 12.2-4.8 5.9.1 6.1 4.7 11.9 4.8 5.8.1 6.6-4.6 12.3-4.6 5.9 0 6 4.8 11.8 4.8 5.6 0 6.5-4.4 12.3-4.6" />
+                <path class="map-art-wave map-art-wave--soft" d="M24 59.2c5.2-.2 5.9-4.1 11.2-4.2 5.4-.1 5.7 4.1 11.1 4.1 5.3 0 6-4.2 11.4-4.1 5.4.1 5.6 4.1 11 4.2 5.3.1 6.1-4 11.4-4 5.2 0 5.9 3.8 10.6 4" />
+                <path class="map-art-wave map-art-wave--faint" d="M38 70.1c4.4 0 5-3.3 9.5-3.4 4.6 0 4.8 3.4 9.4 3.4 4.5 0 5.1-3.4 9.6-3.3 4.4.1 4.8 3.3 9.3 3.3" />
+              </svg>
+              <span class="map-word">YANA</span>
+            </span>
+          </span>
+        </span>
         <span v-if="c.visit.mapButton" class="visit-map-cta">{{ c.visit.mapButton }} <span aria-hidden="true">↗</span></span>
       </a>
       <div class="visit-panel">
@@ -261,6 +348,22 @@ useContentSeo(() => c.value.seo)
 
 const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
+// Photo strip: only photos that have an image.
+const stripPhotos = computed(() => c.value.strip.photos.map(p => p.image).filter(img => img.src))
+
+// Guest reviews: one quote at a time, moving on every 8 seconds unless the
+// visitor is reading (hover / keyboard focus) or prefers less motion.
+const quotes = computed(() => c.value.testimonials.quotes.filter(q => q.quote))
+const quoteIndex = ref(0)
+const pauseQuotes = ref(false)
+function stepQuote(dir: 1 | -1) {
+  const n = quotes.value.length
+  if (n) quoteIndex.value = (quoteIndex.value + dir + n) % n
+}
+watch(() => quotes.value.length, (n) => {
+  if (quoteIndex.value >= n) quoteIndex.value = 0
+})
+
 // "Best shots" carousel under the intro.
 const shots = computed(() => c.value.moments.shots.filter(s => s.image.src))
 const shotsTrack = ref<HTMLElement | null>(null)
@@ -307,6 +410,15 @@ onMounted(() => {
   }
 })
 onUnmounted(() => clearInterval(shotsTimer))
+
+let quotesTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  if (reducedMotion.value) return
+  quotesTimer = setInterval(() => {
+    if (!pauseQuotes.value && !document.hidden && quotes.value.length > 1) stepQuote(1)
+  }, 8000)
+})
+onUnmounted(() => clearInterval(quotesTimer))
 
 </script>
 
@@ -579,7 +691,7 @@ onUnmounted(() => clearInterval(shotsTimer))
   line-height: 1.5;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--gold-dk);
+  color: var(--heading-on-light, #12426D);
 }
 
 .intro-copy {
@@ -627,18 +739,15 @@ onUnmounted(() => clearInterval(shotsTimer))
   margin: 0 auto;
 }
 
-/* Title on the left, counter + arrows on the right. */
+/* Optional heading block above the photos. */
 .shots-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 32px;
+  max-width: 560px;
   margin-bottom: clamp(32px, 4vw, 52px);
 }
 
-.shots-intro {
-  max-width: 560px;
-  text-align: left;
+/* The photos, with the arrows over their left and right edges. */
+.shots-stage {
+  position: relative;
 }
 
 .shots-insta {
@@ -666,11 +775,12 @@ onUnmounted(() => clearInterval(shotsTimer))
   margin: 18px 0 0;
 }
 
-.shots-controls {
+/* Counter beside the progress line, under the photos. */
+.shots-foot {
   display: flex;
   align-items: center;
-  gap: clamp(18px, 2.4vw, 32px);
-  flex-shrink: 0;
+  gap: clamp(18px, 2.4vw, 28px);
+  margin-top: clamp(26px, 3vw, 36px);
 }
 
 .shots-count {
@@ -762,8 +872,8 @@ onUnmounted(() => clearInterval(shotsTimer))
 
 .shots-progress {
   position: relative;
+  flex: 1;
   height: 1px;
-  margin-top: clamp(26px, 3vw, 36px);
   background: rgba(138, 107, 69, 0.2);
 }
 
@@ -775,26 +885,37 @@ onUnmounted(() => clearInterval(shotsTimer))
   transition: transform 0.4s ease;
 }
 
-.shots-nav {
-  display: flex;
-  gap: 10px;
-}
-
+/* Round arrows centred on the photos' height, half over each outer edge. */
 .shots-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 54px;
-  border: 1px solid rgba(138, 107, 69, 0.45);
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(138, 107, 69, 0.35);
   border-radius: 50%;
-  background: transparent;
+  background: var(--panel);
   color: var(--gold-dk);
+  box-shadow: 0 10px 26px rgba(15, 30, 46, 0.16);
   cursor: pointer;
-  transition: background 0.3s, color 0.3s, border-color 0.3s;
+  transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
 }
 
-.shots-btn:hover {
+.shots-btn--prev {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.shots-btn--next {
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.shots-btn:hover,
+.shots-btn:focus-visible {
   background: var(--gold-dk);
   border-color: var(--gold-dk);
   color: var(--panel);
@@ -805,15 +926,21 @@ onUnmounted(() => clearInterval(shotsTimer))
   outline-offset: 6px;
 }
 
-@media (max-width: 700px) {
-  .shots-head {
-    flex-direction: column;
-    align-items: flex-start;
+/* Narrow screens have little side room, so the arrows sit just inside the photos. */
+@media (max-width: 900px) {
+  .shots-btn {
+    width: 44px;
+    height: 44px;
   }
 
-  .shots-controls {
-    width: 100%;
-    justify-content: space-between;
+  .shots-btn--prev {
+    left: 10px;
+    transform: translateY(-50%);
+  }
+
+  .shots-btn--next {
+    right: 10px;
+    transform: translateY(-50%);
   }
 }
 
@@ -830,19 +957,162 @@ onUnmounted(() => clearInterval(shotsTimer))
   display: block;
   overflow: hidden;
   min-height: clamp(380px, 46vw, 680px);
+  /* Lets the canvas below size itself against this box (cqw / cqh). */
+  container-type: size;
 }
 
-.visit-map img {
+/* A square that covers the box like object-fit: cover, so map and pin crop
+   and zoom together. Inside it, 1cqw = 1% of the map (12px of the 1200px image). */
+.visit-map-canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, 100cqh);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  container-type: inline-size;
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.visit-map-canvas img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  /* Maps that aren't exactly square are trimmed, not stretched. */
   object-fit: cover;
-  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.visit-map:hover img {
-  transform: scale(1.04);
+.visit-map:hover .visit-map-canvas {
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+/* ---- YANA map marker: a rounded tile with a pointer (the same idea as
+   GIGI's), in YANA blue with gold and cream line art. Its pointer sits on
+   the restaurant: 582, 588 of the 1200px map. ---- */
+.map-marker {
+  --tile: max(16cqw, 92px);
+  position: absolute;
+  left: 48.5%;
+  top: 49%;
+  width: 0;
+  height: 0;
+}
+
+.map-tile {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--tile) * 0.12);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--tile) * 0.04);
+  width: var(--tile);
+  aspect-ratio: 1;
+  border-radius: calc(var(--tile) * 0.1);
+  background: #12426D;
+  box-shadow: 0 calc(var(--tile) * 0.06) calc(var(--tile) * 0.14) rgba(15, 30, 46, 0.3);
+  transform: translateX(-50%);
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Fine gold frame inside the tile. */
+.map-tile::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--tile) * 0.05);
+  border: 1px solid rgba(217, 182, 144, 0.5);
+  border-radius: calc(var(--tile) * 0.065);
+}
+
+/* The pointer under the tile. */
+.map-tile::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--tile) * -0.12 + 1px);
+  width: calc(var(--tile) * 0.2);
+  height: calc(var(--tile) * 0.12);
+  background: #12426D;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform: translateX(-50%);
+}
+
+.visit-map:hover .map-tile {
+  transform: translateX(-50%) translateY(calc(var(--tile) * -0.04));
+}
+
+.map-art {
+  width: 78%;
+  overflow: visible;
+}
+
+.map-art-flame,
+.map-art-sun {
+  stroke: #D9B690;
+  stroke-width: 2.4;
+}
+
+.map-art-wave {
+  stroke: #F3ECE1;
+  stroke-width: 2.4;
+}
+
+.map-art-wave--soft {
+  opacity: 0.7;
+}
+
+.map-art-wave--faint {
+  opacity: 0.4;
+}
+
+.map-word {
+  position: relative;
+  font-size: calc(var(--tile) * 0.075);
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  margin-right: -0.42em;
+  color: #D9B690;
+}
+
+/* Sea vibe: soft rings spreading over the water from the pin. */
+.map-ripple {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--tile) * 0.42);
+  aspect-ratio: 2.6 / 1;
+  border: 1.5px solid rgba(18, 66, 109, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  animation: mapRipple 3.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+.map-ripple--2 {
+  animation-delay: 1.2s;
+}
+
+.map-ripple--3 {
+  animation-delay: 2.4s;
+}
+
+@keyframes mapRipple {
+  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(4.2); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-ripple {
+    animation: none;
+  }
+
+  .map-ripple--2 {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(1.8);
+  }
 }
 
 .visit-map-cta {
@@ -888,7 +1158,7 @@ onUnmounted(() => clearInterval(shotsTimer))
   font-weight: 300;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold-dk);
+  color: var(--heading-on-light, #12426D);
 }
 
 .visit-copy {
@@ -919,9 +1189,11 @@ onUnmounted(() => clearInterval(shotsTimer))
 }
 
 .visit-row dt {
-  font-family: 'Playfair Display', Georgia, var(--serif);
-  font-style: italic;
-  font-size: clamp(17px, 1.7vw, 22px);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--gold-dk);
 }
 
@@ -978,6 +1250,232 @@ onUnmounted(() => clearInterval(shotsTimer))
   line-height: 1.5;
   letter-spacing: -0.01em;
   color: var(--gold-dk);
+}
+
+/* ---------- Photo strip: navy band, endlessly scrolling photos ---------- */
+.strip-section {
+  background: var(--blue-dk);
+}
+
+.strip-intro {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(64px, 8vw, 110px) clamp(22px, 5vw, 60px) clamp(48px, 6vw, 88px);
+  text-align: center;
+}
+
+.strip-eyebrow {
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.strip-title {
+  margin: 0 0 20px;
+  font-size: clamp(26px, 3.2vw, 44px);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: #F3ECE1;
+}
+
+.strip-copy {
+  max-width: 860px;
+  margin: 0 auto;
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 300;
+  line-height: 1.85;
+  color: rgba(243, 236, 225, 0.72);
+}
+
+.strip-copy + .strip-copy {
+  margin-top: 14px;
+}
+
+.strip {
+  overflow: hidden;
+}
+
+.strip-track {
+  display: flex;
+  width: max-content;
+  animation: stripScroll 60s linear infinite;
+}
+
+.strip:hover .strip-track {
+  animation-play-state: paused;
+}
+
+.strip-row {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  margin: 0;
+  padding: 0 4px 0 0;
+  list-style: none;
+}
+
+.strip-item {
+  position: relative;
+  flex-shrink: 0;
+  height: clamp(240px, 30vw, 380px);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.strip-item img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.strip-item:hover img {
+  transform: scale(1.04);
+}
+
+@keyframes stripScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- Guest reviews: one quote at a time ---------- */
+.reviews {
+  padding: clamp(56px, 6vw, 72px) 28px clamp(72px, 8vw, 104px);
+  background: var(--blue-dk);
+}
+
+.reviews-viewport {
+  max-width: 820px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.reviews-track {
+  display: flex;
+  will-change: transform;
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.review {
+  flex-shrink: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0 4px;
+  text-align: center;
+}
+
+.review-mark {
+  display: block;
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1;
+  color: rgba(217, 182, 144, 0.7);
+}
+
+.review-mark--close {
+  transform: rotate(180deg);
+}
+
+.review-quote {
+  margin: 4px 0;
+}
+
+.review-quote p {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.6;
+  color: #F3ECE1;
+}
+
+.review-by {
+  margin-top: 36px;
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C7D0D8;
+}
+
+.review-name {
+  color: var(--gold);
+}
+
+.reviews-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.reviews-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.reviews-btn:hover,
+.reviews-btn:focus-visible {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--blue-dk);
+}
+
+.reviews-dots {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reviews-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: width 0.5s ease, background 0.5s ease;
+}
+
+.reviews-dot:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.reviews-dot.is-active {
+  width: 28px;
+  background: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip {
+    overflow-x: auto;
+  }
+
+  .strip-track {
+    animation: none;
+  }
+
+  .reviews-track {
+    transition: none;
+  }
 }
 
 /* ---------- Feature bands (text + angled-frame photo) ---------- */
@@ -1144,13 +1642,13 @@ onUnmounted(() => clearInterval(shotsTimer))
   max-width: 640px;
 }
 
-/* Matches the photo's own portrait shape so nothing is cropped. */
+/* Full width of the text column, at the photo's own shape (landscape or
+   portrait), so whatever is chosen in the dashboard is never cropped. */
 .split-dish {
-  aspect-ratio: 1254 / 1600;
-  max-width: 440px;
+  display: block;
+  width: 100%;
+  height: auto;
   margin-bottom: clamp(28px, 3.5vw, 48px);
-  background-size: cover;
-  background-position: center;
   box-shadow: 0 18px 44px rgba(15, 30, 46, 0.14);
 }
 
@@ -1164,7 +1662,7 @@ onUnmounted(() => clearInterval(shotsTimer))
   font-weight: 300;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold-dk);
+  color: var(--heading-on-light, #12426D);
 }
 
 .split-copy {
@@ -1316,7 +1814,7 @@ onUnmounted(() => clearInterval(shotsTimer))
   font-size: clamp(34px, 5vw, 58px);
   line-height: 1.06;
   margin: 24px 0 0;
-  color: var(--ink);
+  color: var(--heading-on-light, #12426D);
 }
 
 .h2-dark--tight {
@@ -1520,59 +2018,4 @@ onUnmounted(() => clearInterval(shotsTimer))
 .hours-time {
   color: var(--ink-dim);
 }
-
-.map-placeholder {
-  position: relative;
-  min-height: 360px;
-  overflow: hidden;
-}
-
-.map-grid {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(rgba(217, 182, 144, 0.1) 1px, transparent 1px) 0 0 / 42px 42px, linear-gradient(90deg, rgba(217, 182, 144, 0.1) 1px, transparent 1px) 0 0 / 42px 42px, radial-gradient(circle at 50% 44%, rgba(18, 66, 109, 0.07), var(--panel));
-}
-
-.map-pin {
-  position: absolute;
-  left: 50%;
-  top: 44%;
-  transform: translate(-50%, -50%);
-  width: 14px;
-  height: 14px;
-}
-
-.map-pin-dot {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--gold);
-}
-
-.map-pin-pulse {
-  animation: yanaPulse 2.6s ease-out infinite;
-}
-
-.map-pin-label {
-  position: absolute;
-  left: 50%;
-  top: calc(44% + 22px);
-  transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.map-caption {
-  position: absolute;
-  left: 20px;
-  bottom: 18px;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-}
-
 </style>

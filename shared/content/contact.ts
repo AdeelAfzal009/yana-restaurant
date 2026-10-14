@@ -1,15 +1,19 @@
-import { background, body, button, eyebrow, img, link, seoFields } from './fields'
+import { background, body, button, eyebrow, img, link, seoFields, backdropFields } from './fields'
 import type { ContentPage } from './schema'
 
 export const MAP_EMBED_PREFIX = 'https://www.google.com/maps/embed'
 
 const defaults = {
   banner: {
+    showBgImage: true,
+    bgColor: 'default',
     image: img('/images/yana-pattern-tall.png'),
+    showEyebrow: true,
     eyebrow: 'Al Saadiyat Island · Abu Dhabi',
     title: 'Reach Us'
   },
   form: {
+    showEyebrow: true,
     eyebrow: 'Get in touch',
     title: 'Let\'s Talk',
     body: 'If you have questions Please write us a message',
@@ -25,6 +29,7 @@ const defaults = {
   cta: {
     visible: true,
     image: img('/images/yana-image-4-mrt9r8ad-uvfn.webp'),
+    showEyebrow: true,
     eyebrow: 'Reservations',
     title: 'Visit Yana Restaurant',
     button: link('Reserve Now', '/reservation')
@@ -46,14 +51,14 @@ export const CONTACT_PAGE: ContentPage = {
     {
       id: 'banner',
       label: 'Banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }],
+      fields: [background(), ...backdropFields('background image'), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 60 }],
       defaults: defaults.banner
     },
     {
       id: 'form',
       label: 'Message form',
       fields: [
-        eyebrow(),
+        ...eyebrow(),
         { key: 'title', type: 'text', label: 'Title', required: true, max: 60 },
         body('Text', 2),
         { key: 'submit', type: 'text', label: 'Send button text', required: true, max: 30 },
@@ -79,7 +84,7 @@ export const CONTACT_PAGE: ContentPage = {
     {
       id: 'cta',
       label: 'Reservation banner',
-      fields: [background(), eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, button()],
+      fields: [background(), ...eyebrow(), { key: 'title', type: 'text', label: 'Title', required: true, max: 80 }, button()],
       defaults: defaults.cta
     },
     {
