@@ -42,11 +42,11 @@
         <button type="button" class="adm-btn adm-btn-icon" title="Import bookings" aria-label="Import bookings" @click="importOpen = true">
           <AdminIcon name="upload" :size="16" />
         </button>
-        <button type="button" class="adm-btn" @click="openForm({ mode: 'walk_in' })">
-          <AdminIcon name="walkin" :size="16" /> Walk-in
+        <button type="button" class="adm-btn" title="Add a walk-in" aria-label="Walk-in" @click="openForm({ mode: 'walk_in' })">
+          <AdminIcon name="walkin" :size="16" /> <span class="btn-label">Walk-in</span>
         </button>
-        <button type="button" class="adm-btn adm-btn-accent" @click="openForm({ mode: 'reservation', date })">
-          <AdminIcon name="plus" :size="16" /> Reservation
+        <button type="button" class="adm-btn adm-btn-accent" title="New reservation" aria-label="Reservation" @click="openForm({ mode: 'reservation', date })">
+          <AdminIcon name="plus" :size="16" /> <span class="btn-label">Reservation</span>
         </button>
       </div>
     </div>
@@ -320,10 +320,15 @@ function showToast(message: string) {
 
 .toolbar {
   display: flex;
-  flex-wrap: wrap;
+  /* One line: only the search box gives up width when space is short. */
+  flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
+}
+
+.toolbar > * {
+  flex-shrink: 0;
 }
 
 .date-nav {
@@ -338,7 +343,7 @@ function showToast(message: string) {
   align-items: center;
   gap: 8px;
   height: 36px;
-  min-width: 176px;
+  min-width: 160px;
   padding: 0 12px;
   border: 1px solid var(--adm-line-strong);
   border-radius: var(--adm-radius);
@@ -370,8 +375,10 @@ function showToast(message: string) {
 
 .search {
   position: relative;
-  flex: 1 1 180px;
-  max-width: 320px;
+  flex: 1 1 200px;
+  flex-shrink: 1;
+  min-width: 120px;
+  max-width: 360px;
 }
 
 .search-icon {
@@ -502,6 +509,25 @@ function showToast(message: string) {
   }
 }
 
+/* Tighter screens: the two action buttons show just their icons. */
+@media (max-width: 1320px) {
+  .btn-label {
+    display: none;
+  }
+
+  .toolbar-actions .adm-btn {
+    width: 38px;
+    padding: 0;
+  }
+}
+
+/* Small screens: let the toolbar wrap onto more lines. */
+@media (max-width: 1180px) {
+  .toolbar {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 720px) {
   .date-pill {
     min-width: 0;
@@ -524,6 +550,13 @@ function showToast(message: string) {
 
   .toolbar-actions .adm-btn:not(.adm-btn-icon) {
     flex: 1;
+    width: auto;
+    padding: 0 14px;
+  }
+
+  /* A full row of room again, so the buttons get their words back. */
+  .btn-label {
+    display: inline;
   }
 }
 </style>
