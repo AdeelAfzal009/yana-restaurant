@@ -3,6 +3,8 @@ import type { ContentPage } from './schema'
 
 const photo = (src: string, alt: string, shape: 'portrait' | 'landscape' = 'portrait') => ({ image: img(src, alt), shape })
 
+const post = (instagramUrl: string) => ({ instagramUrl })
+
 const defaults = {
   banner: {
     showBgImage: true,
@@ -26,6 +28,23 @@ const defaults = {
       photo('/images/web/gallery-dining-room.jpg', 'The dining room and its blue carpet'),
       photo('/images/web/gallery-marina.jpg', 'The marina view from the terrace'),
       photo('/images/DSC01122.jpeg', 'A table by the windows in the sunlit dining room')
+    ]
+  },
+  reels: {
+    visible: true,
+    showEyebrow: true,
+    eyebrow: 'On Instagram',
+    title: 'Moments in motion',
+    count: '8',
+    videosOnly: true,
+    items: [
+      post('https://www.instagram.com/reel/DelwxqIqKL0/'),
+      post('https://www.instagram.com/p/DeOqBWBKmQ4/'),
+      post('https://www.instagram.com/p/DdbxlLBKW6w/'),
+      post('https://www.instagram.com/p/DdrGMVfq2gp/'),
+      post('https://www.instagram.com/p/DdUDq3wqCwx/'),
+      post('https://www.instagram.com/p/DbkpWVTK9bt/'),
+      post('https://www.instagram.com/p/DUqm9YQgaHH/')
     ]
   },
   room: {
@@ -61,7 +80,7 @@ export type GalleryContent = typeof defaults
 export const GALLERY_PAGE: ContentPage = {
   key: 'gallery',
   label: 'Gallery',
-  description: 'The photo grid, The Room and the Instagram block.',
+  description: 'The photo grid, the video slider, The Room and the Instagram block.',
   path: '/gallery',
   sections: [
     {
@@ -87,6 +106,35 @@ export const GALLERY_PAGE: ContentPage = {
         ]
       }],
       defaults: defaults.photos
+    },
+    {
+      id: 'reels',
+      label: 'Instagram videos',
+      description: 'Posts from the restaurant\'s Instagram account, playing under the photo grid. Clicking one opens it in an Instagram-style popup. Needs the Instagram account connected (INSTAGRAM_ACCESS_TOKEN); until then the section stays hidden.',
+      fields: [
+        ...eyebrow(),
+        { key: 'title', type: 'text', label: 'Title', max: 80 },
+        {
+          key: 'items',
+          type: 'list',
+          label: 'Posts to show',
+          itemLabel: 'Post',
+          titleKey: 'instagramUrl',
+          max: 24,
+          fields: [
+            { key: 'instagramUrl', type: 'url', label: 'Instagram post link', required: true, placeholder: 'https://www.instagram.com/reel/…', hint: 'On Instagram, open the post and use … › Copy link. It must be a post from the connected account.' }
+          ]
+        },
+        {
+          key: 'count',
+          type: 'select',
+          label: 'With no posts listed, show the latest',
+          options: ['4', '6', '8', '12'].map(n => ({ value: n, label: `${n} posts` })),
+          hint: 'Leave "Posts to show" empty and the slider keeps itself up to date with the newest posts.'
+        },
+        { key: 'videosOnly', type: 'toggle', label: 'Latest posts: videos only', hint: 'Skips photo posts when picking the latest ones.' }
+      ],
+      defaults: defaults.reels
     },
     {
       id: 'room',

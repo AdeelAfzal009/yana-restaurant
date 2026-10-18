@@ -107,6 +107,7 @@ const defaults = {
   strip: {
     visible: true,
     bgColor: 'dark',
+    speed: '90',
     showEyebrow: true,
     eyebrow: 'Saadiyat Island',
     title: 'A table by the water',
@@ -252,6 +253,19 @@ export const HOME_PAGE: ContentPage = {
       description: 'The dark band with a heading and an endlessly scrolling row of photos. It pauses when a visitor hovers over it.',
       fields: [
         navyColourField(),
+        {
+          key: 'speed',
+          type: 'select',
+          label: 'Scroll speed',
+          options: [
+            { value: '150', label: 'Very slow' },
+            { value: '120', label: 'Slow' },
+            { value: '90', label: 'Normal' },
+            { value: '60', label: 'Fast' },
+            { value: '40', label: 'Very fast' }
+          ],
+          hint: 'How quickly the photos slide across. They pause when a visitor hovers over them.'
+        },
         ...eyebrow(),
         { key: 'title', type: 'textarea', label: 'Title', rows: 2, max: 160, hint: 'Leave the title and text empty to show only the photos.' },
         body('Text', 3),

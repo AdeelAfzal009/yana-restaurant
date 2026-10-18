@@ -56,7 +56,7 @@
     <!-- ===================== KITCHEN (split feature) ===================== -->
     <section v-if="c.kitchen.visible" id="cuisine" class="split">
       <div class="split-media">
-        <div class="split-photo" :style="bg(c.kitchen.roomImage.src)" role="img" :aria-label="c.kitchen.roomImage.alt" />
+        <img :src="c.kitchen.roomImage.src" :alt="c.kitchen.roomImage.alt" class="split-photo" decoding="async">
       </div>
       <div
         class="split-panel"
@@ -96,7 +96,7 @@
       </div>
       <!-- Two copies side by side, so sliding by half loops without a seam. Pauses on hover. -->
       <div class="strip">
-        <div class="strip-track">
+        <div class="strip-track" :style="{ animationDuration: `${c.strip.speed}s` }">
           <ul v-for="copy in 2" :key="copy" class="strip-row" :aria-hidden="copy === 2 ? 'true' : undefined">
             <li v-for="(photo, i) in stripPhotos" :key="i" class="strip-item">
               <img :src="photo.src" :alt="copy === 1 ? photo.alt : ''" loading="lazy" decoding="async">
@@ -1641,9 +1641,12 @@ onUnmounted(() => clearInterval(quotesTimer))
 .split-photo {
   position: sticky;
   top: 0;
+  display: block;
+  width: 100%;
   height: 100vh;
-  background-size: cover;
-  background-position: center;
+  object-fit: cover;
+  /* Kept whole at the bottom; any trimming happens at the top, under the nav. */
+  object-position: center bottom;
 }
 
 .split-panel {
@@ -1674,11 +1677,18 @@ onUnmounted(() => clearInterval(quotesTimer))
 }
 
 /* A pattern repeats at a fixed tile size instead of being scaled up to the
-   panel's height. */
+   panel's height. Vertically the tiles stretch a little so a whole number of
+   them fits, which keeps the bottom row of icons from being sliced off. */
 .split-pattern--tile {
   background-size: 640px auto;
   background-position: top left;
-  background-repeat: repeat;
+  background-repeat: repeat round;
+}
+
+@media (max-width: 900px) {
+  .split-pattern--tile {
+    background-size: 420px auto;
+  }
 }
 
 /* Background chosen in the dashboard: one YANA colour or an image, never two
@@ -1771,10 +1781,10 @@ onUnmounted(() => clearInterval(quotesTimer))
     grid-template-columns: 1fr;
   }
 
-  /* No pinning on phones: the photo simply sits above the panel. */
+  /* No pinning on phones: the whole photo, at its own shape, above the panel. */
   .split-photo {
     position: relative;
-    height: clamp(260px, 56vw, 420px);
+    height: auto;
   }
 
   .split-panel {
