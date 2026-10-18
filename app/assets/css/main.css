@@ -35,9 +35,31 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* No bold or italic type on the public site: everything the browser would
+   make bold or italic is set to the light weight, upright. */
+.yana-site :is(h1, h2, h3, h4, h5, h6, th, b, strong, dt, legend) {
+  font-weight: 300;
+}
+
+.yana-site :is(em, i, cite, address, dfn, var, blockquote, q) {
+  font-style: normal;
+}
+
 /* Public pages sit on the warm cream panel instead of plain white. */
 .yana-page {
   background: var(--panel);
+}
+
+/* With the banner hidden, the nav floats over the first section instead, so
+   that section gets extra room at the top to clear it. */
+.yana-site .yana-page--no-banner > :first-child {
+  padding-top: max(150px, 11vw);
+}
+
+/* ...and when that first section is a light one, the nav's text turns dark
+   until the page is scrolled (when the nav turns solid anyway). */
+.yana-site:has(.yana-page--starts-light) .yana-nav:not(.is-scrolled) {
+  color: var(--ink);
 }
 
 a {
@@ -157,4 +179,82 @@ textarea.yana-input {
   .yana-map-pulse {
     animation: none !important;
   }
+}
+
+/* ===== Light background chosen in the dashboard =====
+   Dark sections (banners, Pisco Bar, photo strip, reviews, founder, the room,
+   footer) get "tone-light" when YANA Light or YANA Light Gold is picked, and
+   their light text turns dark. ".yana-site" keeps these above the pages' own
+   styles. */
+.yana-site .tone-light {
+  border-color: rgba(138, 107, 69, 0.35);
+}
+
+/* Headings */
+.yana-site .tone-light :is(.banner-title, .h2-light, .strip-title, .quote-text, .review-quote p, .founder-mission-title) {
+  color: var(--heading-on-light, #12426D);
+}
+
+/* Body text */
+.yana-site .tone-light :is(.banner-sub, .body-copy-sm, .strip-copy, .review-by, .footer-tagline, .footer-address, .footer-copy, .founder-mission-text),
+.yana-site .tone-light .body-copy.body-copy--light {
+  color: var(--ink-dim);
+}
+
+/* Small headings and gold accents */
+.yana-site .tone-light :is(.eyebrow-plain, .eyebrow-light, .footer-heading, .review-name, .review-mark, .quote-glyph, .social-btn) {
+  color: var(--gold-dk);
+}
+
+.yana-site .tone-light .social-btn {
+  border-color: rgba(138, 107, 69, 0.45);
+}
+
+/* Links */
+.yana-site .tone-light :is(.link-underline--light, .footer-link) {
+  color: var(--ink);
+}
+
+.yana-site .tone-light .link-underline--light {
+  border-color: var(--gold-dk);
+}
+
+.yana-site .tone-light :is(.link-underline--light, .footer-link):hover {
+  color: var(--gold-dk);
+}
+
+.yana-site .tone-light .ghost-word--light {
+  color: rgba(15, 30, 46, 0.05);
+}
+
+.yana-site .tone-light .footer-rule {
+  background: rgba(15, 30, 46, 0.12);
+}
+
+/* Review carousel controls */
+.yana-site .tone-light .reviews-btn {
+  border-color: rgba(15, 30, 46, 0.25);
+  color: var(--gold-dk);
+}
+
+.yana-site .tone-light .reviews-btn:hover,
+.yana-site .tone-light .reviews-btn:focus-visible {
+  border-color: var(--gold-dk);
+  background: var(--gold-dk);
+  color: #ffffff;
+}
+
+.yana-site .tone-light .reviews-dot {
+  background: rgba(15, 30, 46, 0.2);
+}
+
+.yana-site .tone-light .reviews-dot.is-active {
+  background: var(--gold-dk);
+}
+
+/* The line patterns are light-on-dark; flipped, they show as faint dark
+   lines on a light colour. */
+.yana-site .tone-light :is(.pattern-dark, .yana-footer-pattern) {
+  filter: invert(1);
+  mix-blend-mode: multiply;
 }

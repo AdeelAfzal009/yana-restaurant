@@ -1,5 +1,5 @@
 import { background, body, button, eyebrow, image, img, link, seoFields, subtitle, backdropFields } from './fields'
-import type { ContentPage } from './schema'
+import type { ContentField, ContentPage } from './schema'
 
 const DIGITAL_MENU = 'https://qr.mydigimenu.com/e4f76cdf-d1f1-404e-94b9-7c105e902fa4/menu-page?menuID='
 
@@ -11,6 +11,24 @@ export const MENU_TILE_ICONS = [
   { value: 'cup', label: 'Coffee cup' },
   { value: 'highball', label: 'Tall glass' },
   { value: 'dessert', label: 'Dessert' }
+]
+
+// Which tab a menu tile sits under on the Menu page.
+export const MENU_CATEGORIES = [
+  { value: 'food', label: 'Food' },
+  { value: 'drinks', label: 'Drinks' }
+]
+
+// The Food and Drinks sections show a photo or a portrait video beside the text.
+const mediaFields = (): ContentField[] => [
+  {
+    key: 'mediaType',
+    type: 'select',
+    label: 'Beside the text',
+    options: [{ value: 'image', label: 'Photo' }, { value: 'video', label: 'Portrait video' }]
+  },
+  image('image', 'Photo', true),
+  { key: 'video', type: 'url', label: 'Video link (MP4)', placeholder: 'https://… .mp4 or /videos/food.mp4', hint: 'Used when "Portrait video" is chosen. Plays silently on a loop, with no sound. Portrait (tall) videos fit best; keep it short and under ~15 MB. The photo shows while it loads and on phones set to reduce motion.' }
 ]
 
 const defaults = {
@@ -26,13 +44,15 @@ const defaults = {
   tiles: {
     visible: true,
     heading: 'Our Menus',
+    foodTab: 'Food',
+    drinksTab: 'Drinks',
     items: [
-      { icon: 'plate', label: 'À la Carte', desc: 'Ceviches, tiraditos and the Josper grill', url: `${DIGITAL_MENU}62881` },
-      { icon: 'sunrise', label: 'Breakfast', desc: 'From 9am, every morning', url: `${DIGITAL_MENU}60876` },
-      { icon: 'coupe', label: 'Drinks', desc: 'Pisco, signatures and the full bar', url: `${DIGITAL_MENU}56458` },
-      { icon: 'cup', label: 'Coffee & Tea', desc: 'Espresso, matcha and loose leaf', url: `${DIGITAL_MENU}56501` },
-      { icon: 'highball', label: 'Mocktails & Coolers', desc: 'Juices, mojitos and coolers', url: `${DIGITAL_MENU}61626` },
-      { icon: 'dessert', label: 'Desserts', desc: 'Mochi, cheesecake and quinoa textures', url: `${DIGITAL_MENU}62881` }
+      { category: 'food', icon: 'plate', label: 'À la Carte', desc: 'Ceviches, tiraditos and the Josper grill', url: `${DIGITAL_MENU}62881` },
+      { category: 'food', icon: 'sunrise', label: 'Breakfast', desc: 'From 9am, every morning', url: `${DIGITAL_MENU}60876` },
+      { category: 'food', icon: 'dessert', label: 'Desserts', desc: 'Mochi, cheesecake and quinoa textures', url: `${DIGITAL_MENU}62881` },
+      { category: 'drinks', icon: 'coupe', label: 'Drinks', desc: 'Pisco, signatures and the full bar', url: `${DIGITAL_MENU}56458` },
+      { category: 'drinks', icon: 'cup', label: 'Coffee & Tea', desc: 'Espresso, matcha and loose leaf', url: `${DIGITAL_MENU}56501` },
+      { category: 'drinks', icon: 'highball', label: 'Mocktails & Coolers', desc: 'Juices, mojitos and coolers', url: `${DIGITAL_MENU}61626` }
     ]
   },
   food: {
@@ -43,6 +63,8 @@ const defaults = {
       'Ceviches and tiraditos open the evening, the Josper grill carries it, and plates are made to be shared across the table. Signature dishes include the Hotate Tiradito, Miso Black Cod and the Andean Striploin.'
     ].join('\n\n'),
     button: link('View the Food Menu', `${DIGITAL_MENU}62881`, true),
+    mediaType: 'image',
+    video: '',
     image: img('/images/web/menu-food.jpg', 'A spread of YANA dishes and a cocktail on marble')
   },
   drinks: {
@@ -53,6 +75,8 @@ const defaults = {
       'Alongside them run matchas, mojitos, cold-pressed juices, coolers and a full coffee and tea list, so every table finds its pour.'
     ].join('\n\n'),
     button: link('View the Drinks Menu', `${DIGITAL_MENU}62881`, true),
+    mediaType: 'image',
+    video: '',
     image: img('/images/DSC00730.jpeg', 'A cocktail splashing into a crystal glass at the YANA bar')
   },
   cta: {
@@ -76,7 +100,7 @@ export type MenuContent = typeof defaults
 export const MENU_PAGE: ContentPage = {
   key: 'menu',
   label: 'Menu',
-  description: 'The menu tiles (PDFs or online menus) and the Food and Drinks sections.',
+  description: 'The Food and Drinks tabs: menu tiles (PDFs or online menus) and a photo or video section under each.',
   path: '/menu',
   sections: [
     {
@@ -88,9 +112,11 @@ export const MENU_PAGE: ContentPage = {
     {
       id: 'tiles',
       label: 'Menu tiles',
-      description: 'One tile per menu. Each opens a PDF you upload, or an online menu.',
+      description: 'One tile per menu, under the Food or Drinks tab. Each opens a PDF you upload, or an online menu.',
       fields: [
         { key: 'heading', type: 'text', label: 'Heading', max: 40 },
+        { key: 'foodTab', type: 'text', label: 'Food tab name', required: true, max: 24 },
+        { key: 'drinksTab', type: 'text', label: 'Drinks tab name', required: true, max: 24 },
         {
           key: 'items',
           type: 'list',
@@ -100,6 +126,7 @@ export const MENU_PAGE: ContentPage = {
           max: 12,
           required: true,
           fields: [
+            { key: 'category', type: 'select', label: 'Tab', options: MENU_CATEGORIES },
             { key: 'label', type: 'text', label: 'Name', required: true, max: 40 },
             { key: 'desc', type: 'text', label: 'Short description', max: 80 },
             { key: 'icon', type: 'select', label: 'Drawing', options: MENU_TILE_ICONS },
@@ -112,13 +139,15 @@ export const MENU_PAGE: ContentPage = {
     {
       id: 'food',
       label: 'Food',
-      fields: [{ key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, body(), button('button', 'Button', true), image()],
+      description: 'The text with a photo or video, under the Food tab.',
+      fields: [{ key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, body(), button('button', 'Button', true), ...mediaFields()],
       defaults: defaults.food
     },
     {
       id: 'drinks',
       label: 'Signature Drinks',
-      fields: [{ key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, body(), button('button', 'Button', true), image()],
+      description: 'The text with a photo or video, under the Drinks tab.',
+      fields: [{ key: 'title', type: 'text', label: 'Title', required: true, max: 60 }, body(), button('button', 'Button', true), ...mediaFields()],
       defaults: defaults.drinks
     },
     {

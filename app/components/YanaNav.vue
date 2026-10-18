@@ -168,7 +168,7 @@ onUnmounted(() => {
   font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .yana-nav-logo {
@@ -199,7 +199,7 @@ onUnmounted(() => {
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 300;
   color: inherit;
   opacity: 0.92;
   text-decoration: none;
@@ -223,7 +223,7 @@ onUnmounted(() => {
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--blue-dk);
   background: var(--gold);
   padding: 13px 24px;
@@ -333,7 +333,7 @@ onUnmounted(() => {
   font-size: clamp(20px, 1.9vw, 27px);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-weight: 400;
+  font-weight: 300;
   color: var(--gold-dk);
   text-decoration: none;
   transition: opacity 0.4s ease, color 0.3s;
@@ -384,7 +384,7 @@ onUnmounted(() => {
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--blue-dk);
   background: var(--gold);
   border: 1px solid var(--gold);

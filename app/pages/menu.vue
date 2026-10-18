@@ -1,7 +1,7 @@
 <template>
   <div class="yana-page">
     <!-- BANNER -->
-    <header class="menu-banner" :style="sectionBackground(c.banner.bgColor)">
+    <header class="menu-banner" :class="sectionTone(c.banner.bgColor, c.banner.showBgImage)" :style="sectionBackground(c.banner.bgColor)">
       <template v-if="c.banner.showBgImage">
         <div aria-hidden="true" class="banner-bg banner-bg--wide" :style="bg(c.banner.image.src)" />
         <div aria-hidden="true" class="banner-scrim banner-scrim--menu" />
@@ -14,65 +14,89 @@
       </div>
     </header>
 
-    <!-- MENU TILES -->
-    <section v-if="c.tiles.visible" class="tiles">
-      <div v-if="c.tiles.heading" v-reveal class="tiles-head">
-        <span class="tiles-eyebrow">{{ c.tiles.heading }}</span>
-      </div>
-      <div class="tiles-grid">
-        <a
-          v-for="(tile, i) in c.tiles.items"
-          :key="i"
-          v-reveal="{ y: 22 }"
-          class="tile"
-          :href="tile.url"
-          target="_blank"
-          rel="noopener"
-        >
-          <span class="tile-art">
-            <svg class="tile-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="tileIcons[tile.icon as TileIcon] ?? tileIcons.plate" />
-          </span>
-          <span class="tile-label">{{ tile.label }}</span>
-          <span class="tile-rule" aria-hidden="true" />
-          <span v-if="tile.desc" class="tile-desc">{{ tile.desc }}</span>
-          <span class="tile-note">{{ isPdf(tile.url) ? 'Open PDF ↗' : 'View online ↗' }}</span>
-        </a>
+    <!-- FOOD / DRINKS TABS: each tab shows its menu tiles, then its photo or video section -->
+    <section v-if="c.tiles.visible || c.food.visible || c.drinks.visible" class="tiles tiles--tabs">
+      <div v-reveal class="tiles-head">
+        <span v-if="c.tiles.heading" class="tiles-eyebrow">{{ c.tiles.heading }}</span>
+        <div class="group-tabs" role="tablist" aria-label="Menus">
+          <button
+            v-for="t in tabs"
+            :id="`tab-${t.key}`"
+            :key="t.key"
+            type="button"
+            role="tab"
+            class="group-tab"
+            :class="{ 'is-active': tab === t.key }"
+            :aria-selected="tab === t.key"
+            :aria-controls="`panel-${t.key}`"
+            :tabindex="tab === t.key ? 0 : -1"
+            @click="selectTab(t.key)"
+            @keydown.left.right.prevent="selectTab(t.key === 'food' ? 'drinks' : 'food', true)"
+          >
+            {{ t.label }}
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- FOOD -->
-    <template v-if="c.food.visible">
-      <div aria-hidden="true" class="section-divider" />
-      <section id="food" class="feature">
-        <div class="feature-copy">
-          <h2 class="feature-title">{{ c.food.title }}</h2>
-          <p v-for="(p, i) in paragraphs(c.food.body)" :key="i" class="feature-text" v-html="richText(p)" />
-          <CmsLink :link="c.food.button" class="feature-link">
-            <span aria-hidden="true"> →</span>
-          </CmsLink>
-        </div>
-        <div class="feature-media">
-          <img :src="c.food.image.src" :alt="c.food.image.alt" width="1254" height="1600" loading="lazy" decoding="async">
+    <div
+      v-for="t in tabs"
+      v-show="tab === t.key"
+      :id="`panel-${t.key}`"
+      :key="t.key"
+      role="tabpanel"
+      :aria-labelledby="`tab-${t.key}`"
+    >
+      <section v-if="c.tiles.visible && tilesFor(t.key).length" class="tiles tiles--grid">
+        <div class="tiles-grid">
+          <a
+            v-for="(tile, i) in tilesFor(t.key)"
+            :key="i"
+            class="tile"
+            :href="tile.url"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="tile-art">
+              <svg class="tile-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="tileIcons[tile.icon as TileIcon] ?? tileIcons.plate" />
+            </span>
+            <span class="tile-label">{{ tile.label }}</span>
+            <span class="tile-rule" aria-hidden="true" />
+            <span v-if="tile.desc" class="tile-desc">{{ tile.desc }}</span>
+            <span class="tile-note">{{ isPdf(tile.url) ? 'Open PDF ↗' : 'View online ↗' }}</span>
+          </a>
         </div>
       </section>
-    </template>
 
-    <!-- DRINKS -->
-    <template v-if="c.drinks.visible">
-      <div aria-hidden="true" class="section-divider" />
-      <section id="drinks" class="feature feature--reverse feature--panel">
-        <div class="feature-copy">
-          <h2 class="feature-title">{{ c.drinks.title }}</h2>
-          <p v-for="(p, i) in paragraphs(c.drinks.body)" :key="i" class="feature-text" v-html="richText(p)" />
-          <CmsLink :link="c.drinks.button" class="feature-link">
-            <span aria-hidden="true"> →</span>
-          </CmsLink>
-        </div>
-        <div class="feature-media">
-          <img :src="c.drinks.image.src" :alt="c.drinks.image.alt" width="736" height="920" loading="lazy" decoding="async">
-        </div>
-      </section>
-    </template>
+      <template v-if="t.section.visible">
+        <div aria-hidden="true" class="section-divider" />
+        <section :id="t.key" class="feature" :class="{ 'feature--reverse feature--panel': t.key === 'drinks' }">
+          <div class="feature-copy">
+            <h2 class="feature-title">{{ t.section.title }}</h2>
+            <p v-for="(p, i) in paragraphs(t.section.body)" :key="i" class="feature-text" v-html="richText(p)" />
+            <CmsLink :link="t.section.button" class="feature-link">
+              <span aria-hidden="true"> →</span>
+            </CmsLink>
+          </div>
+          <div class="feature-media" :class="{ 'feature-media--video': showVideo(t.section) }">
+            <video
+              v-if="showVideo(t.section)"
+              :key="t.section.video"
+              :src="t.section.video"
+              :poster="t.section.image.src || undefined"
+              autoplay
+              muted
+              loop
+              playsinline
+              disablepictureinpicture
+              preload="metadata"
+              aria-hidden="true"
+            />
+            <img v-else :src="t.section.image.src" :alt="t.section.image.alt" width="1254" height="1600" loading="lazy" decoding="async">
+          </div>
+        </section>
+      </template>
+    </div>
 
     <!-- CTA -->
     <section v-if="c.cta.visible" class="cta-section">
@@ -113,6 +137,37 @@ const tileIcons = {
 type TileIcon = keyof typeof tileIcons
 
 const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
+
+// Food and Drinks tabs. /menu?menu=drinks (used by the home page's Pisco Bar
+// button) or #drinks opens on Drinks.
+type MenuTab = 'food' | 'drinks'
+const route = useRoute()
+const router = useRouter()
+const tabFromRoute = (): MenuTab => route.query.menu === 'drinks' || route.hash === '#drinks' ? 'drinks' : 'food'
+const tab = ref<MenuTab>(tabFromRoute())
+watch(() => [route.query.menu, route.hash], () => { tab.value = tabFromRoute() })
+
+const tabs = computed(() => [
+  { key: 'food' as const, label: c.value.tiles.foodTab, section: c.value.food },
+  { key: 'drinks' as const, label: c.value.tiles.drinksTab, section: c.value.drinks }
+])
+
+const tilesFor = (key: MenuTab) => c.value.tiles.items.filter(t => (t.category || 'food') === key)
+
+function selectTab(key: MenuTab, focus = false) {
+  tab.value = key
+  router.replace({ query: { ...route.query, menu: key === 'drinks' ? 'drinks' : undefined }, hash: '' })
+  if (focus) nextTick(() => document.getElementById(`tab-${key}`)?.focus())
+  // A video in a hidden tab may not have started; play it once it is shown.
+  nextTick(() => document.querySelectorAll<HTMLVideoElement>(`#panel-${key} video`).forEach(v => v.play().catch(() => {})))
+}
+
+// Portrait video beside the text, unless the visitor asks for reduced motion.
+const reducedMotion = ref(false)
+onMounted(() => {
+  reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
+const showVideo = (section: { mediaType: string, video: string }) => section.mediaType === 'video' && !!section.video && !reducedMotion.value
 </script>
 
 <style scoped>
@@ -160,7 +215,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .rule-short {
@@ -182,7 +237,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
 
 .banner-sub {
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(19px, 3vw, 28px);
   color: rgba(255, 255, 255, 0.9);
   margin: 16px 0 0;
@@ -190,52 +245,53 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
 
 .group-tabs {
   display: flex;
-  gap: clamp(16px, 3vw, 34px);
+  justify-content: center;
+  gap: clamp(28px, 5vw, 64px);
   margin-top: clamp(24px, 3vw, 34px);
 }
 
 .group-tab {
-  letter-spacing: 0.01em;
-  font-weight: 300;
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 7px;
-  padding: 0 0 8px;
+  padding: 0 0 10px;
   border: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 1px solid rgba(15, 30, 46, 0.18);
   background: none;
   font-family: var(--serif);
-  font-size: clamp(22px, 3vw, 30px);
-  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(20px, 2.6vw, 28px);
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
   cursor: pointer;
   transition: color 0.3s, border-color 0.3s;
 }
 
 .group-tab:hover {
-  color: #ffffff;
+  color: var(--ink);
 }
 
 .group-tab.is-active {
-  color: var(--gold);
-  border-bottom-color: var(--gold);
+  color: var(--heading-on-light, #12426D);
+  border-bottom-color: var(--gold-dk);
 }
 
-.group-tab-count {
-  font-family: var(--sans);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.5);
+.group-tab:focus-visible {
+  outline: 1px solid var(--gold-dk);
+  outline-offset: 6px;
 }
 
-.group-tab.is-active .group-tab-count {
-  color: var(--gold-lt);
-}
-
-/* ---------- Menu tiles ---------- */
 .tiles {
   position: relative;
   background: var(--panel);
   padding: clamp(56px, 7vw, 104px) clamp(20px, 5vw, 64px) clamp(60px, 8vw, 112px);
+}
+
+/* The tab bar and the tiles under it read as one block. */
+.tiles--tabs {
+  padding-bottom: 0;
+}
+
+.tiles--grid {
+  padding-top: 0;
 }
 
 .tiles-head {
@@ -430,7 +486,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   font-size: 11.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--ink);
   text-decoration: none;
   transition: gap 0.3s, color 0.3s, border-color 0.3s;
@@ -447,6 +503,21 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   width: 100%;
   height: clamp(320px, 42vw, 560px);
   object-fit: cover;
+}
+
+/* A portrait video keeps its tall shape, centred in the column. */
+.feature-media--video {
+  display: flex;
+  justify-content: center;
+}
+
+.feature-media video {
+  display: block;
+  height: clamp(420px, 52vw, 680px);
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  background: var(--panel-dk);
 }
 
 @media (max-width: 860px) {
@@ -483,7 +554,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   font-size: 11px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--ink);
   text-decoration: none;
   padding: 20px 0;
@@ -533,7 +604,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
 .intro-text {
   letter-spacing: 0;
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   font-size: clamp(21px, 3.4vw, 32px);
   line-height: 1.45;
@@ -588,7 +659,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
 .dish-name {
   letter-spacing: 0;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(19px, 1.9vw, 22px);
   line-height: 1.2;
   margin: 0;
@@ -612,7 +683,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
 
 .dish-price {
   letter-spacing: 0.02em;
-  font-weight: 400;
+  font-weight: 300;
   font-family: var(--serif);
   font-size: 19px;
   color: var(--gold-dk);
@@ -766,7 +837,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: #0f1e2e;
   background: var(--gold);
   padding: 19px 44px;
@@ -785,7 +856,7 @@ const isPdf = (url: string) => /\.pdf($|[?#])/i.test(url)
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold-lt);
   background: transparent;
   padding: 19px 44px;

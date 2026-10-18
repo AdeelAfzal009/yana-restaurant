@@ -1,5 +1,5 @@
 <template>
-  <footer class="yana-footer" :style="sectionBackground(layout.footer.bgColor)">
+  <footer class="yana-footer" :class="sectionTone(layout.footer.bgColor)" :style="sectionBackground(layout.footer.bgColor)">
     <div v-if="layout.footer.showBgImage" aria-hidden="true" class="yana-footer-pattern" />
     <div class="yana-footer-inner">
       <div class="yana-footer-cols">
@@ -106,7 +106,7 @@ const layout = useContent('layout')
 
 .footer-tagline {
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 17px;
   color: var(--cream-dim);
   margin: 18px 0 0;
@@ -158,7 +158,7 @@ const layout = useContent('layout')
 }
 
 .footer-link {
-  font-weight: 600;
+  font-weight: 300;
   font-size: 13.5px;
   letter-spacing: 0.06em;
   color: #ffffff;

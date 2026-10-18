@@ -1,6 +1,6 @@
 <template>
   <div class="yana-page">
-    <header class="contact-banner" :style="sectionBackground(c.banner.bgColor)">
+    <header class="contact-banner" :class="sectionTone(c.banner.bgColor, c.banner.showBgImage)" :style="sectionBackground(c.banner.bgColor)">
       <template v-if="c.banner.showBgImage">
         <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
         <div aria-hidden="true" class="banner-scrim" />
@@ -173,7 +173,7 @@ function onSubmit(e: Event) {
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .eyebrow-plain--dark {
@@ -190,7 +190,7 @@ function onSubmit(e: Event) {
 
 .banner-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(44px, 9vw, 104px);
   line-height: 1;
   margin: 20px 0 0;
@@ -224,7 +224,7 @@ function onSubmit(e: Event) {
 
 .h2-dark {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(32px, 5vw, 58px);
   line-height: 1.06;
   margin: 22px 0 0;
@@ -269,7 +269,7 @@ function onSubmit(e: Event) {
   padding: 18px 42px;
   cursor: pointer;
   font-family: var(--sans);
-  font-weight: 400;
+  font-weight: 300;
   transition: all 0.4s ease;
 }
 
@@ -302,7 +302,7 @@ function onSubmit(e: Event) {
 }
 
 .contact-link {
-  font-weight: 600;
+  font-weight: 300;
   display: flex;
   gap: 16px;
   align-items: flex-start;
@@ -426,7 +426,7 @@ function onSubmit(e: Event) {
 
 .cta-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(34px, 5.6vw, 66px);
   line-height: 1.06;
   margin: 20px 0 0;
@@ -439,7 +439,7 @@ function onSubmit(e: Event) {
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: #0f1e2e;
   background: var(--gold);
   padding: 19px 46px;

@@ -3,6 +3,7 @@ import type { ContentPage } from './schema'
 
 const defaults = {
   banner: {
+    visible: true,
     showBgImage: true,
     bgColor: 'default',
     image: img('/images/yana-image-4-mrt9n45r-v3w7.webp'),
@@ -28,10 +29,11 @@ const defaults = {
     showEyebrow: true,
     eyebrow: 'Our Founder',
     title: 'Message from the Founder',
-    portraitA: img(''),
     portraitB: img(''),
     quote: 'Every plate that leaves our kitchen should feel like an occasion — that is the standard we hold ourselves to.',
-    attribution: 'Founder, YANA Restaurant'
+    attribution: 'Founder, YANA Restaurant',
+    missionTitle: 'Mission & Vision',
+    missionBody: 'To bring together Peruvian flavours and Pan-Asian craftsmanship, making YANA a distinctive dining destination defined by exceptional cuisine, creativity and warm hospitality.'
   },
   pillars: {
     visible: true,
@@ -96,10 +98,11 @@ export const ABOUT_PAGE: ContentPage = {
       description: 'Until portraits are added, grey placeholders are shown.',
       fields: [...backdropFields(), 
         ...eyebrow(), title(),
-        image('portraitA', 'Portrait (large)', false),
-        image('portraitB', 'Portrait (small)', false),
+        image('portraitB', 'Portrait', false),
         { key: 'quote', type: 'textarea', label: 'Quote', required: true, rows: 3, max: 400 },
-        { key: 'attribution', type: 'text', label: 'Signed by', max: 80 }
+        { key: 'attribution', type: 'text', label: 'Signed by', max: 80 },
+        { key: 'missionTitle', type: 'text', label: 'Heading under the photo', max: 60, hint: 'Shown centred under the photo and quote. Leave the heading and text empty to hide it.' },
+        { ...body('Text under the photo', 3), key: 'missionBody', max: 600 }
       ],
       defaults: defaults.founder
     },

@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ '--heading-on-light': headingColour }">
+  <div class="yana-site" :style="{ '--heading-on-light': headingColour }">
     <YanaNav :active="active" />
     <slot />
     <YanaFooter />

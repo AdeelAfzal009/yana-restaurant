@@ -1,6 +1,6 @@
 <template>
   <div class="yana-page">
-    <header class="reservation-banner" :style="sectionBackground(c.banner.bgColor)">
+    <header class="reservation-banner" :class="sectionTone(c.banner.bgColor, c.banner.showBgImage)" :style="sectionBackground(c.banner.bgColor)">
       <template v-if="c.banner.showBgImage">
         <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
         <div aria-hidden="true" class="banner-scrim" />
@@ -396,7 +396,7 @@ function resetForm() {
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .rule-short {
@@ -408,7 +408,7 @@ function resetForm() {
 
 .banner-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(40px, 8vw, 84px);
   line-height: 1;
   margin: 20px 0 0;
@@ -440,7 +440,7 @@ function resetForm() {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 16px 20px;
-  font-weight: 500;
+  font-weight: 300;
 }
 
 .booking-body {
@@ -470,7 +470,7 @@ function resetForm() {
 .calendar-title {
   font-family: var(--serif);
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--ink);
 }
 
@@ -530,7 +530,7 @@ function resetForm() {
 
 .booking-label {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 300;
   color: var(--ink);
   margin: 0;
 }
@@ -616,7 +616,7 @@ function resetForm() {
 
 .summary-row strong {
   color: var(--ink);
-  font-weight: 500;
+  font-weight: 300;
 }
 
 .summary-icon {
@@ -713,7 +713,7 @@ function resetForm() {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   padding: 14px 26px;
   border: 1px solid var(--gold);
   color: var(--gold-dk);

@@ -212,7 +212,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   background: var(--gold);
   color: var(--blue-dk);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 /* ---------- Panel ---------- */
@@ -264,7 +264,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   font-size: 12.5px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold);
 }
 
@@ -349,7 +349,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold-dk);
   text-decoration: none;
   transition: background 0.3s, color 0.3s, border-color 0.3s;

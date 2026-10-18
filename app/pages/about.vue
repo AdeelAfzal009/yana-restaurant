@@ -1,6 +1,6 @@
 <template>
-  <div class="yana-page">
-    <header class="about-banner" :style="sectionBackground(c.banner.bgColor)">
+  <div class="yana-page" :class="{ 'yana-page--no-banner': !c.banner.visible, 'yana-page--starts-light': !c.banner.visible && c.standard.visible }">
+    <header v-if="c.banner.visible" class="about-banner" :class="sectionTone(c.banner.bgColor, c.banner.showBgImage)" :style="sectionBackground(c.banner.bgColor)">
       <template v-if="c.banner.showBgImage">
         <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
         <div aria-hidden="true" class="banner-scrim" />
@@ -29,7 +29,7 @@
     </section>
 
     <!-- FOUNDER -->
-    <section v-if="c.founder.visible" class="founder-section" :style="sectionBackground(c.founder.bgColor)">
+    <section v-if="c.founder.visible" class="founder-section" :class="sectionTone(c.founder.bgColor)" :style="sectionBackground(c.founder.bgColor)">
       <div v-if="c.founder.showBgImage" aria-hidden="true" class="pattern-dark" />
       <div class="founder-inner">
         <div class="founder-intro">
@@ -37,10 +37,6 @@
           <h2 class="h2-light" v-html="richText(c.founder.title)" />
         </div>
         <div class="founder-grid">
-          <div class="founder-portrait founder-portrait--a">
-            <img v-if="c.founder.portraitA.src" :src="c.founder.portraitA.src" :alt="c.founder.portraitA.alt" class="cms-fill" loading="lazy" decoding="async">
-            <ImagePlaceholder v-else label="Founder portrait" />
-          </div>
           <div class="founder-portrait founder-portrait--b">
             <img v-if="c.founder.portraitB.src" :src="c.founder.portraitB.src" :alt="c.founder.portraitB.alt" class="cms-fill" loading="lazy" decoding="async">
             <ImagePlaceholder v-else label="Founder portrait" />
@@ -53,6 +49,11 @@
               <span class="eyebrow-plain">{{ c.founder.attribution }}</span>
             </div>
           </div>
+        </div>
+        <div v-if="c.founder.missionTitle || c.founder.missionBody" class="founder-mission">
+          <span class="rule-short rule-short--center" aria-hidden="true" />
+          <h3 v-if="c.founder.missionTitle" class="founder-mission-title">{{ c.founder.missionTitle }}</h3>
+          <p v-for="(p, i) in paragraphs(c.founder.missionBody)" :key="i" class="founder-mission-text" v-html="richText(p)" />
         </div>
       </div>
     </section>
@@ -113,7 +114,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 <style scoped>
 /* Words set in **bold** in the dashboard. */
 .body-copy :deep(strong) {
-  font-weight: 500;
+  font-weight: 300;
   color: var(--ink);
 }
 
@@ -172,7 +173,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .eyebrow-plain--dark {
@@ -193,7 +194,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 
 .banner-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(44px, 9vw, 104px);
   line-height: 1;
   margin: 20px 0 0;
@@ -233,7 +234,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 
 .h2-dark {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(32px, 5vw, 58px);
   line-height: 1.06;
   margin: 24px 0 0;
@@ -242,7 +243,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 
 .h2-light {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(32px, 5vw, 58px);
   line-height: 1.06;
   margin: 22px 0 0;
@@ -319,13 +320,50 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 
 .founder-portrait {
   position: relative;
+  /* Fits on screen under the nav: the full photo is visible without scrolling. */
+  justify-self: center;
+  width: auto;
+  max-width: 100%;
+  height: min(calc(100svh - 180px), 760px);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border: 1px solid rgba(217, 182, 144, 0.28);
 }
 
-.founder-portrait--a {
-  background: linear-gradient(160deg, #12426d, #0f1e2e 74%);
+/* Phones: the photo takes the full width at its own shape. */
+@media (max-width: 640px) {
+  .founder-portrait {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Mission & Vision, centred under the photo and quote on the same background. */
+.founder-mission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 760px;
+  margin: clamp(56px, 7vw, 96px) auto 0;
+  text-align: center;
+}
+
+.founder-mission-title {
+  margin: 26px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.founder-mission-text {
+  margin: 20px 0 0;
+  font-size: 17px;
+  line-height: 1.9;
+  font-weight: 300;
+  color: var(--cream-dim);
 }
 
 .founder-portrait--b {
@@ -349,10 +387,10 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 
 .quote-text {
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
-  font-size: clamp(20px, 2.6vw, 28px);
-  line-height: 1.45;
+  font-size: 18px;
+  line-height: 1.8;
   color: #ffffff;
   margin: 16px 0 0;
 }
@@ -401,7 +439,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 .about-experience-section {
   position: relative;
   overflow: hidden;
-  padding: 0 clamp(20px, 5vw, 64px) clamp(76px, 11vw, 150px);
+  padding: clamp(48px, 6vw, 84px) clamp(20px, 5vw, 64px);
 }
 
 .about-experience-grid {
@@ -451,7 +489,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
   font-size: clamp(40px, 6vw, 62px);
   line-height: 1;
   color: var(--gold-dk);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .stat-label {
@@ -490,7 +528,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
 
 .cta-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(34px, 5.6vw, 66px);
   line-height: 1.06;
   margin: 20px 0 0;
@@ -503,7 +541,7 @@ const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefin
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: #0f1e2e;
   background: var(--gold);
   padding: 19px 46px;

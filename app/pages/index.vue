@@ -58,11 +58,21 @@
       <div class="split-media">
         <div class="split-photo" :style="bg(c.kitchen.roomImage.src)" role="img" :aria-label="c.kitchen.roomImage.alt" />
       </div>
-      <div class="split-panel">
-        <div aria-hidden="true" class="split-pattern" />
+      <div
+        class="split-panel"
+        :class="{ 'split-panel--image': c.kitchen.panelBg === 'image', 'split-panel--dark': panelIsDark }"
+        :style="c.kitchen.panelBg === 'image' ? undefined : sectionBackground(c.kitchen.panelBg)"
+      >
+        <div
+          v-if="c.kitchen.panelBg === 'image' && c.kitchen.panelImage.src"
+          aria-hidden="true"
+          class="split-pattern"
+          :class="c.kitchen.panelImage.src !== PANEL_PATTERN && ['split-pattern--photo', `split-pattern--${c.kitchen.panelImageFit}`]"
+          :style="bg(c.kitchen.panelImage.src)"
+        />
         <div v-reveal="{ y: 28 }" class="split-inner">
           <img v-if="c.kitchen.dishImage.src" :src="c.kitchen.dishImage.src" :alt="c.kitchen.dishImage.alt" class="split-dish" loading="lazy" decoding="async">
-          <span v-if="c.kitchen.showEyebrow && c.kitchen.eyebrow" class="eyebrow eyebrow-dark split-eyebrow"><span class="rule-short" />{{ c.kitchen.eyebrow }}</span>
+          <span v-if="c.kitchen.showEyebrow && c.kitchen.eyebrow" class="eyebrow split-eyebrow" :class="panelIsDark ? 'eyebrow-light' : 'eyebrow-dark'"><span class="rule-short" />{{ c.kitchen.eyebrow }}</span>
           <h2 class="split-title" v-html="richText(c.kitchen.title)" />
           <p v-for="(p, i) in paragraphs(c.kitchen.body)" :key="i" class="split-copy" v-html="richText(p)" />
           <CmsLink :link="c.kitchen.button" class="split-link">
@@ -77,8 +87,77 @@
       <blockquote v-reveal="{ y: 24 }" class="pull-quote-text" v-html="richText(c.quote.text)" />
     </section>
 
+    <!-- ===================== PHOTO STRIP (endless scroll) ===================== -->
+    <section v-if="c.strip.visible && stripPhotos.length" class="strip-section" :class="sectionTone(c.strip.bgColor)" :style="sectionBackground(c.strip.bgColor)">
+      <div v-if="c.strip.title || c.strip.body || (c.strip.showEyebrow && c.strip.eyebrow)" v-reveal="{ y: 24 }" class="strip-intro">
+        <span v-if="c.strip.showEyebrow && c.strip.eyebrow" class="eyebrow eyebrow-light strip-eyebrow"><span class="rule-short" />{{ c.strip.eyebrow }}</span>
+        <h2 v-if="c.strip.title" class="strip-title" v-html="richText(c.strip.title)" />
+        <p v-for="(p, i) in paragraphs(c.strip.body)" :key="i" class="strip-copy" v-html="richText(p)" />
+      </div>
+      <!-- Two copies side by side, so sliding by half loops without a seam. Pauses on hover. -->
+      <div class="strip">
+        <div class="strip-track">
+          <ul v-for="copy in 2" :key="copy" class="strip-row" :aria-hidden="copy === 2 ? 'true' : undefined">
+            <li v-for="(photo, i) in stripPhotos" :key="i" class="strip-item">
+              <img :src="photo.src" :alt="copy === 1 ? photo.alt : ''" loading="lazy" decoding="async">
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GUEST REVIEWS (carousel) ===================== -->
+    <section
+      v-if="c.testimonials.visible && quotes.length"
+      class="reviews"
+      :class="sectionTone(c.testimonials.bgColor)"
+      :style="sectionBackground(c.testimonials.bgColor)"
+      aria-roledescription="carousel"
+      aria-label="What our guests say"
+      @mouseenter="pauseQuotes = true"
+      @mouseleave="pauseQuotes = false"
+      @focusin="pauseQuotes = true"
+      @focusout="pauseQuotes = false"
+    >
+      <div class="reviews-viewport">
+        <div class="reviews-track" :style="{ transform: `translate3d(-${quoteIndex * 100}%, 0, 0)` }">
+          <figure v-for="(q, i) in quotes" :key="i" class="review" :aria-hidden="i !== quoteIndex" :inert="i !== quoteIndex">
+            <span aria-hidden="true" class="review-mark">&ldquo;</span>
+            <blockquote class="review-quote">
+              <p v-html="richText(q.quote)" />
+            </blockquote>
+            <span aria-hidden="true" class="review-mark review-mark--close">&ldquo;</span>
+            <figcaption class="review-by">
+              <span class="review-name">{{ q.name }}</span>
+              <template v-if="q.detail"><br>{{ q.detail }}</template>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+      <div v-if="quotes.length > 1" class="reviews-nav">
+        <button type="button" class="reviews-btn" aria-label="Show the previous quote" @click="stepQuote(-1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <ul class="reviews-dots">
+          <li v-for="(q, i) in quotes" :key="i">
+            <button
+              type="button"
+              class="reviews-dot"
+              :class="{ 'is-active': i === quoteIndex }"
+              :aria-label="`Show the quote from ${q.name}`"
+              :aria-current="i === quoteIndex"
+              @click="quoteIndex = i"
+            />
+          </li>
+        </ul>
+        <button type="button" class="reviews-btn" aria-label="Show the next quote" @click="stepQuote(1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      </div>
+    </section>
+
     <!-- ===================== PISCO BAR (dark band) ===================== -->
-    <section v-if="c.bar.visible" id="bar" class="feature feature--dark" :style="sectionBackground(c.bar.bgColor)">
+    <section v-if="c.bar.visible" id="bar" class="feature feature--dark" :class="sectionTone(c.bar.bgColor)" :style="sectionBackground(c.bar.bgColor)">
       <div v-if="c.bar.showBgImage" aria-hidden="true" class="pattern-dark pattern-dark--tall" />
       <span v-if="c.bar.showGhost && c.bar.ghost" aria-hidden="true" class="ghost-word ghost-word--light ghost-center">{{ c.bar.ghost }}</span>
       <div class="feature-grid feature-grid--reverse">
@@ -144,73 +223,6 @@
       </div>
     </section>
 
-    <!-- ===================== PHOTO STRIP (endless scroll) ===================== -->
-    <section v-if="c.strip.visible && stripPhotos.length" class="strip-section" :style="sectionBackground(c.strip.bgColor)">
-      <div v-if="c.strip.title || c.strip.body || (c.strip.showEyebrow && c.strip.eyebrow)" v-reveal="{ y: 24 }" class="strip-intro">
-        <span v-if="c.strip.showEyebrow && c.strip.eyebrow" class="eyebrow eyebrow-light strip-eyebrow"><span class="rule-short" />{{ c.strip.eyebrow }}</span>
-        <h2 v-if="c.strip.title" class="strip-title" v-html="richText(c.strip.title)" />
-        <p v-for="(p, i) in paragraphs(c.strip.body)" :key="i" class="strip-copy" v-html="richText(p)" />
-      </div>
-      <!-- Two copies side by side, so sliding by half loops without a seam. Pauses on hover. -->
-      <div class="strip">
-        <div class="strip-track">
-          <ul v-for="copy in 2" :key="copy" class="strip-row" :aria-hidden="copy === 2 ? 'true' : undefined">
-            <li v-for="(photo, i) in stripPhotos" :key="i" class="strip-item">
-              <img :src="photo.src" :alt="copy === 1 ? photo.alt : ''" loading="lazy" decoding="async">
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== GUEST REVIEWS (carousel) ===================== -->
-    <section
-      v-if="c.testimonials.visible && quotes.length"
-      class="reviews"
-      :style="sectionBackground(c.testimonials.bgColor)"
-      aria-roledescription="carousel"
-      aria-label="What our guests say"
-      @mouseenter="pauseQuotes = true"
-      @mouseleave="pauseQuotes = false"
-      @focusin="pauseQuotes = true"
-      @focusout="pauseQuotes = false"
-    >
-      <div class="reviews-viewport">
-        <div class="reviews-track" :style="{ transform: `translate3d(-${quoteIndex * 100}%, 0, 0)` }">
-          <figure v-for="(q, i) in quotes" :key="i" class="review" :aria-hidden="i !== quoteIndex" :inert="i !== quoteIndex">
-            <span aria-hidden="true" class="review-mark">&ldquo;</span>
-            <blockquote class="review-quote">
-              <p v-html="richText(q.quote)" />
-            </blockquote>
-            <span aria-hidden="true" class="review-mark review-mark--close">&ldquo;</span>
-            <figcaption class="review-by">
-              <span class="review-name">{{ q.name }}</span>
-              <template v-if="q.detail"><br>{{ q.detail }}</template>
-            </figcaption>
-          </figure>
-        </div>
-      </div>
-      <div v-if="quotes.length > 1" class="reviews-nav">
-        <button type="button" class="reviews-btn" aria-label="Show the previous quote" @click="stepQuote(-1)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
-        </button>
-        <ul class="reviews-dots">
-          <li v-for="(q, i) in quotes" :key="i">
-            <button
-              type="button"
-              class="reviews-dot"
-              :class="{ 'is-active': i === quoteIndex }"
-              :aria-label="`Show the quote from ${q.name}`"
-              :aria-current="i === quoteIndex"
-              @click="quoteIndex = i"
-            />
-          </li>
-        </ul>
-        <button type="button" class="reviews-btn" aria-label="Show the next quote" @click="stepQuote(1)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
-        </button>
-      </div>
-    </section>
 
     <div v-if="c.moments.visible" aria-hidden="true" class="section-divider" />
 
@@ -344,6 +356,8 @@
 
 <script setup lang="ts">
 import { addressLines, telHref, whatsappHref } from '#shared/content/site'
+import { PANEL_PATTERN } from '#shared/content/home'
+import { BRAND_COLOURS } from '#shared/content/fields'
 
 const c = await usePageContent('home')
 const site = useContent('site')
@@ -352,6 +366,9 @@ useContentSeo(() => c.value.seo)
 const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
 // The Terrace and Our Story sit next to each other when Evenings is off.
+// The Food text panel's colour is dark, so its text turns light.
+const panelIsDark = computed(() => BRAND_COLOURS[c.value.kitchen.panelBg]?.light === false)
+
 const terraceMeetsStory = computed(() => c.value.terrace.visible && c.value.story.visible && !c.value.evenings.visible)
 
 // Photo strip: only photos that have an image.
@@ -506,7 +523,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   letter-spacing: 0.4em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .rule {
@@ -542,7 +559,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 
 .hero-sub {
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   font-size: clamp(18px, 3.2vw, 27px);
   color: rgba(255, 255, 255, 0.9);
@@ -559,7 +576,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--blue-dk);
   background: var(--gold);
   padding: 19px 44px;
@@ -634,7 +651,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: clamp(80px, 17vw, 250px);
   line-height: 0.8;
   color: rgba(18, 66, 109, 0.05);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: 0.03em;
   pointer-events: none;
   white-space: nowrap;
@@ -721,7 +738,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--ink);
   text-decoration: none;
   transition: background 0.35s, color 0.35s, border-color 0.35s;
@@ -764,7 +781,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold-dk);
   text-decoration: none;
   border-bottom: 1px solid rgba(138, 107, 69, 0.4);
@@ -792,7 +809,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 .shots-count {
   font-size: 13px;
   letter-spacing: 0.2em;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold-dk);
   font-variant-numeric: tabular-nums;
 }
@@ -856,7 +873,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: 11.5px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: #ffffff;
 }
 
@@ -1077,7 +1094,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 .map-word {
   position: relative;
   font-size: calc(var(--tile) * 0.075);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: 0.42em;
   margin-right: -0.42em;
   color: #D9B690;
@@ -1197,7 +1214,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 .visit-row dt {
   font-family: 'Montserrat', sans-serif;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gold-dk);
@@ -1213,7 +1230,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 }
 
 .visit-row a {
-  font-weight: 600;
+  font-weight: 300;
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid rgba(217, 182, 144, 0.8);
@@ -1250,8 +1267,8 @@ onUnmounted(() => clearInterval(quotesTimer))
   max-width: 1120px;
   margin: 0 auto;
   font-family: 'Montserrat', sans-serif;
-  font-style: italic;
-  font-weight: 400;
+  font-style: normal;
+  font-weight: 300;
   font-size: clamp(24px, 3.4vw, 46px);
   line-height: 1.5;
   letter-spacing: -0.01em;
@@ -1304,7 +1321,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 .strip-track {
   display: flex;
   width: max-content;
-  animation: stripScroll 60s linear infinite;
+  animation: stripScroll 90s linear infinite;
 }
 
 .strip:hover .strip-track {
@@ -1393,7 +1410,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   margin: 0 auto;
   font-size: clamp(17px, 1.5vw, 21px);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.6;
   color: #F3ECE1;
 }
@@ -1554,7 +1571,7 @@ onUnmounted(() => clearInterval(quotesTimer))
 
 .link-underline {
   letter-spacing: 0.01em;
-  font-weight: 600;
+  font-weight: 300;
   display: inline-block;
   margin-top: 36px;
   padding-bottom: 4px;
@@ -1650,6 +1667,44 @@ onUnmounted(() => clearInterval(quotesTimer))
   pointer-events: none;
 }
 
+/* An image chosen in the dashboard fills the panel as uploaded. */
+.split-pattern--photo {
+  filter: none;
+  opacity: 1;
+}
+
+/* A pattern repeats at a fixed tile size instead of being scaled up to the
+   panel's height. */
+.split-pattern--tile {
+  background-size: 640px auto;
+  background-position: top left;
+  background-repeat: repeat;
+}
+
+/* Background chosen in the dashboard: one YANA colour or an image, never two
+   at once. */
+.split-panel--image:has(.split-pattern--photo) {
+  background: none;
+}
+
+.split-panel--dark .split-title {
+  color: #ffffff;
+}
+
+.split-panel--dark .split-copy {
+  color: var(--cream-dim);
+}
+
+.split-panel--dark .split-link {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.split-panel--dark .split-link:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
 .split-inner {
   position: relative;
   z-index: 2;
@@ -1699,7 +1754,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--ink);
   text-decoration: none;
   transition: color 0.3s, border-color 0.3s, gap 0.3s;
@@ -1732,7 +1787,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   letter-spacing: 0.01em;
   font-weight: 300;
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 22px;
   color: var(--gold-dk);
   margin: 34px 0 0;
@@ -1800,7 +1855,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   font-size: 11px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .eyebrow-dark {
@@ -1946,7 +2001,7 @@ onUnmounted(() => clearInterval(quotesTimer))
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .cta-title {

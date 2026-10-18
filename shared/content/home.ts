@@ -1,5 +1,11 @@
-import { background, body, button, eyebrow, ghostFields, image, navyColourField, img, link, seoFields, subtitle, title, backdropFields } from './fields'
+import { BRAND_COLOURS, background, body, button, eyebrow, ghostFields, image, navyColourField, img, link, seoFields, subtitle, title, backdropFields } from './fields'
 import type { ContentPage } from './schema'
+
+// The line pattern drawn behind the Food text. It is a dark pattern, so the site
+// shows it lightened (inverted); any other image is shown as uploaded.
+export const PANEL_PATTERN = '/images/yana-pattern-square.jpeg'
+
+const PANEL_COLOURS = Object.entries(BRAND_COLOURS).map(([value, c]) => ({ value, label: c.label }))
 
 const defaults = {
   hero: {
@@ -27,6 +33,9 @@ const defaults = {
     visible: true,
     roomImage: img('/images/yana-image-2-mruiybvd-26zk.webp', 'The YANA dining room'),
     dishImage: img('/images/web/menu-food.jpg', 'A spread of YANA dishes and a cocktail on marble'),
+    panelBg: 'image',
+    panelImage: img(PANEL_PATTERN),
+    panelImageFit: 'tile',
     showEyebrow: true,
     eyebrow: '01 — Food',
     title: 'La Cocina de YANA',
@@ -209,6 +218,24 @@ export const HOME_PAGE: ContentPage = {
       fields: [
         image('roomImage', 'Large photo (left)'),
         { ...image('dishImage', 'Photo above the title'), hint: 'Shown across the full width of the text, at the photo\'s own shape, so nothing is cropped. Landscape photos work best.' },
+        {
+          key: 'panelBg',
+          type: 'select',
+          label: 'Background (right side)',
+          options: [...PANEL_COLOURS, { value: 'image', label: 'Background image' }],
+          hint: 'Only one is used at a time. YANA Light and YANA Light Gold keep the text dark; the other colours switch it to light.'
+        },
+        { ...background('panelImage', 'Background image (right side)'), hint: 'Used when the background is set to Background image. The text stays dark, so pick a light, calm photo or pattern.' },
+        {
+          key: 'panelImageFit',
+          type: 'select',
+          label: 'Background image fit',
+          options: [
+            { value: 'tile', label: 'Repeat as a pattern' },
+            { value: 'cover', label: 'Fill the panel (photo)' }
+          ],
+          hint: 'Repeat keeps a pattern at its own size. Fill stretches one photo over the whole panel, so a pattern would look enlarged.'
+        },
         ...eyebrow(), title(), body(), button()
       ],
       defaults: defaults.kitchen
@@ -218,31 +245,6 @@ export const HOME_PAGE: ContentPage = {
       label: 'Quote',
       fields: [{ key: 'text', type: 'textarea', label: 'Quote', required: true, rows: 2, max: 300 }],
       defaults: defaults.quote
-    },
-    {
-      id: 'bar',
-      label: 'Pisco Bar',
-      fields: [...backdropFields(), ...eyebrow(), title(), body(), button(), image(), ...ghostFields()],
-      defaults: defaults.bar
-    },
-    {
-      id: 'terrace',
-      label: 'The Terrace',
-      fields: [...eyebrow(), title(), body(), button(), image(), ...ghostFields()],
-      defaults: defaults.terrace
-    },
-    {
-      id: 'evenings',
-      label: 'Evenings',
-      description: 'The full-width photo band.',
-      fields: [background('image', 'Photo'), ...eyebrow(), title(), body(), button(), ...ghostFields()],
-      defaults: defaults.evenings
-    },
-    {
-      id: 'story',
-      label: 'Our Story',
-      fields: [...eyebrow(), title(), body(), { key: 'signoff', type: 'text', label: 'Sign-off', max: 80 }, image(), ...ghostFields()],
-      defaults: defaults.story
     },
     {
       id: 'strip',
@@ -285,6 +287,31 @@ export const HOME_PAGE: ContentPage = {
         ]
       }],
       defaults: defaults.testimonials
+    },
+    {
+      id: 'bar',
+      label: 'Pisco Bar',
+      fields: [...backdropFields(), ...eyebrow(), title(), body(), button(), image(), ...ghostFields()],
+      defaults: defaults.bar
+    },
+    {
+      id: 'terrace',
+      label: 'The Terrace',
+      fields: [...eyebrow(), title(), body(), button(), image(), ...ghostFields()],
+      defaults: defaults.terrace
+    },
+    {
+      id: 'evenings',
+      label: 'Evenings',
+      description: 'The full-width photo band.',
+      fields: [background('image', 'Photo'), ...eyebrow(), title(), body(), button(), ...ghostFields()],
+      defaults: defaults.evenings
+    },
+    {
+      id: 'story',
+      label: 'Our Story',
+      fields: [...eyebrow(), title(), body(), { key: 'signoff', type: 'text', label: 'Sign-off', max: 80 }, image(), ...ghostFields()],
+      defaults: defaults.story
     },
     {
       id: 'moments',

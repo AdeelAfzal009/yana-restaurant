@@ -1,6 +1,6 @@
 <template>
   <div class="yana-page">
-    <header class="gallery-banner" :style="sectionBackground(c.banner.bgColor)">
+    <header class="gallery-banner" :class="sectionTone(c.banner.bgColor, c.banner.showBgImage)" :style="sectionBackground(c.banner.bgColor)">
       <template v-if="c.banner.showBgImage">
         <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
         <div aria-hidden="true" class="banner-scrim" />
@@ -36,7 +36,7 @@
     </section>
 
     <!-- DARK BAND: THE ROOM -->
-    <section v-if="c.room.visible" class="room-section" :style="sectionBackground(c.room.bgColor)">
+    <section v-if="c.room.visible" class="room-section" :class="sectionTone(c.room.bgColor)" :style="sectionBackground(c.room.bgColor)">
       <div v-if="c.room.showBgImage" aria-hidden="true" class="pattern-dark" />
       <div class="room-inner">
         <div class="room-intro">
@@ -203,7 +203,7 @@ const ROOM_GRADIENTS = [
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--gold-lt);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .rule-short {
@@ -215,7 +215,7 @@ const ROOM_GRADIENTS = [
 
 .banner-title {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(44px, 9vw, 104px);
   line-height: 1;
   margin: 20px 0 0;
@@ -225,7 +225,7 @@ const ROOM_GRADIENTS = [
 
 .banner-sub {
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(19px, 3vw, 28px);
   color: rgba(255, 255, 255, 0.9);
   margin: 16px 0 0;
@@ -388,7 +388,7 @@ const ROOM_GRADIENTS = [
 }
 
 .lightbox-count {
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
 }
@@ -528,7 +528,7 @@ const ROOM_GRADIENTS = [
 
 .h2-light {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(30px, 4.6vw, 54px);
   line-height: 1.06;
   margin: 22px 0 0;
@@ -590,7 +590,7 @@ const ROOM_GRADIENTS = [
 
 .h2-dark {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 300;
   font-size: clamp(30px, 4.6vw, 52px);
   line-height: 1.08;
   margin: 20px 0 0;
@@ -603,7 +603,7 @@ const ROOM_GRADIENTS = [
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--gold-dk);
   background: transparent;
   border: 1px solid var(--gold);
