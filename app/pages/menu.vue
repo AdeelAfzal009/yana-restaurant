@@ -44,6 +44,7 @@
       v-show="tab === t.key"
       :id="`panel-${t.key}`"
       :key="t.key"
+      class="menu-panel"
       role="tabpanel"
       :aria-labelledby="`tab-${t.key}`"
     >
@@ -527,6 +528,30 @@ const showVideo = (section: { mediaType: string, video: string }) => section.med
 
   .feature--reverse .feature-copy {
     order: 0;
+  }
+
+  /* Phones: in each tab the video (or photo) comes first, right under the
+     tabs, then the menu cards, then the text. The Food/Drinks section steps
+     aside so its photo and text can be placed separately. */
+  .menu-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-panel > .feature {
+    display: contents;
+  }
+
+  .menu-panel .feature-media {
+    order: -1;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px 36px;
+  }
+
+  .menu-panel .feature-copy {
+    order: 2;
+    padding: 36px 20px 56px;
   }
 }
 

@@ -48,7 +48,6 @@ const defaults = {
     drinksTab: 'Drinks',
     items: [
       { category: 'food', icon: 'plate', label: 'À la Carte', desc: 'Ceviches, tiraditos and the Josper grill', url: `${DIGITAL_MENU}62881` },
-      { category: 'food', icon: 'sunrise', label: 'Breakfast', desc: 'From 9am, every morning', url: `${DIGITAL_MENU}60876` },
       { category: 'food', icon: 'dessert', label: 'Desserts', desc: 'Mochi, cheesecake and quinoa textures', url: `${DIGITAL_MENU}62881` },
       { category: 'drinks', icon: 'coupe', label: 'Drinks', desc: 'Pisco, signatures and the full bar', url: `${DIGITAL_MENU}56458` },
       { category: 'drinks', icon: 'cup', label: 'Coffee & Tea', desc: 'Espresso, matcha and loose leaf', url: `${DIGITAL_MENU}56501` },
