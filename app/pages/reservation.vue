@@ -187,6 +187,7 @@
 </template>
 
 <script setup lang="ts">
+import { ONLINE_BOOKING } from '#shared/utils/reservation-meta'
 const c = await usePageContent('reservation')
 useContentSeo(() => c.value.seo)
 
@@ -277,18 +278,13 @@ function selectDate(iso: string) {
 
 const timeSlots = computed(() => {
   if (!selectedDate.value) return []
-  const dow = new Date(`${selectedDate.value}T00:00:00`).getDay()
-  const isWeekend = dow === 5 || dow === 6
-  const openMinutes = 9 * 60
-  const closeMinutes = isWeekend ? 24 * 60 : 22 * 60
-  const lastSlot = closeMinutes - 60
 
   const isToday = selectedDate.value === toIso(today.getFullYear(), today.getMonth(), today.getDate())
   const now = new Date()
   const earliestMinutes = isToday ? now.getHours() * 60 + now.getMinutes() + 30 : -1
 
   const slots: { value: string, label: string }[] = []
-  for (let m = openMinutes; m <= lastSlot; m += 15) {
+  for (let m = ONLINE_BOOKING.firstMinute; m <= ONLINE_BOOKING.lastMinute; m += ONLINE_BOOKING.stepMinutes) {
     if (m < earliestMinutes) continue
     const h = Math.floor(m / 60)
     const mm = m % 60

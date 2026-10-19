@@ -33,8 +33,8 @@ const defaults: SiteInfo = {
   },
   hours: {
     rows: [
-      { days: 'Sunday – Thursday', hours: '9am – 10pm' },
-      { days: 'Friday & Saturday', hours: '9am – midnight' }
+      { days: 'Sunday – Thursday', hours: '12pm – 12am' },
+      { days: 'Friday & Saturday', hours: '12pm – 1am' }
     ]
   },
   social: {
@@ -76,7 +76,7 @@ export const SITE_PAGE: ContentPage = {
           required: true,
           fields: [
             { key: 'days', type: 'text', label: 'Days', required: true, max: 40, placeholder: 'Sunday – Thursday' },
-            { key: 'hours', type: 'text', label: 'Hours', required: true, max: 40, placeholder: '9am – 10pm' }
+            { key: 'hours', type: 'text', label: 'Hours', required: true, max: 40, placeholder: '12pm – 12am' }
           ]
         }
       ],

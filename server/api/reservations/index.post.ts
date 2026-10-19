@@ -4,6 +4,7 @@ import { findOrCreateGuest } from '../../utils/guests'
 import { logActivity } from '../../utils/activity'
 import { queueEmail, sendReservationEmail, sendStaffNewBooking } from '../../utils/notify'
 import { DATE_RE, EMAIL_RE, TIME_RE } from '../../utils/validate'
+import { isOnlineBookingTime } from '#shared/utils/reservation-meta'
 
 interface ReservationInput {
   date?: string
@@ -24,6 +25,9 @@ export default defineEventHandler(async (event) => {
   }
   if (!body.time || !TIME_RE.test(body.time)) {
     throw createError({ statusCode: 400, statusMessage: 'A valid time is required' })
+  }
+  if (!isOnlineBookingTime(body.time)) {
+    throw createError({ statusCode: 400, statusMessage: 'Online bookings are from 12pm to 10pm' })
   }
   const partySize = Number(body.partySize)
   if (!Number.isInteger(partySize) || partySize < 1 || partySize > 20) {

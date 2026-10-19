@@ -96,7 +96,7 @@
       </div>
       <!-- Two copies side by side, so sliding by half loops without a seam. Pauses on hover. -->
       <div class="strip">
-        <div class="strip-track" :style="{ animationDuration: `${c.strip.speed}s` }">
+        <div class="strip-track" :style="{ animationDuration: `${stripSeconds}s` }">
           <ul v-for="copy in 2" :key="copy" class="strip-row" :aria-hidden="copy === 2 ? 'true' : undefined">
             <li v-for="(photo, i) in stripPhotos" :key="i" class="strip-item">
               <img :src="photo.src" :alt="copy === 1 ? photo.alt : ''" loading="lazy" decoding="async">
@@ -366,6 +366,12 @@ useContentSeo(() => c.value.seo)
 const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
 // The Terrace and Our Story sit next to each other when Evenings is off.
+// Photo strip speed from the dashboard: seconds per loop, kept to 5–300.
+const stripSeconds = computed(() => {
+  const n = Number.parseFloat(String(c.value.strip.speed))
+  return Number.isFinite(n) ? Math.min(300, Math.max(5, n)) : 90
+})
+
 // The Food text panel's colour is dark, so its text turns light.
 const panelIsDark = computed(() => BRAND_COLOURS[c.value.kitchen.panelBg]?.light === false)
 
@@ -1789,6 +1795,16 @@ onUnmounted(() => clearInterval(quotesTimer))
 
   .split-panel {
     min-height: 0;
+    padding-top: 40px;
+    padding-bottom: 28px;
+  }
+}
+
+/* Phones: the quote sits closer to the Food section above it. */
+@media (max-width: 640px) {
+  .pull-quote {
+    padding-top: 24px;
+    padding-bottom: 36px;
   }
 }
 

@@ -255,16 +255,11 @@ export const HOME_PAGE: ContentPage = {
         navyColourField(),
         {
           key: 'speed',
-          type: 'select',
-          label: 'Scroll speed',
-          options: [
-            { value: '150', label: 'Very slow' },
-            { value: '120', label: 'Slow' },
-            { value: '90', label: 'Normal' },
-            { value: '60', label: 'Fast' },
-            { value: '40', label: 'Very fast' }
-          ],
-          hint: 'How quickly the photos slide across. They pause when a visitor hovers over them.'
+          type: 'text',
+          label: 'Scroll speed (seconds)',
+          max: 4,
+          placeholder: '90',
+          hint: 'Seconds for the photos to slide all the way round once. Smaller is faster: 40 is quick, 90 is the original pace, 150 is slow. Any number from 5 to 300.'
         },
         ...eyebrow(),
         { key: 'title', type: 'textarea', label: 'Title', rows: 2, max: 160, hint: 'Leave the title and text empty to show only the photos.' },

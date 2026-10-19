@@ -74,7 +74,7 @@ export const DEFAULT_CONCIERGE: ConciergeConfig = {
       id: 'hours',
       enabled: true,
       label: 'Opening hours',
-      reply: 'Sunday – Thursday: 9am – 10pm\nFriday & Saturday: 9am – midnight\nThe terrace and bar are open daily alongside the dining room.',
+      reply: 'Sunday – Thursday: 12pm – 12am\nFriday & Saturday: 12pm – 1am\nOnline bookings are taken from 12pm to 10pm.',
       actions: [{ type: 'book', label: 'Book a table' }]
     },
     {

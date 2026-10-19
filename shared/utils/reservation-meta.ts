@@ -90,3 +90,14 @@ export function shiftForTime(hhmm: string): ShiftKey {
   const match = SHIFTS.find(s => s.key !== 'all' && m >= toMinutes(s.start) && m < toMinutes(s.end))
   return match?.key ?? 'all'
 }
+
+// Times guests can book online, every day: 12pm (opening) to 10pm (last
+// booking), every 15 minutes. The restaurant stays open later (until midnight,
+// 1am on Fridays and Saturdays), but the last online booking is 10pm.
+export const ONLINE_BOOKING = { firstMinute: 12 * 60, lastMinute: 22 * 60, stepMinutes: 15 }
+
+export function isOnlineBookingTime(time: string) {
+  const [h, m] = time.split(':').map(Number)
+  const minutes = h! * 60 + m!
+  return minutes >= ONLINE_BOOKING.firstMinute && minutes <= ONLINE_BOOKING.lastMinute && minutes % ONLINE_BOOKING.stepMinutes === 0
+}
