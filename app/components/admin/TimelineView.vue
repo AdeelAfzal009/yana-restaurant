@@ -4,7 +4,11 @@
       <div class="tl-grid" :style="{ '--cols': slots.length, '--col-w': `${COL_W}px` }">
         <!-- Header -->
         <div class="tl-corner">
-          <span>Table</span>
+          <label class="tl-sort">
+            <select v-model="tableSort" class="adm-select tl-sort-select" aria-label="Sort tables by">
+              <option v-for="o in TABLE_SORTS" :key="o.value" :value="o.value">{{ o.label }}</option>
+            </select>
+          </label>
           <span class="adm-muted">Covers booked</span>
         </div>
         <div class="tl-head">
@@ -35,10 +39,11 @@
             <span class="adm-muted adm-num">{{ section.tables.length }} tables</span>
           </div>
           <div class="tl-group-fill" />
-          <template v-for="t in section.tables" :key="t.id">
+          <template v-for="t in sortedTables(section.tables)" :key="t.id">
             <div class="tl-row-label">
               <span class="tl-table-name"><AdminIcon name="table" :size="14" /> {{ t.name }}</span>
-              <span class="adm-muted adm-num">{{ t.minCovers }}–{{ t.maxCovers }}</span>
+              <span v-if="tableSort === 'booked'" class="adm-muted adm-num" :title="`Seats ${t.minCovers}–${t.maxCovers}`">{{ bookedCovers(t.id) }} booked</span>
+              <span v-else class="adm-muted adm-num">{{ t.minCovers }}–{{ t.maxCovers }}</span>
             </div>
             <div
               class="tl-track"
@@ -124,6 +129,45 @@ const conflicts = computed(() => {
   }
   return ids
 })
+
+// Order of the table rows within each section. Remembered in this browser.
+const TABLE_SORTS = [
+  { value: 'floor', label: 'Floor plan order' },
+  { value: 'name', label: 'Table name' },
+  { value: 'seats-desc', label: 'Most seats' },
+  { value: 'seats-asc', label: 'Fewest seats' },
+  { value: 'booked', label: 'Most booked' }
+] as const
+type TableSort = (typeof TABLE_SORTS)[number]['value']
+const SORT_STORAGE_KEY = 'yana-timeline-table-sort'
+
+const tableSort = ref<TableSort>('floor')
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(SORT_STORAGE_KEY)
+    if (TABLE_SORTS.some(o => o.value === saved)) tableSort.value = saved as TableSort
+  } catch {}
+})
+watch(tableSort, (value) => {
+  try {
+    localStorage.setItem(SORT_STORAGE_KEY, value)
+  } catch {}
+})
+
+// Covers of the day's bookings on a table (the ones shown on the grid).
+const bookedCovers = (tableId?: number) => (tableId ? byTable.value[tableId] ?? [] : []).reduce((sum, r) => sum + r.partySize, 0)
+
+const byName = (a: FloorTable, b: FloorTable) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+
+function sortedTables(tables: FloorTable[]) {
+  switch (tableSort.value) {
+    case 'name': return [...tables].sort(byName)
+    case 'seats-desc': return [...tables].sort((a, b) => b.maxCovers - a.maxCovers || byName(a, b))
+    case 'seats-asc': return [...tables].sort((a, b) => a.maxCovers - b.maxCovers || byName(a, b))
+    case 'booked': return [...tables].sort((a, b) => bookedCovers(b.id) - bookedCovers(a.id) || byName(a, b))
+    default: return tables
+  }
+}
 
 const unassigned = computed(() => visible.value.filter(r => !r.tableId))
 
@@ -282,6 +326,16 @@ const TimelineBlock = defineComponent({
   border-bottom: 1px solid var(--adm-line-strong);
   font-size: 12px;
   font-weight: 500;
+}
+
+.tl-sort {
+  display: block;
+}
+
+.tl-sort-select {
+  height: 30px;
+  padding: 0 6px;
+  font-size: 12px;
 }
 
 .tl-corner .adm-muted {

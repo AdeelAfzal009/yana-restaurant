@@ -2,6 +2,7 @@ import { lt } from 'drizzle-orm'
 import type { H3Event } from 'h3'
 import { auditLog } from '../database/schema'
 import { useDb } from './db'
+import { clientIp } from './request'
 
 // Records a dashboard action for the Logs page. Never throws: a failed log
 // write must not undo or block the action it describes.
@@ -18,7 +19,7 @@ export async function audit(
       action,
       target: extra.target ?? null,
       details: extra.details ?? {},
-      ip: getRequestIP(event, { xForwardedFor: true }) ?? null
+      ip: clientIp(event)
     })
   } catch (error) {
     console.error(`[audit] Could not record "${action}":`, error)

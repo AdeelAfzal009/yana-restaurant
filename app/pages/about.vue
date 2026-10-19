@@ -1,5 +1,6 @@
 <template>
   <div class="yana-page" :class="{ 'yana-page--no-banner': !c.banner.visible, 'yana-page--starts-light': !c.banner.visible && c.standard.visible }">
+    <!-- With the banner hidden, the page keeps its main heading (visually hidden) for search engines and screen readers. -->
     <header v-if="c.banner.visible" class="about-banner" :class="sectionTone(c.banner.bgColor, c.banner.showBgImage)" :style="sectionBackground(c.banner.bgColor)">
       <template v-if="c.banner.showBgImage">
         <div aria-hidden="true" class="banner-bg" :style="bg(c.banner.image.src)" />
@@ -11,6 +12,7 @@
         <h1 class="banner-title">{{ c.banner.title }}</h1>
       </div>
     </header>
+    <h1 v-else class="sr-only">{{ c.banner.title }}</h1>
 
     <!-- A NEW STANDARD -->
     <section v-if="c.standard.visible" class="standard-section">
@@ -106,9 +108,8 @@
 
 <script setup lang="ts">
 const c = await usePageContent('about')
-useContentSeo(() => c.value.seo)
+useContentSeo(() => c.value.seo, () => c.value.standard.image.src)
 
-const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 </script>
 
 <style scoped>

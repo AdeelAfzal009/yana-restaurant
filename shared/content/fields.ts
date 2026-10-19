@@ -82,7 +82,8 @@ export const backdropFields = (what = 'background pattern'): ContentField[] => [
 
 export const seoFields = (): ContentField[] => [
   { key: 'title', type: 'text', label: 'Page title', required: true, max: 70, hint: 'Shown in the browser tab and as the headline in Google results. Around 50–60 characters works best.' },
-  { key: 'description', type: 'textarea', label: 'Description', rows: 3, max: 300, hint: 'The short summary under the title in Google and when the link is shared. Around 150 characters works best.' }
+  { key: 'description', type: 'textarea', label: 'Description', rows: 3, max: 300, hint: 'The short summary under the title in Google and when the link is shared. Around 150 characters works best.' },
+  { ...image('image', 'Share image', false), hint: 'Optional: the picture shown when the page is shared on WhatsApp, Facebook, LinkedIn and so on. A landscape photo works best. Without one, a photo from the page is used.' }
 ]
 
 export const link = (label: string, url: string, newTab = false) => ({ label, url, newTab })

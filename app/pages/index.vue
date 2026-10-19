@@ -361,9 +361,8 @@ import { BRAND_COLOURS } from '#shared/content/fields'
 
 const c = await usePageContent('home')
 const site = useContent('site')
-useContentSeo(() => c.value.seo)
+useContentSeo(() => c.value.seo, () => c.value.hero.image.src)
 
-const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
 // The Terrace and Our Story sit next to each other when Evenings is off.
 // Photo strip speed from the dashboard: seconds per loop, kept to 5–300.

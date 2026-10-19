@@ -74,6 +74,9 @@ export async function storeUpload(file: { data: Buffer, filename?: string }, sta
     data = file.data
   } else {
     if (file.data.length > MEDIA_LIMITS.imageBytes) badRequest('Images can be up to 40 MB.')
+    // SVG and other XML never reach the image library (SVG can carry scripts,
+    // and its parser is the part of sharp most often found vulnerable).
+    if (/^\s*</.test(file.data.subarray(0, 256).toString('latin1'))) badRequest('Upload a JPG, PNG, WebP or PDF file.')
     let format: string | undefined
     try {
       format = (await sharp(file.data).metadata()).format

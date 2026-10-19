@@ -8,14 +8,25 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     adminSessionSecret: process.env.ADMIN_SESSION_SECRET || 'dev-only-insecure-secret',
-    databaseUrl: process.env.DATABASE_URL || ''
+    databaseUrl: process.env.DATABASE_URL || '',
+    public: {
+      // The site's public address for links in search results and shares,
+      // e.g. https://yanarestaurants.com. Set NUXT_PUBLIC_SITE_URL once a
+      // custom domain is live; until then the address in use is detected.
+      siteUrl: ''
+    }
   },
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
       title: 'YANA Restaurant — Fire & Sea',
       meta: [
-        { name: 'description', content: 'YANA — Pan-Asian × Peruvian fusion restaurant on Al Saadiyat Island, Abu Dhabi.' }
+        { name: 'description', content: 'YANA — Pan-Asian × Peruvian fusion restaurant on Al Saadiyat Island, Abu Dhabi.' },
+        { name: 'theme-color', content: '#0F1E2E' },
+        { property: 'og:site_name', content: 'YANA Restaurant' },
+        { property: 'og:locale', content: 'en_AE' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' }
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

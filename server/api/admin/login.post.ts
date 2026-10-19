@@ -4,35 +4,24 @@ import { staff } from '../../database/schema'
 import { audit } from '../../utils/audit'
 import { setSessionCookie } from '../../utils/auth'
 import { useDb } from '../../utils/db'
-import { verifyPassword } from '../../utils/password'
+import { hashPassword, verifyPassword } from '../../utils/password'
+import { clientIp, rateLimiter } from '../../utils/request'
 
 // Tuned so normal use can't lock a real person out: scrypt verification already
 // costs ~100ms, which caps guessing far more effectively than a low counter.
 const MAX_ATTEMPTS = 20
 const WINDOW_MS = 5 * 60 * 1000
 
-// In-memory and therefore per-instance; enough to blunt password guessing on a
-// single container. Move to Redis if this ever runs more than one replica.
-const attempts = new Map<string, { count: number, resetAt: number }>()
+const limiter = rateLimiter(MAX_ATTEMPTS, WINDOW_MS)
 
-function hitRateLimit(key: string) {
-  const now = Date.now()
-  const record = attempts.get(key)
-
-  if (!record || record.resetAt < now) {
-    attempts.set(key, { count: 1, resetAt: now + WINDOW_MS })
-    return false
-  }
-
-  record.count += 1
-  return record.count > MAX_ATTEMPTS
-}
+// Made once, on first use; never matches a real password.
+let dummyHash: Promise<string> | null = null
 
 export default defineEventHandler(async (event) => {
-  const key = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  if (hitRateLimit(key)) {
+  const key = clientIp(event)
+  if (limiter.hit(key)) {
     // Logged once per lockout, not for every blocked attempt.
-    if (attempts.get(key)?.count === MAX_ATTEMPTS + 1) await audit(event, null, 'auth.rate_limited')
+    if (limiter.count(key) === MAX_ATTEMPTS + 1) await audit(event, null, 'auth.rate_limited')
     throw createError({ statusCode: 429, statusMessage: 'Too many attempts. Try again later.' })
   }
 
@@ -55,11 +44,16 @@ export default defineEventHandler(async (event) => {
     await audit(event, account ? { id: account.id, name: account.name } : null, 'auth.sign_in_failed', { target: email, details: { reason } })
     return invalid()
   }
-  if (!account) throw await fail('No account with this email')
+  if (!account) {
+    // Check a dummy password anyway, so an unknown email takes as long to
+    // answer as a known one and response times don't reveal which exist.
+    await verifyPassword(body.password, await (dummyHash ??= hashPassword(crypto.randomUUID())))
+    throw await fail('No account with this email')
+  }
   if (!account.active) throw await fail('Account is deactivated')
   if (!(await verifyPassword(body.password, account.passwordHash))) throw await fail('Wrong password')
 
-  attempts.delete(key)
+  limiter.reset(key)
 
   await db.update(staff).set({ lastLoginAt: new Date() }).where(eq(staff.id, account.id))
   setSessionCookie(event, account.id)

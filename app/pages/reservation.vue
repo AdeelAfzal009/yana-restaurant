@@ -118,14 +118,16 @@
           <p v-if="c.booking.detailsPrompt" class="booking-label" style="margin-top: 30px;">{{ c.booking.detailsPrompt }}</p>
           <form class="reservation-form" @submit.prevent="submitReservation">
             <div class="form-fields">
-              <input v-model.trim="guest.firstName" class="yana-input" type="text" placeholder="First name*" required>
-              <input v-model.trim="guest.lastName" class="yana-input" type="text" placeholder="Last name*" required>
+              <input v-model.trim="guest.firstName" class="yana-input" type="text" name="given-name" autocomplete="given-name" maxlength="60" placeholder="First name*" required>
+              <input v-model.trim="guest.lastName" class="yana-input" type="text" name="family-name" autocomplete="family-name" maxlength="60" placeholder="Last name*" required>
             </div>
             <div class="form-fields">
-              <input v-model.trim="guest.email" class="yana-input" type="email" placeholder="Email address*" required>
-              <input v-model.trim="guest.phone" class="yana-input" type="tel" placeholder="Mobile number*" required>
+              <input v-model.trim="guest.email" class="yana-input" type="email" name="email" autocomplete="email" maxlength="254" placeholder="Email address*" required>
+              <input v-model.trim="guest.phone" class="yana-input" type="tel" name="tel" autocomplete="tel" maxlength="30" placeholder="Mobile number*" required>
             </div>
-            <textarea v-model.trim="guest.notes" class="yana-input" placeholder="Or specify any additional requests" />
+            <textarea v-model.trim="guest.notes" class="yana-input" name="notes" maxlength="1000" placeholder="Or specify any additional requests" />
+            <!-- Left empty by people; bots that fill every field are turned away. -->
+            <input v-model="guest.website" class="form-trap" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
 
             <label class="check-row">
               <input v-model="guest.acceptedTerms" type="checkbox" required>
@@ -191,7 +193,6 @@ import { ONLINE_BOOKING } from '#shared/utils/reservation-meta'
 const c = await usePageContent('reservation')
 useContentSeo(() => c.value.seo)
 
-const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
 const maxPartySize = 10
 
@@ -215,6 +216,7 @@ const guest = reactive({
   email: '',
   phone: '',
   notes: '',
+  website: '',
   acceptedTerms: false
 })
 
@@ -331,7 +333,8 @@ async function submitReservation() {
         lastName: guest.lastName,
         email: guest.email,
         phone: guest.phone,
-        notes: guest.notes
+        notes: guest.notes,
+        website: guest.website
       }
     })
     confirmedReference.value = res.reference
@@ -739,5 +742,14 @@ function resetForm() {
   .booking-card {
     margin-top: 0;
   }
+}
+
+/* Spam trap: off-screen and skipped by keyboards and screen readers. */
+.form-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
 </style>

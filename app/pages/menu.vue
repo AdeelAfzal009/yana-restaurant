@@ -121,9 +121,8 @@
 
 <script setup lang="ts">
 const c = await usePageContent('menu')
-useContentSeo(() => c.value.seo)
+useContentSeo(() => c.value.seo, () => c.value.food.image.src)
 
-const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
 // One drawn mark per menu, on a 64px grid, so the grid isn't six of the same
 // icon. The dashboard offers these by name (MENU_TILE_ICONS).

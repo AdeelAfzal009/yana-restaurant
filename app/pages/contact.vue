@@ -115,7 +115,6 @@ const c = await usePageContent('contact')
 const site = useContent('site')
 useContentSeo(() => c.value.seo)
 
-const bg = (src: string) => src ? { backgroundImage: `url('${src}')` } : undefined
 
 const form = reactive({
   name: '',

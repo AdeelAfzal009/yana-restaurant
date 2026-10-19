@@ -45,6 +45,19 @@ body {
   font-style: normal;
 }
 
+/* Read by search engines and screen readers, not shown on screen. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Public pages sit on the warm cream panel instead of plain white. */
 .yana-page {
   background: var(--panel);
@@ -52,7 +65,7 @@ body {
 
 /* With the banner hidden, the nav floats over the first section instead, so
    that section gets extra room at the top to clear it. */
-.yana-site .yana-page--no-banner > :first-child {
+.yana-site .yana-page--no-banner > section:first-of-type {
   padding-top: max(150px, 11vw);
 }
 

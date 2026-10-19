@@ -38,3 +38,11 @@ export function sectionTone(colour?: string | null, coveredByImage = false) {
   const brand = colour ? BRAND_COLOURS[colour] : undefined
   return { 'tone-light': !!brand?.light && !coveredByImage }
 }
+
+// A CSS background for an image address from the dashboard. Quotes, brackets
+// and backslashes are encoded so an address can't break out of url(…).
+export function bg(src: string | null | undefined) {
+  if (!src) return undefined
+  const safe = src.replace(/['"()\\\s]/g, c => `%${c.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase()}`)
+  return { backgroundImage: `url('${safe}')` }
+}
