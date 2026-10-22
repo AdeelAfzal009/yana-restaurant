@@ -15,6 +15,7 @@
     "db:seed-demo": "tsx scripts/seed-demo.ts",
     "db:pull-content": "tsx --env-file=.env scripts/pull-content.ts",
     "db:push-content": "tsx --env-file=.env scripts/push-content.ts",
+    "db:pull-all": "bash scripts/pull-database.sh",
     "start": "PORT=${PORT:-3100} node .output/server/index.mjs"
   },
   "dependencies": {

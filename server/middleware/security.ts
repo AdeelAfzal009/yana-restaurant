@@ -17,8 +17,7 @@ const CONTENT_SECURITY_POLICY = [
   `frame-ancestors 'self'`,
   `base-uri 'self'`,
   `form-action 'self'`,
-  `object-src 'none'`,
-  `upgrade-insecure-requests`
+  `object-src 'none'`
 ].join('; ')
 
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
@@ -50,11 +49,12 @@ export default defineEventHandler((event) => {
   }
 
   // Development keeps Vite's hot reload working, which this policy would block.
+  // The https-only parts apply only when the site is reached over https, so
+  // a production build run locally (Docker on http://localhost) still works.
   if (!import.meta.dev) {
-    setResponseHeaders(event, {
-      'Content-Security-Policy': CONTENT_SECURITY_POLICY,
-      'Strict-Transport-Security': 'max-age=31536000'
-    })
+    const https = getRequestProtocol(event, { xForwardedProto: true }) === 'https'
+    setResponseHeader(event, 'Content-Security-Policy', https ? `${CONTENT_SECURITY_POLICY}; upgrade-insecure-requests` : CONTENT_SECURITY_POLICY)
+    if (https) setResponseHeader(event, 'Strict-Transport-Security', 'max-age=31536000')
   }
 
   if (!path.startsWith('/api/') || !UNSAFE_METHODS.has(event.method)) return
