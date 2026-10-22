@@ -23,6 +23,8 @@ export default defineNuxtConfig({
       meta: [
         { name: 'description', content: 'YANA — Pan-Asian × Peruvian fusion restaurant on Al Saadiyat Island, Abu Dhabi.' },
         { name: 'theme-color', content: '#0F1E2E' },
+        // Google Search Console ownership check. Keep it, or the site is unverified.
+        { name: 'google-site-verification', content: 'PbRYkHLN7ORgeqxghYbaxByiHgBcYQtkL8SeMj_4Ycg' },
         { property: 'og:site_name', content: 'YANA Restaurant' },
         { property: 'og:locale', content: 'en_AE' },
         { property: 'og:type', content: 'website' },
