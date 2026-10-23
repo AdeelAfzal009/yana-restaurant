@@ -29,6 +29,9 @@
           <span>Excel (.xlsx) or CSV, up to 10 MB. Nothing is saved until you confirm.</span>
           <input type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="onPick">
         </label>
+        <p v-if="!preview && !busy" class="gi-sample">
+          Making a guest list by hand? <a href="/api/admin/import-samples/guests" download>Download the sample sheet</a> to see the columns and formats.
+        </p>
 
         <p v-if="busy" class="gi-busy">{{ busy === 'import' ? `Importing ${fmt(toImport)} guests…` : 'Reading the file…' }}</p>
         <p v-if="error" class="adm-error">{{ error }}</p>
@@ -448,5 +451,16 @@ function close() {
   .gi-counts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.gi-sample {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--adm-muted);
+}
+
+.gi-sample a {
+  color: var(--adm-accent-dk);
+  font-weight: 500;
 }
 </style>

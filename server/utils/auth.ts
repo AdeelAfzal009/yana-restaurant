@@ -47,7 +47,9 @@ export function setSessionCookie(event: H3Event, staffId: number) {
   setCookie(event, SESSION_COOKIE, `${body}.${sign(body)}`, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    // https only on the real site; a local copy on http://localhost must
+    // still be able to sign in (Safari drops secure cookies on plain http).
+    secure: getRequestProtocol(event, { xForwardedProto: true }) === 'https',
     path: '/',
     maxAge: SESSION_TTL_MS / 1000
   })

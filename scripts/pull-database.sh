@@ -84,7 +84,7 @@ fi
 
 echo "Replacing local with live …"
 in_db psql -U postgres -d "$LOCAL_DB" -q -v ON_ERROR_STOP=1 -c \
-  "drop schema if exists drizzle cascade; drop schema public cascade; create schema public;"
+  "set client_min_messages = warning; drop schema if exists drizzle cascade; drop schema public cascade; create schema public;"
 in_db pg_restore -U postgres -d "$LOCAL_DB" --no-owner --no-acl < "$LIVE_DUMP"
 
 echo
@@ -92,4 +92,4 @@ echo "Done. Local is now a copy of live:"
 in_db psql -U postgres -d "$LOCAL_DB" -At -F ': ' -c "$COUNTS" | sed 's/^/  /'
 echo
 echo "Sign in to the local dashboard with your LIVE email and password."
-echo "Restart npm run dev so it doesn't hold on to old content from memory."
+echo "If the local website is running, restart it to show the new data (npm run sync does this for you)."

@@ -28,6 +28,9 @@
           <span>ServMe reservations reports (.xlsx). Nothing is saved until you confirm, and no emails are sent to guests.</span>
           <input type="file" accept=".xlsx,.csv" multiple @change="onPick">
         </label>
+        <p v-if="!preview && !busy" class="bi-sample">
+          Filling a sheet by hand? <a href="/api/admin/import-samples/bookings" download>Download the sample sheet</a> to see the columns and formats.
+        </p>
 
         <p v-if="busy" class="bi-busy">{{ busy === 'import' ? `Importing ${fmt(preview?.counts.create ?? 0)} bookings…` : 'Reading the files…' }}</p>
         <p v-if="error" class="adm-error">{{ error }}</p>
@@ -403,5 +406,16 @@ function close() {
   .bi-counts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.bi-sample {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--adm-muted);
+}
+
+.bi-sample a {
+  color: var(--adm-accent-dk);
+  font-weight: 500;
 }
 </style>
