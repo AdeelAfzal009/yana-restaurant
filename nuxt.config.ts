@@ -13,7 +13,10 @@ export default defineNuxtConfig({
       // The site's public address for links in search results and shares,
       // e.g. https://yanarestaurants.com. Set NUXT_PUBLIC_SITE_URL once a
       // custom domain is live; until then the address in use is detected.
-      siteUrl: ''
+      siteUrl: '',
+      // Google Analytics 4 for the public website (property "YANA – Website").
+      // Override with NUXT_PUBLIC_GA_MEASUREMENT_ID; set it to an empty value to switch off.
+      gaMeasurementId: 'G-W0PCK0MF7T'
     }
   },
   app: {

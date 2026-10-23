@@ -55,6 +55,22 @@ const structuredData = computed(() => {
 })
 useHead({ script: [{ type: 'application/ld+json', key: 'restaurant-ld', innerHTML: structuredData }] })
 
+// Google Analytics, on the public website only (the dashboard has its own
+// layout, so staff aren't counted) and never in local development. GA4 counts
+// each page change in the app by itself (enhanced measurement).
+const gaId = useRuntimeConfig().public.gaMeasurementId as string
+if (gaId && !import.meta.dev) {
+  useHead({
+    script: [
+      { key: 'ga-loader', src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`, async: true },
+      {
+        key: 'ga-init',
+        innerHTML: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(gaId)});`
+      }
+    ]
+  })
+}
+
 type NavKey = 'home' | 'menu' | 'reservation' | 'about' | 'gallery' | 'contact'
 
 const active = computed<NavKey>(() => {

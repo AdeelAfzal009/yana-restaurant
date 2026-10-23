@@ -339,6 +339,8 @@ async function submitReservation() {
     })
     confirmedReference.value = res.reference
     step.value = 3
+    // Counted in Google Analytics (mark "reservation_completed" as a key event there).
+    ;(window as { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'reservation_completed', { party_size: partySize.value })
   } catch (err: any) {
     submitError.value = err?.data?.statusMessage || 'Something went wrong. Please try again.'
   } finally {
