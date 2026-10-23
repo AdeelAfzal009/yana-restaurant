@@ -85,6 +85,13 @@
       "when": 1791885060692,
       "tag": "0011_reservation_booked_by",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792754315167,
+      "tag": "0012_honors_members",
+      "breakpoints": true
     }
   ]
 }

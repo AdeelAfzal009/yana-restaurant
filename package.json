@@ -17,12 +17,15 @@
     "db:push-content": "tsx --env-file=.env scripts/push-content.ts",
     "db:pull-all": "bash scripts/pull-database.sh",
     "start": "PORT=${PORT:-3100} node .output/server/index.mjs",
-    "sync": "bash scripts/sync.sh"
+    "sync": "bash scripts/sync.sh",
+    "honors:images": "tsx scripts/honors-images.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.5.2",
+    "passkit-generator": "^3.7.0",
     "pg": "^8.23.0",
+    "qrcode": "^1.5.4",
     "read-excel-file": "^5.8.8",
     "sharp": "^0.35.5",
     "vue": "^3.5.42",
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@types/pg": "^8.23.1",
+    "@types/qrcode": "^1.5.6",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.23.13"
   }

@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { pgTable, pgEnum, serial, integer, text, boolean, date, time, timestamp, varchar, index, uniqueIndex, jsonb, customType } from 'drizzle-orm/pg-core'
+import { pgTable, pgEnum, pgSequence, serial, integer, text, boolean, date, time, timestamp, varchar, index, uniqueIndex, jsonb, customType } from 'drizzle-orm/pg-core'
 
 const bytea = customType<{ data: Buffer, driverData: Buffer }>({ dataType: () => 'bytea' })
 
@@ -252,9 +252,36 @@ export const auditLog = pgTable('audit_log', {
   index('audit_log_action_idx').on(table.action)
 ])
 
+// Yana Honors: the membership card a guest keeps in Google or Apple Wallet.
+// One card per guest. The card shows only the tier, name and member number;
+// the discount is for staff and can differ from guest to guest.
+export const honorsTierEnum = pgEnum('honors_tier', ['silver', 'platinum'])
+export const honorsStatusEnum = pgEnum('honors_status', ['active', 'revoked'])
+export const honorsMemberNumberSeq = pgSequence('honors_member_number_seq', { startWith: 1 })
+
+export const honorsMembers = pgTable('honors_members', {
+  id: serial('id').primaryKey(),
+  guestId: integer('guest_id').notNull().unique().references(() => guests.id, { onDelete: 'cascade' }),
+  // Printed on the card, e.g. YH-000123. Kept when the card is re-sent.
+  memberNumber: text('member_number').notNull().unique()
+    .default(sql`'YH-' || lpad(nextval('honors_member_number_seq')::text, 6, '0')`),
+  tier: honorsTierEnum('tier').notNull(),
+  discountPercent: integer('discount_percent').notNull(),
+  status: honorsStatusEnum('status').notNull().default('active'),
+  // The secret in the "add to wallet" link. A new link replaces the old one.
+  token: text('token').unique(),
+  tokenExpiresAt: timestamp('token_expires_at', { withTimezone: true }),
+  // First time the link handed out a pass; it keeps working a short while after.
+  tokenUsedAt: timestamp('token_used_at', { withTimezone: true }),
+  issuedBy: integer('issued_by').references(() => staff.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+})
+
 export type Reservation = typeof reservations.$inferSelect
 export type NewReservation = typeof reservations.$inferInsert
 export type Guest = typeof guests.$inferSelect
 export type RestaurantTable = typeof restaurantTables.$inferSelect
 export type Staff = typeof staff.$inferSelect
 export type Settings = typeof settings.$inferSelect
+export type HonorsMember = typeof honorsMembers.$inferSelect
