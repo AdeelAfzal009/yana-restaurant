@@ -1,3 +1,5 @@
+import type { HonorsTier } from '#shared/utils/honors'
+
 export interface AdminReservation {
   id: number
   reference: string
@@ -90,7 +92,20 @@ export interface GuestProfile {
   priorLastVisit: string | null
   importedFrom: string | null
   createdAt: string
+  honors: HonorsCardInfo | null
   history: GuestHistoryItem[]
+}
+
+// The guest's Yana Honors card, as the dashboard sees it.
+export interface HonorsCardInfo {
+  id: number
+  memberNumber: string
+  tier: HonorsTier
+  discountPercent: number
+  status: 'active' | 'revoked'
+  issuedByName: string | null
+  createdAt: string
+  linkUsedAt: string | null
 }
 
 export interface ActivityEntry {

@@ -50,6 +50,11 @@ const AUDIT_ACTIONS: Record<string, { category: LogCategory, title: string, tone
   'guests.updated': { category: 'guests', title: 'Edited a guest profile' },
   'guests.imported': { category: 'guests', title: 'Imported guests' },
   'guests.deleted': { category: 'guests', title: 'Deleted guests', tone: 'warning' },
+  'honors.issued': { category: 'guests', title: 'Issued a Yana Honors card', tone: 'success' },
+  'honors.updated': { category: 'guests', title: 'Changed a Yana Honors card' },
+  'honors.revoked': { category: 'guests', title: 'Revoked a Yana Honors card', tone: 'warning' },
+  'honors.reactivated': { category: 'guests', title: 'Reactivated a Yana Honors card' },
+  'honors.link_emailed': { category: 'guests', title: 'Emailed a Yana Honors card link' },
   'reservations.imported': { category: 'reservations', title: 'Imported bookings' }
 }
 
@@ -241,7 +246,7 @@ async function emailEntries(f: FeedFilters) {
     .limit(f.limit)
 
   return rows.map((r): LogEntry & { source: Source, id: number } => {
-    const name = EMAIL_TEMPLATE_META[r.template as EmailTemplateKey]?.name ?? r.template
+    const name = EMAIL_TEMPLATE_META[r.template as EmailTemplateKey]?.name ?? (r.template === 'honors_card' ? 'Yana Honors card' : r.template)
     const details = [`To ${r.recipient}`, `Subject: ${r.subject}`]
     if (r.error) details.push(`${r.status === 'failed' ? 'Error' : 'Reason'}: ${r.error}`)
     return {

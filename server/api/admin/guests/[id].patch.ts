@@ -3,6 +3,9 @@ import { guests } from '../../../database/schema'
 import { audit } from '../../../utils/audit'
 import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
+import { syncGoogleCard } from '../../../utils/google-wallet'
+import { loadHonorsForGuest } from '../../../utils/honors'
+import { siteOrigin } from '../../../utils/request'
 import { badRequest, cleanTags, EMAIL_RE, optionalText } from '../../../utils/validate'
 
 type GuestBody = Record<string, unknown>
@@ -64,9 +67,16 @@ export default defineEventHandler(async (event) => {
   }
 
   const db = useDb()
+  const [before] = await db.select({ firstName: guests.firstName, lastName: guests.lastName }).from(guests).where(eq(guests.id, id)).limit(1)
   try {
     const [updated] = await db.update(guests).set({ ...set, updatedAt: new Date() }).where(eq(guests.id, id)).returning()
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Guest not found' })
+    // The name is printed on the wallet card. Apple passes can't be changed
+    // once added; Google ones can.
+    if (before && (before.firstName !== updated.firstName || before.lastName !== updated.lastName)) {
+      const member = await loadHonorsForGuest(id)
+      if (member) await syncGoogleCard(member, updated, siteOrigin(event))
+    }
     await audit(event, current, 'guests.updated', { target: `${updated.firstName} ${updated.lastName}`.trim(), details: { guestId: id, fields: Object.keys(set) } })
     return updated
   } catch (error: any) {

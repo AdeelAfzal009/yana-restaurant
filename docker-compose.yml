@@ -44,6 +44,18 @@ services:
       # Never send real emails from the local copy: it holds real guests'
       # addresses after npm run sync. Emails are logged instead.
       - MAIL_DRY_RUN=${MAIL_DRY_RUN:-1}
+      # Yana Honors wallet cards; off when unset. GOOGLE_WALLET_OBJECT_PREFIX
+      # keeps local test cards apart from the live site's in the same issuer.
+      - GOOGLE_WALLET_ISSUER_ID=${GOOGLE_WALLET_ISSUER_ID:-}
+      - GOOGLE_WALLET_SA_EMAIL=${GOOGLE_WALLET_SA_EMAIL:-}
+      - GOOGLE_WALLET_SA_PRIVATE_KEY=${GOOGLE_WALLET_SA_PRIVATE_KEY:-}
+      - GOOGLE_WALLET_OBJECT_PREFIX=${GOOGLE_WALLET_OBJECT_PREFIX:-local}
+      - APPLE_PASS_TYPE_ID=${APPLE_PASS_TYPE_ID:-}
+      - APPLE_TEAM_ID=${APPLE_TEAM_ID:-}
+      - APPLE_PASS_CERT=${APPLE_PASS_CERT:-}
+      - APPLE_PASS_KEY=${APPLE_PASS_KEY:-}
+      - APPLE_PASS_KEY_PASSPHRASE=${APPLE_PASS_KEY_PASSPHRASE:-}
+      - APPLE_WWDR_CERT=${APPLE_WWDR_CERT:-}
       # Local visits must not show up in the real Google Analytics.
       - NUXT_PUBLIC_GA_MEASUREMENT_ID=
 

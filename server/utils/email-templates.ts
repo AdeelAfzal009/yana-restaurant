@@ -34,7 +34,7 @@ const GOLD_DK = '#8A6B45'
 const CREAM = '#F3ECE1'
 const INK = '#16232F'
 
-function escapeHtml(value: string) {
+export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 }
 
@@ -91,7 +91,7 @@ interface LayoutParts {
   changeNote?: string
 }
 
-function layout(opts: LayoutParts) {
+export function layout(opts: LayoutParts) {
   const { siteUrl } = getMailConfig()
   const rows = opts.rows.map(([label, value]) => `
             <tr>
@@ -159,7 +159,7 @@ function layout(opts: LayoutParts) {
 </html>`
 }
 
-function textBlock(parts: { heading: string, intro: string, rows: [string, string][], body?: string, ctaLabel?: string, ctaUrl?: string, footerNote?: string, changeNote?: string, address: string }) {
+export function textBlock(parts: { heading: string, intro: string, rows: [string, string][], body?: string, ctaLabel?: string, ctaUrl?: string, footerNote?: string, changeNote?: string, address: string }) {
   const { siteUrl } = getMailConfig()
   return [
     'YANA RESTAURANT',

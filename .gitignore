@@ -36,3 +36,6 @@ node_modules
 
 # Content backups made by db:push-content (may contain personal data)
 /backups
+
+# Design brief and client files for Yana Honors (kept locally)
+/yana-honors-handoff

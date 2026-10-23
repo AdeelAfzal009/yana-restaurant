@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { floorSections, guests, reservations, restaurantTables } from '../../../database/schema'
 import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
+import { honorsForGuest } from '../../../utils/honors'
 import { badRequest } from '../../../utils/validate'
 
 export default defineEventHandler(async (event) => {
@@ -39,5 +40,5 @@ export default defineEventHandler(async (event) => {
     .where(eq(reservations.guestId, id))
     .orderBy(desc(reservations.date), desc(reservations.time))
 
-  return { ...guest, history: history.map(h => ({ ...h, time: h.time.slice(0, 5) })) }
+  return { ...guest, honors: await honorsForGuest(id), history: history.map(h => ({ ...h, time: h.time.slice(0, 5) })) }
 })

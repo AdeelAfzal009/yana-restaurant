@@ -1,5 +1,5 @@
-import { desc, ilike, or, sql } from 'drizzle-orm'
-import { guests } from '../../../database/schema'
+import { desc, eq, ilike, or, sql } from 'drizzle-orm'
+import { guests, honorsMembers } from '../../../database/schema'
 import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 
@@ -39,6 +39,9 @@ export default defineEventHandler(async (event) => {
       vip: guests.vip,
       notes: guests.notes,
       createdAt: guests.createdAt,
+      // Revoked cards don't count: the guest no longer gets the discount.
+      honorsTier: sql<'silver' | 'platinum' | null>`case when ${honorsMembers.status} = 'active' then ${honorsMembers.tier} end`,
+      honorsNumber: honorsMembers.memberNumber,
       stats: sql<{
         visits: number
         covers: number
@@ -50,11 +53,13 @@ export default defineEventHandler(async (event) => {
       }>`(select row_to_json(s) from ${stats} s)`
     })
     .from(guests)
+    .leftJoin(honorsMembers, eq(honorsMembers.guestId, guests.id))
     .where(q
       ? or(
           ilike(sql`${guests.firstName} || ' ' || ${guests.lastName}`, like),
           ilike(guests.email, like),
           ilike(guests.phone, like),
+          ilike(honorsMembers.memberNumber, like),
           sql`exists (select 1 from unnest(${guests.tags}) t where t ilike ${like})`
         )
       : undefined)

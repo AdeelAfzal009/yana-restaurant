@@ -8,12 +8,13 @@
       <div class="head-tools">
         <div class="search">
           <AdminIcon name="search" :size="15" class="search-icon" />
-          <input v-model="q" type="search" class="adm-input" placeholder="Name, phone, email or tag" aria-label="Search guests">
+          <input v-model="q" type="search" class="adm-input" placeholder="Name, phone, email, tag or member ID" aria-label="Search guests">
         </div>
         <div class="adm-seg">
           <button type="button" :class="{ 'is-active': filter === 'all' }" @click="filter = 'all'">All</button>
           <button type="button" :class="{ 'is-active': filter === 'vip' }" @click="filter = 'vip'"><AdminIcon name="star" :size="13" /> VIP</button>
           <button type="button" :class="{ 'is-active': filter === 'regular' }" @click="filter = 'regular'">3+ visits</button>
+          <button type="button" :class="{ 'is-active': filter === 'honors' }" @click="filter = 'honors'">Yana Honors</button>
         </div>
         <button type="button" class="adm-btn adm-btn-icon" title="Export CSV" aria-label="Export CSV" @click="exportCsv">
           <AdminIcon name="download" :size="16" />
@@ -116,6 +117,7 @@
                   <span class="guest-name">
                     {{ guestName(g) }}
                     <AdminIcon v-if="g.vip" name="star" :size="13" class="vip-star" />
+                    <span v-if="g.honorsTier" class="honors-chip" :class="g.honorsTier" :title="`Yana Honors ${g.honorsNumber}`">{{ HONORS_TIER_LABEL[g.honorsTier] }}</span>
                   </span>
                 </div>
               </td>
@@ -154,6 +156,9 @@
               <h2 class="head-name">{{ [profile.salutation, guestName(profile)].filter(Boolean).join(' ') }}</h2>
               <p class="adm-page-sub">{{ [profile.phone, profile.email].filter(Boolean).join(' · ') || 'No contact details' }} · Guest since {{ new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) }}</p>
               <span class="status-chip head-status" :class="{ returning: profileVisits >= 2 }">{{ guestStatus(profileVisits) }}</span>
+              <span v-if="profile.honors?.status === 'active'" class="honors-chip head-status" :class="profile.honors.tier">
+                Yana Honors {{ HONORS_TIER_LABEL[profile.honors.tier] }} · {{ profile.honors.discountPercent }}% off
+              </span>
             </div>
           </div>
           <span v-else class="adm-muted">Loading…</span>
@@ -164,12 +169,14 @@
 
         <nav v-if="profile" class="g-tabs" role="tablist">
           <button type="button" role="tab" :aria-selected="gTab === 'profile'" :class="{ 'is-active': gTab === 'profile' }" @click="gTab = 'profile'">Profile</button>
+          <button type="button" role="tab" :aria-selected="gTab === 'honors'" :class="{ 'is-active': gTab === 'honors' }" @click="gTab = 'honors'">Yana Honors</button>
           <button type="button" role="tab" :aria-selected="gTab === 'history'" :class="{ 'is-active': gTab === 'history' }" @click="gTab = 'history'">
             Bookings <span class="g-count adm-num">{{ profile.history.length }}</span>
           </button>
         </nav>
         <div v-if="profile" class="adm-panel-body">
           <AdminGuestProfileForm v-if="gTab === 'profile'" :profile="profile" :sections="sections" @saved="onSaved" />
+          <AdminHonorsPanel v-else-if="gTab === 'honors'" :profile="profile" @changed="onHonorsChanged" />
           <template v-else>
             <p v-if="profile.priorVisits || profile.priorNoShows || profile.priorCancellations" class="prior-note">
               Plus {{ profile.priorVisits + profile.priorNoShows + profile.priorCancellations }} earlier bookings from {{ profile.importedFrom || 'the previous system' }}
@@ -188,6 +195,9 @@
 </template>
 
 <script setup lang="ts">
+import { HONORS_TIER_LABEL } from '#shared/utils/honors'
+import type { HonorsTier } from '#shared/utils/honors'
+
 definePageMeta({ layout: 'admin', middleware: 'admin-auth' })
 useHead({ title: 'Guests · YANA Admin' })
 
@@ -201,6 +211,8 @@ interface GuestRow {
   vip: boolean
   notes: string | null
   createdAt: string
+  honorsTier: HonorsTier | null
+  honorsNumber: string | null
   stats: {
     visits: number
     covers: number
@@ -223,7 +235,7 @@ const guests = ref<GuestRow[]>([])
 const loading = ref(true)
 const error = ref('')
 const q = ref('')
-const filter = ref<'all' | 'vip' | 'regular'>('all')
+const filter = ref<'all' | 'vip' | 'regular' | 'honors'>('all')
 
 async function load() {
   loading.value = true
@@ -247,6 +259,7 @@ onMounted(load)
 const filtered = computed(() => guests.value.filter((g) => {
   if (filter.value === 'vip') return g.vip
   if (filter.value === 'regular') return (g.stats?.visits ?? 0) >= 3
+  if (filter.value === 'honors') return !!g.honorsTier
   return true
 }))
 
@@ -328,7 +341,7 @@ async function deleteSelected() {
 // ---- Profile ----
 const openId = ref<number | null>(null)
 const profile = ref<GuestProfile | null>(null)
-const gTab = ref<'profile' | 'history'>('profile')
+const gTab = ref<'profile' | 'honors' | 'history'>('profile')
 const sections = ref<FloorSection[]>([])
 
 onMounted(async () => {
@@ -367,13 +380,21 @@ function onSaved(updated: GuestProfile) {
   if (row) Object.assign(row, { firstName: updated.firstName, lastName: updated.lastName, email: updated.email, phone: updated.phone, tags: updated.tags, vip: updated.vip, notes: updated.notes })
 }
 
+function onHonorsChanged(honors: HonorsCardInfo | null) {
+  if (!profile.value) return
+  profile.value = { ...profile.value, honors }
+  const row = guests.value.find(g => g.id === profile.value!.id)
+  if (row) Object.assign(row, { honorsTier: honors?.status === 'active' ? honors.tier : null, honorsNumber: honors?.memberNumber ?? null })
+}
+
 // Exports the ticked guests, or everyone shown when nothing is ticked.
 function exportCsv() {
   const rows = selected.value.size ? selectedRows.value : filtered.value
   downloadCsv(selected.value.size ? `yana-guests-selected-${rows.length}.csv` : 'yana-guests.csv', [
-    ['First name', 'Last name', 'Phone', 'Email', 'VIP', 'Visits', 'Covers', 'No-shows', 'Last visit', 'Tags', 'Notes'],
+    ['First name', 'Last name', 'Phone', 'Email', 'VIP', 'Yana Honors', 'Member ID', 'Visits', 'Covers', 'No-shows', 'Last visit', 'Tags', 'Notes'],
     ...rows.map(g => [
-      g.firstName, g.lastName, g.phone, g.email, g.vip ? 'Yes' : '', g.stats?.visits ?? 0, g.stats?.covers ?? 0,
+      g.firstName, g.lastName, g.phone, g.email, g.vip ? 'Yes' : '', g.honorsTier ? HONORS_TIER_LABEL[g.honorsTier] : '', g.honorsTier ? g.honorsNumber : '',
+      g.stats?.visits ?? 0, g.stats?.covers ?? 0,
       g.stats?.no_shows ?? 0, g.stats?.last_visit, g.tags.join('; '), g.notes
     ])
   ])
@@ -428,6 +449,32 @@ function exportCsv() {
 
 .head-status {
   margin-top: 6px;
+}
+
+.honors-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border: 1px solid #D3D8E0;
+  border-radius: 999px;
+  background: #0C1D2F;
+  color: #D3D8E0;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.honors-chip.platinum {
+  border-color: #E8BD73;
+  background: #E8BD73;
+  color: #0C1D2F;
+}
+
+.head-status.honors-chip {
+  margin-left: 6px;
+  padding: 2px 9px;
 }
 
 .since {
