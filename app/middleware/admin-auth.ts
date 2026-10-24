@@ -6,14 +6,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const requestFetch = useRequestFetch()
 
   type Session = { authed: boolean, user?: { mustChangePassword?: boolean, permissions?: string[] } }
+  // Signing in returns to the page that was asked for, e.g. a member card
+  // scanned with a phone that wasn't signed in yet.
+  const login = { path: '/admin/login', query: to.path === '/admin' ? {} : { next: to.fullPath } }
   let session: Session
   try {
     session = await requestFetch<Session>('/api/admin/session')
   } catch {
-    return navigateTo('/admin/login')
+    return navigateTo(login)
   }
 
-  if (!session.authed) return navigateTo('/admin/login')
+  if (!session.authed) return navigateTo(login)
   // Accounts with a temporary password go straight to set their own.
   if (session.user?.mustChangePassword && to.path !== '/admin/password') {
     return navigateTo('/admin/password')

@@ -457,7 +457,7 @@ function exportCsv() {
   padding: 1px 8px;
   border: 1px solid #D3D8E0;
   border-radius: 999px;
-  background: #0C1D2F;
+  background: #0F1E2E;
   color: #D3D8E0;
   font-size: 10.5px;
   font-weight: 500;
@@ -467,9 +467,9 @@ function exportCsv() {
 }
 
 .honors-chip.platinum {
-  border-color: #E8BD73;
-  background: #E8BD73;
-  color: #0C1D2F;
+  border-color: #EAB77A;
+  background: #EAB77A;
+  color: #0F1E2E;
 }
 
 .head-status.honors-chip {

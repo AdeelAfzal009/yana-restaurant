@@ -2,9 +2,9 @@
 // dependency-free: a service account signs its own JWTs with node:crypto.
 //
 // One LoyaltyClass holds the look (logo, colour); each member is a
-// LoyaltyObject in it carrying their tier's banner, tier, name, member number
-// and whether the card is active. Keeping the tier on the object means a tier
-// change never has to move a card between classes. The
+// LoyaltyObject in it with the banner, tier, name, member number, the staff
+// verify QR code and whether the card is active. Keeping the tier on the
+// object means a tier change never has to move a card between classes. The
 // "Add to Google Wallet" button is a link with a signed JWT naming the object.
 //
 // Setup: Google Pay & Wallet Console → issuer account; Google Cloud → service
@@ -13,7 +13,7 @@
 import { createSign } from 'node:crypto'
 import { HONORS_TIER_LABEL } from '#shared/utils/honors'
 import type { Guest, HonorsMember } from '../database/schema'
-import { memberName } from './honors'
+import { honorsVerifyUrl, memberName, publicOrigin } from './honors'
 import { getMailConfig } from './mail'
 
 const API = 'https://walletobjects.googleapis.com/walletobjects/v1'
@@ -30,8 +30,8 @@ export function getGoogleWalletConfig() {
     issuerId,
     email,
     privateKey,
-    // Keeps a local or test copy from overwriting the live site's passes when
-    // both use the same issuer account.
+    // Keeps a local or test copy from overwriting the live site's cards (and
+    // their look) when both use the same issuer account.
     objectPrefix: process.env.GOOGLE_WALLET_OBJECT_PREFIX || 'yh',
     enabled: Boolean(issuerId && email && privateKey)
   }
@@ -81,23 +81,19 @@ async function upsert(kind: 'loyaltyClass' | 'loyaltyObject', resource: { id: st
   }
 }
 
-// Google fetches the logo and banner itself, so they must come from the live
-// https site, never from localhost.
-function imageBase(origin: string) {
-  return origin.startsWith('https://') ? origin : getMailConfig().siteUrl
-}
-
 const text = (value: string) => ({ defaultValue: { language: 'en', value } })
 
 function loyaltyClass(origin: string) {
-  const { issuerId } = getGoogleWalletConfig()
+  const { issuerId, objectPrefix } = getGoogleWalletConfig()
   return {
-    id: `${issuerId}.yana_honors`,
+    // A local or test copy keeps its own class too, so it can't change the
+    // live cards' look.
+    id: `${issuerId}.${objectPrefix === 'yh' ? '' : `${objectPrefix}_`}yana_honors`,
     issuerName: 'YANA',
     programName: 'Yana Honors',
-    programLogo: { sourceUri: { uri: `${imageBase(origin)}/honors/google-logo.png` }, contentDescription: text('YANA') },
-    hexBackgroundColor: '#0C1D2F',
-    accountNameLabel: 'Member name',
+    programLogo: { sourceUri: { uri: `${publicOrigin(origin)}/honors/google-logo-honors.png` }, contentDescription: text('YANA Honors') },
+    hexBackgroundColor: '#0F1E2E',
+    accountNameLabel: 'Guest name',
     accountIdLabel: 'Member ID',
     homepageUri: { uri: getMailConfig().siteUrl, description: 'YANA Restaurant' },
     multipleDevicesAndHoldersAllowedStatus: 'ONE_USER_ALL_DEVICES',
@@ -114,8 +110,9 @@ function loyaltyObject(member: HonorsMember, guest: Guest, origin: string) {
     state: member.status === 'active' ? 'ACTIVE' : 'INACTIVE',
     accountName: memberName(guest),
     accountId: member.memberNumber,
-    heroImage: { sourceUri: { uri: `${imageBase(origin)}/honors/google-hero-${member.tier}.png` }, contentDescription: text(`Yana Honors ${tier}`) },
-    textModulesData: [{ id: 'tier', header: 'Tier', body: tier.toUpperCase() }]
+    heroImage: { sourceUri: { uri: `${publicOrigin(origin)}/honors/google-hero-card.png` }, contentDescription: text('Yana Honors membership card') },
+    textModulesData: [{ id: 'tier', header: 'Tier', body: tier.toUpperCase() }],
+    barcode: { type: 'QR_CODE', value: honorsVerifyUrl(origin, member.memberNumber), alternateText: member.memberNumber }
   }
 }
 

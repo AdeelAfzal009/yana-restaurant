@@ -1,19 +1,15 @@
 <template>
   <div class="hc">
-    <div class="hc-card" :class="`is-${tier}`" role="img" :aria-label="`Yana Honors ${HONORS_TIER_LABEL[tier]} card for ${name}, member ID ${memberNumber}`">
-      <img class="hc-pattern" src="/honors/corner-pattern.jpg" alt="">
-      <div class="hc-frame" />
-      <div class="hc-body">
-        <img class="hc-mark" src="/honors/mark-gold.png" alt="">
-        <img class="hc-wordmark" src="/honors/wordmark-gold.png" alt="">
-        <img class="hc-divider" src="/honors/divider-gold.png" alt="">
-        <p class="hc-program">Yana Honors</p>
-        <p class="hc-tier">{{ HONORS_TIER_LABEL[tier] }}</p>
-        <p class="hc-label">Member name</p>
-        <p class="hc-value">{{ name }}</p>
-        <p class="hc-label">Member ID</p>
-        <p class="hc-value hc-id">{{ memberNumber }}</p>
-      </div>
+    <div class="hc-card" role="img" :aria-label="`Yana Honors ${HONORS_TIER_LABEL[tier]} membership card for ${name}, member ID ${memberNumber}`">
+      <img class="hc-lockup" src="/honors/honors-lockup.png" alt="">
+      <p class="hc-title">Membership card</p>
+      <dl class="hc-fields">
+        <dt>Guest name:</dt><dd>{{ name }}</dd>
+        <dt>Member ID:</dt><dd>{{ memberNumber }}</dd>
+        <dt>Tier:</dt><dd>{{ HONORS_TIER_LABEL[tier] }}</dd>
+      </dl>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <div v-if="qrSvg" class="hc-qr" v-html="qrSvg" />
     </div>
   </div>
 </template>
@@ -21,10 +17,20 @@
 <script setup lang="ts">
 import { HONORS_TIER_LABEL } from '#shared/utils/honors'
 import type { HonorsTier } from '#shared/utils/honors'
+import QRCode from 'qrcode'
 
-// The Yana Honors card as designed (390 x 560), scaled to whatever width it
-// is given. The wallets draw their own version from the same brand images.
-defineProps<{ tier: HonorsTier, name: string, memberNumber: string }>()
+// The Yana Honors card as designed (public/honors/yana-membership-card.png,
+// 1748 x 1240), scaled to whatever width it is given. The QR code is the same
+// staff verify link the wallet cards carry. The wallets draw their own version
+// from pieces of the same design.
+const props = defineProps<{ tier: HonorsTier, name: string, memberNumber: string }>()
+
+const qrSvg = ref('')
+onMounted(async () => {
+  qrSvg.value = await QRCode.toString(`${location.origin}/admin/honors/${props.memberNumber}`, {
+    type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#EAB77A', light: '#0F1E2E' }
+  })
+})
 </script>
 
 <style scoped>
@@ -35,128 +41,76 @@ defineProps<{ tier: HonorsTier, name: string, memberNumber: string }>()
 
 .hc-card {
   /* One design pixel. */
-  --u: calc(100cqw / 390);
+  --u: calc(100cqw / 1748);
   position: relative;
   overflow: hidden;
-  aspect-ratio: 390 / 560;
-  border-radius: calc(22 * var(--u));
-  background: #0C1D2F;
+  aspect-ratio: 1748 / 1240;
+  border-radius: calc(60 * var(--u));
+  background: #0F1E2E;
+  border: 1px solid rgba(234, 183, 122, 0.28);
   font-family: Montserrat, sans-serif;
-  color: #E8BD73;
-  box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(5, 12, 20, 0.35);
+  box-shadow: 0 calc(40 * var(--u)) calc(90 * var(--u)) rgba(5, 12, 20, 0.35);
 }
 
-.hc-pattern {
+.hc-lockup {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 47%;
-  object-fit: cover;
-  object-position: right bottom;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 55%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 55%);
-  opacity: 0.85;
+  left: 50%;
+  top: calc(104 * var(--u));
+  width: calc(419 * var(--u));
+  transform: translateX(-50%);
 }
 
-.hc-frame {
+.hc-title {
   position: absolute;
-  inset: calc(10 * var(--u));
-  border-radius: calc(16 * var(--u));
-  border: calc(1.2 * var(--u)) solid rgba(211, 216, 224, 0.35);
-  pointer-events: none;
-}
-
-.is-platinum .hc-frame {
-  border-color: rgba(232, 189, 115, 0.6);
-}
-
-.hc-body {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: calc(42 * var(--u));
-  text-align: center;
-}
-
-.hc-body p {
+  inset: calc(352 * var(--u)) 0 auto;
   margin: 0;
-}
-
-.hc-mark {
-  width: calc(48 * var(--u));
-}
-
-.hc-wordmark {
-  width: calc(170 * var(--u));
-  margin-top: calc(20 * var(--u));
-}
-
-.hc-divider {
-  width: calc(205 * var(--u));
-  margin-top: calc(16 * var(--u));
-}
-
-.hc-program {
-  margin-top: calc(26 * var(--u)) !important;
-  padding-left: 0.42em;
-  font-size: calc(13 * var(--u));
-  font-weight: 300;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: #C9A465;
-}
-
-.hc-tier {
-  margin-top: calc(26 * var(--u)) !important;
-  min-width: calc(200 * var(--u));
-  padding: calc(9 * var(--u)) calc(28 * var(--u)) calc(9 * var(--u)) calc(34 * var(--u));
-  border: calc(1.2 * var(--u)) solid #D3D8E0;
-  border-radius: 999px;
-  font-size: calc(17 * var(--u));
+  padding-left: 0.15em;
+  font-size: calc(94 * var(--u));
   font-weight: 400;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  text-align: center;
   text-transform: uppercase;
-  color: #D3D8E0;
+  color: #EAB77A;
 }
 
-.is-platinum .hc-tier {
-  border-color: #E8BD73;
-  background: #E8BD73;
-  color: #0C1D2F;
+.hc-fields {
+  position: absolute;
+  left: calc(126 * var(--u));
+  top: calc(548 * var(--u));
+  right: calc(560 * var(--u));
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: calc(44 * var(--u)) calc(28 * var(--u));
+  margin: 0;
+  font-size: calc(62 * var(--u));
+  line-height: 1.15;
+  text-align: left;
 }
 
-.hc-label {
-  margin-top: calc(24 * var(--u)) !important;
-  padding-left: 0.26em;
-  font-size: calc(10 * var(--u));
-  letter-spacing: 0.26em;
+.hc-fields dt {
   text-transform: uppercase;
-  color: #C9A465;
+  color: #fff;
 }
 
-.hc-tier + .hc-label {
-  margin-top: calc(30 * var(--u)) !important;
-}
-
-.hc-value {
-  max-width: 86%;
-  margin-top: calc(5 * var(--u)) !important;
+.hc-fields dd {
+  margin: 0;
   overflow: hidden;
-  font-size: calc(17 * var(--u));
-  font-weight: 400;
-  letter-spacing: 0.04em;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #E8BD73;
+  color: #EAB77A;
 }
 
-.hc-label + .hc-value + .hc-label {
-  margin-top: calc(16 * var(--u)) !important;
+.hc-qr {
+  position: absolute;
+  left: calc(1263 * var(--u));
+  top: calc(791 * var(--u));
+  width: calc(294 * var(--u));
 }
 
-.hc-id {
-  letter-spacing: 0.14em;
+.hc-qr :deep(svg) {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 </style>

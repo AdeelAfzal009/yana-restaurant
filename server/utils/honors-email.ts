@@ -18,7 +18,7 @@ export async function sendHonorsCardEmail(member: HonorsMember, guest: Guest, li
   const until = expiresAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Dubai' })
   const heading = 'Welcome to Yana Honors'
   const intro = `Dear ${guest.firstName}, thank you for being part of the YANA family. We are delighted to welcome you as a Yana Honors ${tier} member.`
-  const rows: [string, string][] = [['Member name', name], ['Tier', tier], ['Member ID', member.memberNumber]]
+  const rows: [string, string][] = [['Guest name', name], ['Tier', tier], ['Member ID', member.memberNumber]]
   const body = 'Open the link on your phone to add your membership card to Google Wallet or Apple Wallet, then show it to our team on your next visit.'
   const footerNote = `This link is personal to you and works until ${until}. If it has stopped working, ask our team for a new one.`
 

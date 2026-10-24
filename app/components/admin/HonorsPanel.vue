@@ -204,7 +204,7 @@ async function showQr() {
   error.value = ''
   try {
     const res = await $fetch<{ url: string, expiresAt: string }>(`/api/admin/honors/${honors.value.id}/link`, { method: 'POST', body: { channel: 'qr' } })
-    const svg = await QRCode.toString(res.url, { type: 'svg', margin: 1, errorCorrectionLevel: 'M', color: { dark: '#0C1D2F', light: '#FFFFFF' } })
+    const svg = await QRCode.toString(res.url, { type: 'svg', margin: 1, errorCorrectionLevel: 'M', color: { dark: '#0F1E2E', light: '#FFFFFF' } })
     qr.value = { url: res.url, svg, expiresAt: new Date(res.expiresAt).getTime() }
     copied.value = false
     now.value = Date.now()
@@ -292,7 +292,7 @@ async function emailLink() {
 
 .hp-member {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -303,7 +303,7 @@ async function emailLink() {
   }
 
   .hp-preview {
-    max-width: 240px;
+    max-width: 320px;
   }
 }
 
