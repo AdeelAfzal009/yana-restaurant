@@ -98,8 +98,8 @@ const problemText = computed(() => ({
 .add {
   min-height: 100vh;
   min-height: 100dvh;
-  background: radial-gradient(120% 80% at 50% 0%, #14294000 0%, #0C1D2F 70%), #0C1D2F;
-  color: #E8BD73;
+  background: #0F1E2E;
+  color: #EAB77A;
   font-family: Montserrat, sans-serif;
 }
 
@@ -136,11 +136,11 @@ const problemText = computed(() => ({
 }
 
 .add-sub a {
-  color: #E8BD73;
+  color: #EAB77A;
 }
 
 .add-card {
-  width: min(300px, 100%);
+  width: min(380px, 100%);
   margin: 28px 0 26px;
 }
 
@@ -158,7 +158,7 @@ const problemText = computed(() => ({
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: min(300px, 100%);
+  width: min(320px, 100%);
 }
 
 .add-btn {

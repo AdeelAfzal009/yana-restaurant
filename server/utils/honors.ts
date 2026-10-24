@@ -3,6 +3,7 @@ import { and, eq, sql } from 'drizzle-orm'
 import { guests, honorsMembers, staff } from '../database/schema'
 import type { Guest, HonorsMember } from '../database/schema'
 import { useDb } from './db'
+import { getMailConfig } from './mail'
 
 // How long an "add to wallet" link works: shown as a QR at reception it only
 // needs to last while the guest is at the desk; emailed, the guest may open it
@@ -16,6 +17,16 @@ const LINK_GRACE_MS = 30 * MINUTE
 export type HonorsLinkChannel = keyof typeof HONORS_LINK_TTL_MS
 
 export const honorsLinkUrl = (origin: string, token: string) => `${origin}/add/${token}`
+
+// The live https site. Wallet cards outlive the request that made them, and
+// Google fetches their images itself, so they never point at localhost.
+export function publicOrigin(origin: string) {
+  return origin.startsWith('https://') ? origin : getMailConfig().siteUrl
+}
+
+// What the QR code on the card opens: the member in the dashboard, for staff
+// to check the card is genuine and active and see the discount.
+export const honorsVerifyUrl = (origin: string, memberNumber: string) => `${publicOrigin(origin)}/admin/honors/${memberNumber}`
 
 export const memberName = (guest: Pick<Guest, 'firstName' | 'lastName'>) => `${guest.firstName} ${guest.lastName}`.trim()
 

@@ -112,6 +112,10 @@ const error = ref('')
 const loading = ref(false)
 const showPassword = ref(false)
 
+// Only dashboard pages on this site, never an outside address.
+const route = useRoute()
+const next = typeof route.query.next === 'string' && /^\/admin\/(?!login)/.test(route.query.next) ? route.query.next : null
+
 async function onSubmit() {
   error.value = ''
   if (!email.value || !password.value) {
@@ -124,7 +128,7 @@ async function onSubmit() {
       method: 'POST',
       body: { email: email.value, password: password.value }
     })
-    await navigateTo(res.mustChangePassword ? '/admin/password' : res.home ?? '/admin')
+    await navigateTo(res.mustChangePassword ? '/admin/password' : next ?? res.home ?? '/admin')
   } catch (err: any) {
     error.value = err?.data?.statusMessage || 'Login failed'
   } finally {

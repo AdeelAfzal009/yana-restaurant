@@ -1,5 +1,6 @@
 import { buildApplePass, getAppleWalletConfig } from '../../../utils/apple-wallet'
 import { findHonorsByToken, markHonorsLinkUsed } from '../../../utils/honors'
+import { siteOrigin } from '../../../utils/request'
 
 // "Add to Apple Wallet": the signed .pkpass, which Safari opens straight in
 // Wallet. Problems go back to the add page, which explains them.
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
   let pass: Buffer
   try {
-    pass = await buildApplePass(row.member, row.guest)
+    pass = await buildApplePass(row.member, row.guest, siteOrigin(event))
   } catch (error) {
     console.error('[apple-wallet]', error)
     return back('apple')
