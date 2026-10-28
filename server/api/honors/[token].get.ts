@@ -3,7 +3,7 @@ import { getGoogleWalletConfig } from '../../utils/google-wallet'
 import { findHonorsByToken, memberName } from '../../utils/honors'
 
 // The card behind an "add to wallet" link, for the public /add/<token> page.
-// Only what the card itself shows; the discount is never sent to the guest.
+// Only what the card itself shows.
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')
   const row = await findHonorsByToken(getRouterParam(event, 'token') ?? '')

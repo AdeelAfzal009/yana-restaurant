@@ -1,0 +1,1 @@
+ALTER TABLE "honors_members" DROP COLUMN "discount_percent";

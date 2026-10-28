@@ -92,6 +92,13 @@
       "when": 1792754315167,
       "tag": "0012_honors_members",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793212694910,
+      "tag": "0013_honors_drop_discount",
+      "breakpoints": true
     }
   ]
 }

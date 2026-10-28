@@ -24,10 +24,6 @@ export function publicOrigin(origin: string) {
   return origin.startsWith('https://') ? origin : getMailConfig().siteUrl
 }
 
-// What the QR code on the card opens: the member in the dashboard, for staff
-// to check the card is genuine and active and see the discount.
-export const honorsVerifyUrl = (origin: string, memberNumber: string) => `${publicOrigin(origin)}/admin/honors/${memberNumber}`
-
 export const memberName = (guest: Pick<Guest, 'firstName' | 'lastName'>) => `${guest.firstName} ${guest.lastName}`.trim()
 
 // A fresh link for the card; any earlier link stops working.
@@ -80,7 +76,6 @@ export function publicHonors(member: HonorsMember, issuedByName: string | null =
     id: member.id,
     memberNumber: member.memberNumber,
     tier: member.tier,
-    discountPercent: member.discountPercent,
     status: member.status,
     issuedByName,
     createdAt: member.createdAt,
@@ -97,12 +92,6 @@ export async function loadHonorsMember(id: number) {
     .where(eq(honorsMembers.id, id))
     .limit(1)
   return row ?? null
-}
-
-export function parseDiscount(value: unknown) {
-  if (value === null || value === '') return null
-  const n = Number(value)
-  return Number.isInteger(n) && n >= 0 && n <= 100 ? n : null
 }
 
 export async function loadHonorsForGuest(guestId: number) {

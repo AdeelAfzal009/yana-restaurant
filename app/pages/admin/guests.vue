@@ -157,7 +157,7 @@
               <p class="adm-page-sub">{{ [profile.phone, profile.email].filter(Boolean).join(' · ') || 'No contact details' }} · Guest since {{ new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) }}</p>
               <span class="status-chip head-status" :class="{ returning: profileVisits >= 2 }">{{ guestStatus(profileVisits) }}</span>
               <span v-if="profile.honors?.status === 'active'" class="honors-chip head-status" :class="profile.honors.tier">
-                Yana Honors {{ HONORS_TIER_LABEL[profile.honors.tier] }} · {{ profile.honors.discountPercent }}% off
+                Yana Honors {{ HONORS_TIER_LABEL[profile.honors.tier] }}
               </span>
             </div>
           </div>
