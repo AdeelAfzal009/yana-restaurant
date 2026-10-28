@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
       vip: guests.vip,
       notes: guests.notes,
       createdAt: guests.createdAt,
-      // Revoked cards don't count: the guest no longer gets the discount.
+      // Revoked cards don't count: the guest is no longer a member.
       honorsTier: sql<'silver' | 'platinum' | null>`case when ${honorsMembers.status} = 'active' then ${honorsMembers.tier} end`,
       honorsNumber: honorsMembers.memberNumber,
       stats: sql<{

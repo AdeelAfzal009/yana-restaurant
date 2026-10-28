@@ -5,11 +5,11 @@ import { audit } from '../../../utils/audit'
 import { requirePermission } from '../../../utils/auth'
 import { useDb } from '../../../utils/db'
 import { syncGoogleCard } from '../../../utils/google-wallet'
-import { honorsForGuest, loadHonorsMember, memberName, parseDiscount } from '../../../utils/honors'
+import { honorsForGuest, loadHonorsMember, memberName } from '../../../utils/honors'
 import { siteOrigin } from '../../../utils/request'
 import { badRequest } from '../../../utils/validate'
 
-// Changes a card: { tier?, discountPercent?, status? }. Revoking also stops
+// Changes a card: { tier?, status? }. Revoking also stops
 // any link still out there and marks the card inactive in Google Wallet.
 export default defineEventHandler(async (event) => {
   const current = await requirePermission(event, 'guests')
@@ -19,17 +19,12 @@ export default defineEventHandler(async (event) => {
   const row = await loadHonorsMember(id)
   if (!row) throw createError({ statusCode: 404, statusMessage: 'Card not found' })
 
-  const body = await readBody<{ tier?: unknown, discountPercent?: unknown, status?: unknown }>(event)
+  const body = await readBody<{ tier?: unknown, status?: unknown }>(event)
   const set: Partial<typeof honorsMembers.$inferInsert> = {}
 
   if (body.tier !== undefined) {
     if (!isHonorsTier(body.tier)) badRequest('Choose Silver or Platinum')
     set.tier = body.tier
-  }
-  if (body.discountPercent !== undefined) {
-    const discount = parseDiscount(body.discountPercent)
-    if (discount === null) badRequest('Discount must be a whole number from 0 to 100')
-    set.discountPercent = discount
   }
   if (body.status !== undefined) {
     if (body.status !== 'active' && body.status !== 'revoked') badRequest('Invalid status')
@@ -39,14 +34,13 @@ export default defineEventHandler(async (event) => {
 
   const [updated] = await useDb().update(honorsMembers).set({ ...set, updatedAt: new Date() }).where(eq(honorsMembers.id, id)).returning()
 
-  // Google shows the tier and status, not the discount.
   const walletChanged = updated!.tier !== row.member.tier || updated!.status !== row.member.status
   const warning = walletChanged ? await syncGoogleCard(updated!, row.guest, siteOrigin(event)) : null
 
   const statusChange = updated!.status !== row.member.status
   await audit(event, current, statusChange ? (updated!.status === 'revoked' ? 'honors.revoked' : 'honors.reactivated') : 'honors.updated', {
     target: memberName(row.guest),
-    details: { guestId: row.guest.id, memberNumber: updated!.memberNumber, fields: Object.keys(set), tier: updated!.tier, discountPercent: updated!.discountPercent }
+    details: { guestId: row.guest.id, memberNumber: updated!.memberNumber, fields: Object.keys(set), tier: updated!.tier }
   })
   return { honors: await honorsForGuest(row.guest.id), warning }
 })

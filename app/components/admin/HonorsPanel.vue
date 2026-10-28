@@ -11,18 +11,14 @@
     <section v-if="!honors" class="hp-issue">
       <div>
         <h3 class="hp-title">Issue a Yana Honors card</h3>
-        <p class="adm-muted hp-lead">The guest adds it to Google Wallet or Apple Wallet and shows it on each visit. The discount is only shown here, not on the card.</p>
+        <p class="adm-muted hp-lead">The guest adds it to Google Wallet or Apple Wallet and shows it on each visit.</p>
       </div>
       <div class="adm-field">
         <span class="adm-label">Tier</span>
         <div class="adm-seg">
-          <button v-for="t in HONORS_TIERS" :key="t" type="button" :class="{ 'is-active': form.tier === t }" @click="pickTier(t)">{{ HONORS_TIER_LABEL[t] }}</button>
+          <button v-for="t in HONORS_TIERS" :key="t" type="button" :class="{ 'is-active': form.tier === t }" @click="form.tier = t">{{ HONORS_TIER_LABEL[t] }}</button>
         </div>
       </div>
-      <label class="adm-field hp-discount">
-        <span class="adm-label">Discount</span>
-        <span class="hp-pct"><input v-model.number="form.discountPercent" type="number" min="0" max="100" step="1" class="adm-input"><span>%</span></span>
-      </label>
       <p v-if="error" class="adm-error">{{ error }}</p>
       <div>
         <button type="button" class="adm-btn adm-btn-primary" :disabled="busy" @click="issue">
@@ -54,11 +50,7 @@
               <button v-for="t in HONORS_TIERS" :key="t" type="button" :class="{ 'is-active': edit.tier === t }" @click="edit.tier = t">{{ HONORS_TIER_LABEL[t] }}</button>
             </div>
           </div>
-          <label class="adm-field hp-discount">
-            <span class="adm-label">Discount</span>
-            <span class="hp-pct"><input v-model.number="edit.discountPercent" type="number" min="0" max="100" step="1" class="adm-input"><span>%</span></span>
-          </label>
-          <button v-if="editDirty" type="button" class="adm-btn adm-btn-primary adm-btn-sm" :disabled="busy" @click="update({ tier: edit.tier, discountPercent: edit.discountPercent })">Save</button>
+          <button v-if="editDirty" type="button" class="adm-btn adm-btn-primary adm-btn-sm" :disabled="busy" @click="update({ tier: edit.tier })">Save</button>
         </div>
 
         <template v-if="honors.status === 'active'">
@@ -107,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { HONORS_DEFAULT_DISCOUNT, HONORS_TIER_LABEL, HONORS_TIERS } from '#shared/utils/honors'
+import { HONORS_TIER_LABEL, HONORS_TIERS } from '#shared/utils/honors'
 import type { HonorsTier } from '#shared/utils/honors'
 import QRCode from 'qrcode'
 
@@ -135,13 +127,7 @@ function flash(message: string) {
 }
 
 // ---- Issue ----
-const form = reactive({ tier: 'platinum' as HonorsTier, discountPercent: HONORS_DEFAULT_DISCOUNT.platinum })
-
-// Switching tier moves the discount along with it, unless staff typed their own.
-function pickTier(tier: HonorsTier) {
-  if (form.discountPercent === HONORS_DEFAULT_DISCOUNT[form.tier]) form.discountPercent = HONORS_DEFAULT_DISCOUNT[tier]
-  form.tier = tier
-}
+const form = reactive({ tier: 'platinum' as HonorsTier })
 
 async function issue() {
   busy.value = true
@@ -157,11 +143,11 @@ async function issue() {
 }
 
 // ---- Change, revoke ----
-const edit = reactive({ tier: 'platinum' as HonorsTier, discountPercent: 0 })
+const edit = reactive({ tier: 'platinum' as HonorsTier })
 watch(honors, (h) => {
-  if (h) Object.assign(edit, { tier: h.tier, discountPercent: h.discountPercent })
+  if (h) edit.tier = h.tier
 }, { immediate: true })
-const editDirty = computed(() => !!honors.value && (edit.tier !== honors.value.tier || edit.discountPercent !== honors.value.discountPercent))
+const editDirty = computed(() => !!honors.value && edit.tier !== honors.value.tier)
 
 async function update(body: Record<string, unknown>) {
   if (!honors.value) return
@@ -276,23 +262,10 @@ async function emailLink() {
   font-size: 13px;
 }
 
-.hp-discount {
-  max-width: 140px;
-}
-
-.hp-pct {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.hp-pct .adm-input {
-  width: 80px;
-}
 
 .hp-member {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 240px 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -303,7 +276,7 @@ async function emailLink() {
   }
 
   .hp-preview {
-    max-width: 320px;
+    max-width: 240px;
   }
 }
 

@@ -101,7 +101,6 @@ export interface HonorsCardInfo {
   id: number
   memberNumber: string
   tier: HonorsTier
-  discountPercent: number
   status: 'active' | 'revoked'
   issuedByName: string | null
   createdAt: string

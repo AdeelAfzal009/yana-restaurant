@@ -253,8 +253,7 @@ export const auditLog = pgTable('audit_log', {
 ])
 
 // Yana Honors: the membership card a guest keeps in Google or Apple Wallet.
-// One card per guest. The card shows only the tier, name and member number;
-// the discount is for staff and can differ from guest to guest.
+// One card per guest. The card shows only the tier, name and member number.
 export const honorsTierEnum = pgEnum('honors_tier', ['silver', 'platinum'])
 export const honorsStatusEnum = pgEnum('honors_status', ['active', 'revoked'])
 export const honorsMemberNumberSeq = pgSequence('honors_member_number_seq', { startWith: 1 })
@@ -266,7 +265,6 @@ export const honorsMembers = pgTable('honors_members', {
   memberNumber: text('member_number').notNull().unique()
     .default(sql`'YH-' || lpad(nextval('honors_member_number_seq')::text, 6, '0')`),
   tier: honorsTierEnum('tier').notNull(),
-  discountPercent: integer('discount_percent').notNull(),
   status: honorsStatusEnum('status').notNull().default('active'),
   // The secret in the "add to wallet" link. A new link replaces the old one.
   token: text('token').unique(),

@@ -140,7 +140,7 @@ const problemText = computed(() => ({
 }
 
 .add-card {
-  width: min(380px, 100%);
+  width: min(280px, 100%);
   margin: 28px 0 26px;
 }
 

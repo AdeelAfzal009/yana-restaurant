@@ -1,10 +1,11 @@
 // Google Wallet passes for Yana Honors, over Google's REST API. Deliberately
 // dependency-free: a service account signs its own JWTs with node:crypto.
 //
-// One LoyaltyClass holds the look (logo, colour); each member is a
-// LoyaltyObject in it with the banner, tier, name, member number, the staff
-// verify QR code and whether the card is active. Keeping the tier on the
-// object means a tier change never has to move a card between classes. The
+// One LoyaltyClass holds the look: "YANA" with "Honors" under it at the top
+// (all the closed card shows), the colour, and a row showing the tier. Each member is a LoyaltyObject in it
+// with their name, member number, tier and whether the card is active; no
+// barcode. Keeping the tier on the object means a tier change never has to
+// move a card between classes. The
 // "Add to Google Wallet" button is a link with a signed JWT naming the object.
 //
 // Setup: Google Pay & Wallet Console → issuer account; Google Cloud → service
@@ -13,7 +14,7 @@
 import { createSign } from 'node:crypto'
 import { HONORS_TIER_LABEL } from '#shared/utils/honors'
 import type { Guest, HonorsMember } from '../database/schema'
-import { honorsVerifyUrl, memberName, publicOrigin } from './honors'
+import { memberName, publicOrigin } from './honors'
 import { getMailConfig } from './mail'
 
 const API = 'https://walletobjects.googleapis.com/walletobjects/v1'
@@ -74,10 +75,12 @@ async function walletApi(method: string, path: string, body?: unknown) {
   throw new Error(`Google Wallet ${method} ${path.split('/')[1]} failed: ${error.error?.message || `HTTP ${response.status}`}`)
 }
 
-// Inserts, or replaces what's there when it already exists.
+// Inserts, or replaces what's there when it already exists. Replacing (not
+// patching) also clears anything an older version of the card had, such as
+// a banner or barcode.
 async function upsert(kind: 'loyaltyClass' | 'loyaltyObject', resource: { id: string }) {
   if (await walletApi('POST', `/${kind}`, resource) === 409) {
-    await walletApi(kind === 'loyaltyClass' ? 'PUT' : 'PATCH', `/${kind}/${encodeURIComponent(resource.id)}`, resource)
+    await walletApi('PUT', `/${kind}/${encodeURIComponent(resource.id)}`, resource)
   }
 }
 
@@ -89,13 +92,25 @@ function loyaltyClass(origin: string) {
     // A local or test copy keeps its own class too, so it can't change the
     // live cards' look.
     id: `${issuerId}.${objectPrefix === 'yh' ? '' : `${objectPrefix}_`}yana_honors`,
+    // Google always writes the program name under the logo, so the logo is
+    // just "YANA" and the program name is "Honors". On Android the wide logo
+    // replaces the round logo and the issuer name; elsewhere (such as the
+    // save page) the round logo and issuer name show instead.
     issuerName: 'YANA',
-    programName: 'Yana Honors',
-    programLogo: { sourceUri: { uri: `${publicOrigin(origin)}/honors/google-logo-honors.png` }, contentDescription: text('YANA Honors') },
+    programName: 'Honors',
+    programLogo: { sourceUri: { uri: `${publicOrigin(origin)}/honors/google-logo-yana.png` }, contentDescription: text('YANA') },
+    wideProgramLogo: { sourceUri: { uri: `${publicOrigin(origin)}/honors/google-wide-yana.png` }, contentDescription: text('YANA') },
     hexBackgroundColor: '#0F1E2E',
     accountNameLabel: 'Guest name',
     accountIdLabel: 'Member ID',
     homepageUri: { uri: getMailConfig().siteUrl, description: 'YANA Restaurant' },
+    // Guest name and member ID are on the card front by default; this adds
+    // the tier below them.
+    classTemplateInfo: {
+      cardTemplateOverride: {
+        cardRowTemplateInfos: [{ oneItem: { item: { firstValue: { fields: [{ fieldPath: "object.textModulesData['tier']" }] } } } }]
+      }
+    },
     multipleDevicesAndHoldersAllowedStatus: 'ONE_USER_ALL_DEVICES',
     reviewStatus: 'UNDER_REVIEW'
   }
@@ -110,9 +125,7 @@ function loyaltyObject(member: HonorsMember, guest: Guest, origin: string) {
     state: member.status === 'active' ? 'ACTIVE' : 'INACTIVE',
     accountName: memberName(guest),
     accountId: member.memberNumber,
-    heroImage: { sourceUri: { uri: `${publicOrigin(origin)}/honors/google-hero-card.png` }, contentDescription: text('Yana Honors membership card') },
-    textModulesData: [{ id: 'tier', header: 'Tier', body: tier.toUpperCase() }],
-    barcode: { type: 'QR_CODE', value: honorsVerifyUrl(origin, member.memberNumber), alternateText: member.memberNumber }
+    textModulesData: [{ id: 'tier', header: 'Tier', body: tier }]
   }
 }
 
@@ -154,7 +167,7 @@ export async function syncGoogleCard(member: HonorsMember, guest: Guest, origin:
   try {
     await ensureClass(origin)
     const object = loyaltyObject(member, guest, origin)
-    await walletApi('PATCH', `/loyaltyObject/${encodeURIComponent(object.id)}`, object)
+    await walletApi('PUT', `/loyaltyObject/${encodeURIComponent(object.id)}`, object)
     return null
   } catch (error) {
     console.error('[google-wallet]', error)
